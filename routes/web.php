@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,9 @@ Route::get('/', function () {
 Route::get('/products', function() {
     return Inertia::render('Products');
 });
+
+Route::get('/catalog', [CategoryController::class, 'catalog']);
+Route::get('/catalog/{сategory}', [CategoryController::class, 'categories'])->name('categories');
 
 // Route::get('/', function () {
 //     return Inertia::render('Welcome', [
