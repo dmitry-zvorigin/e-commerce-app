@@ -1,16 +1,18 @@
-import Breadcrumbs from "@/Components/Breadcrumbs";
-import DefaultLayout from "@/Layouts/DefaultLayout";
-import { InertiaLink } from "@inertiajs/inertia-react";
+import Banners from '@/Components/Banners';
+import Breadcrumbs from '@/Components/Breadcrumbs';
+import DefaultLayout from '@/Layouts/DefaultLayout';
+import { Link } from '@inertiajs/react'
 import { useState } from "react";
 
-const Catalog = ({ categories, breadcrumbs, categoris_menu }) => {
+export default function Catalog({ categories, breadcrumbs }) {
 
+    // console.log(categories);
+    // console.log(categories);
     const [showChildren, setShowChildren] = useState(null);
 
     return (
-        <DefaultLayout categoris_menu={categoris_menu}>
         <div className="bg-white">
-            <div className="max-w-full py-16 sm:py-24 lg:max-w-7xl">
+            <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h2 className="text-2xl font-bold tracking-tight text-gray-900">Каталог товаров</h2>
         
@@ -23,22 +25,14 @@ const Catalog = ({ categories, breadcrumbs, categoris_menu }) => {
                         onMouseLeave={() => setShowChildren(null)}
                     >
                         {showChildren === category && (
-                            <div className="absolute inset-1 flex  justify-start p-5 bg-white rounded-lg">
+                            <div className="absolute inset-1 flex items-center justify-center bg-gray-200 rounded-lg">
                                 <div className="text-black">
-                                    <InertiaLink 
-                                        className="font-bold mb-1 hover:text-orange-700" 
-                                        href={route('categories', { categorySlug: category.slug })}>{category.name}
-                                    </InertiaLink>
+                                    <a href={category.show_url} className="font-bold mb-1 hover:text-orange-700">{category.name}</a>
                                     {category.children && category.children.length > 0 && (
                                     <ul>
                                         {category.children.map((child) => (
                                         <li key={child.id}>
-                                            <InertiaLink 
-                                                className="hover:text-orange-700"
-                                                href={route('categories', { categorySlug: child.slug })}
-                                            >
-                                                {child.name}
-                                            </InertiaLink>
+                                            <a href={child.show_url} className="hover:text-orange-700">{child.name}</a>
                                         </li>
                                         ))}
                                     </ul>
@@ -68,8 +62,5 @@ const Catalog = ({ categories, breadcrumbs, categoris_menu }) => {
                 </div>
             </div>
         </div>
-        </DefaultLayout>
     );
 }
-
-export default Catalog;

@@ -1,16 +1,12 @@
-import Banners from "@/Components/Banners";
-import Filters from "@/Components/Filters";
-import Footer from "@/Components/Footer";
-import Header from "@/Components/Header";
-import Pagination from "@/Components/Pagination";
+import Navbar from "@/Test/Navbar";
+import { InertiaApp } from "@inertiajs/inertia-react";
 
-export default function Home() {
-
-    return(
+const Home = () => {
+    return (
         <>
-            <Banners/>
-            <Header/>
-            <Filters/>
+            Home
         </>
     );
 }
+
+export default Home;
