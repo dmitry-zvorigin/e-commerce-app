@@ -28,7 +28,7 @@ class CategoryController extends Controller
         
         $breadcrumbs = Breadcrumbs::generate('catalog');
 
-        return Inertia::render('Catalog', ['categories' => $categories, 'breadcrumbs' => $breadcrumbs, 'categoris_menu' => $categoriesMenu]);
+        return Inertia::render('Catalog', ['categories' => $categories, 'breadcrumbs' => $breadcrumbs, 'categories_menu' => $categoriesMenu]);
     }
 
     public function categories($categorySlug)
@@ -37,15 +37,21 @@ class CategoryController extends Controller
 
         $category = Category::where('slug', $categorySlug)->first();
 
-        $categories = Category::where('slug', $categorySlug)->with(['children', 'children.images'])->first();
-        $categories->children->each(function ($category) {
-            $category->append('show_url');
-        });
-        
+        $categoriesMenu = Category::get()->toTree();
 
         $result = Category::ancestorsAndSelf($category->id);
         $breadcrumbs = Breadcrumbs::generate('categories', $result);
-        $categoriesMenu = Category::get()->toTree();
+
+        if($category->is_final) {
+            $products = $category->products;
+            return Inertia::render('Products', ['category' => $category, 'products' => $products, 'categories_menu' => $categoriesMenu, 'breadcrumbs' => $breadcrumbs]);
+        }
+
+        $categories = Category::where('slug', $categorySlug)->with(['children', 'children.images'])->first();
+  
+        $result = Category::ancestorsAndSelf($category->id);
+        $breadcrumbs = Breadcrumbs::generate('categories', $result);
+        
 
         return Inertia::render('Categories', ['categories' => $categories, 'breadcrumbs' => $breadcrumbs, 'categories_menu' => $categoriesMenu]);
 

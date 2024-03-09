@@ -29,6 +29,12 @@ class Category extends Model
         return $this->hasMany(CategoryImage::class);
     }
 
+    public function products() : HasMany
+    {
+        // Отношения к продуктам
+        return $this->hasMany(Product::class);
+    }
+
     public function getShowUrlAttribute()
     {
         // Генерация поля url_show

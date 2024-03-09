@@ -11,12 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('categories', function (Blueprint $table) {
+        Schema::create('category_attribute_relationships', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('slug');
-            $table->boolean('is_final')->default(false);
-            $table->nestedSet();
+            $table->foreignId('category_id')->constrained();
+            $table->foreignId('attribute_id')->constrained('product_attributes');
+            $table->boolean('is_required')->default(false);
             $table->timestamps();
         });
     }
@@ -26,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('categories');
+        Schema::dropIfExists('category_attribute_relationships');
     }
 };
-
-

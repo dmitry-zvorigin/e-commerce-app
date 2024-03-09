@@ -910,10 +910,11 @@ class CategorySeeder extends Seeder
     protected function createChildren(Category $parent, array $children) 
     {
         foreach ($children as $categoryName => $subcategories) {
-            $child = Category::create(['name' => $categoryName]);
+            $isFinal = empty($subcategories);
+            $child = Category::create(['name' => $categoryName, 'is_final' => $isFinal]);
             $child->appendToNode($parent)->save();
 
-            if (!empty($subcategories)) {
+            if (!$isFinal) {
                 $this->createChildren($child, $subcategories);
             }
         }

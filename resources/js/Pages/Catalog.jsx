@@ -3,12 +3,12 @@ import DefaultLayout from "@/Layouts/DefaultLayout";
 import { InertiaLink } from "@inertiajs/inertia-react";
 import { useState } from "react";
 
-const Catalog = ({ categories, breadcrumbs, categoris_menu }) => {
+const Catalog = ({ categories, breadcrumbs, categories_menu }) => {
 
     const [showChildren, setShowChildren] = useState(null);
 
     return (
-        <DefaultLayout categoris_menu={categoris_menu}>
+        <DefaultLayout categories_menu={categories_menu}>
         <div className="bg-white">
             <div className="max-w-full py-16 sm:py-24 lg:max-w-7xl">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
