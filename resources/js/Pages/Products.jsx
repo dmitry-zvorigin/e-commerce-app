@@ -1,9 +1,9 @@
 import Breadcrumbs from "@/Components/Breadcrumbs";
 import Filters from "@/Components/Filters";
-import Pagination from "@/Components/Pagination";
 import DefaultLayout from "@/Layouts/DefaultLayout";
+import { declineProductCount } from "@/helpers";
 
-export default function Products({ categories_menu, breadcrumbs }) {
+export default function Products({ categories_menu, breadcrumbs, category, products, filters, filters_query }) {
 
     return (
         <>
@@ -11,10 +11,12 @@ export default function Products({ categories_menu, breadcrumbs }) {
             <div className="bg-white">
                 <div className="max-w-full py-16 sm:py-24 lg:max-w-7xl">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
-                    <Filters/>
+                    <h2 className="text-4xl font-bold tracking-tight text-gray-900">
+                        {category.name} {declineProductCount(products.length)}
+                    </h2>
+                    <Filters products={products} filters={filters} category={category} filters_query={filters_query} />
                 </div>
             </div>
-                <Filters/>
             </DefaultLayout>
             
         </>

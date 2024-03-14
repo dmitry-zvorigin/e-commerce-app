@@ -23,7 +23,10 @@ Route::inertia('/', 'Home')->name('home');
 Route::inertia('/catalog', 'Catalog')->name('catalog');
 Route::get('catalog', [CategoryController::class, 'catalog'])->name('catalog');
 Route::get('catalog/{categorySlug}', [CategoryController::class, 'categories'])->name('categories');
-Route::inertia('/compare', 'Compare')->name('compare');
+
+// Route::get('compare')->name('compare')->uses([CategoryController::class, 'test']);
+Route::get('/compare', [CategoryController::class, 'test'])->name('compare');
+// Route::inertia('/compare', 'Compare', ['str' => 'str'])->name('compare');
 Route::inertia('/favorites', 'Favorites')->name('favorites');
 Route::inertia('/cart', 'Cart')->name('cart');
 Route::inertia('/user', 'User')->name('user');

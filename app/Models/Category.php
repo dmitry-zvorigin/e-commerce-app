@@ -35,6 +35,22 @@ class Category extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function attributeRelationships() : HasMany
+    {
+        // Отношение к аттрибутам
+        return $this->hasMany(CategoryAttributeRelationship::class);
+    }
+
+    public function requiredAttributes()
+    {
+        // Получить все аттрибуты имеющие true для категории
+        return $this->attributeRelationships()
+            ->where('is_required', true)
+            ->with('attribute')
+            ->get()
+            ->pluck('attribute.name');
+    }
+
     public function getShowUrlAttribute()
     {
         // Генерация поля url_show

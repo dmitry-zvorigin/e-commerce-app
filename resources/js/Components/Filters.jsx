@@ -14,18 +14,20 @@
 */
 import { Fragment, useState } from 'react'
 import { Dialog, Disclosure, Menu, Transition } from '@headlessui/react'
-import { XMarkIcon } from '@heroicons/react/24/outline'
+import { Bars2Icon, Bars4Icon, XMarkIcon } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, FunnelIcon, MinusIcon, PlusIcon, Squares2X2Icon } from '@heroicons/react/20/solid'
 import ProductList from './ProductList'
 import Pagination from './Pagination'
+import Filt from './Filt'
 
 const sortOptions = [
-  { name: 'Most Popular', href: '#', current: true },
-  { name: 'Best Rating', href: '#', current: false },
-  { name: 'Newest', href: '#', current: false },
-  { name: 'Price: Low to High', href: '#', current: false },
-  { name: 'Price: High to Low', href: '#', current: false },
-]
+  { name: 'Сначала недорогие', href: '#', current: true },
+  { name: 'Сначала дорогие', href: '#', current: false },
+  { name: 'Сначала популярные', href: '#', current: false },
+  { name: 'Сначала новые', href: '#', current: false },
+  { name: 'Сначала старные', href: '#', current: false },
+];
+
 const subCategories = [
   { name: 'Totes', href: '#' },
   { name: 'Backpacks', href: '#' },
@@ -33,7 +35,7 @@ const subCategories = [
   { name: 'Hip Bags', href: '#' },
   { name: 'Laptop Sleeves', href: '#' },
 ]
-const filters = [
+const filtersTest = [
   {
     id: 'color',
     name: 'Color',
@@ -72,15 +74,88 @@ const filters = [
 ]
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ')
+  return classes.filter(Boolean).join(' ');
 }
 
-export default function Filters() {
-  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false)
+export default function Filters({ products, filters, category, filters_query }) {
+
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   return (
-    <div className="bg-white">
+    <div className="bg-white mt-8">
+
+      <div className='flex flex-row'>
+
+        <div className='rounded-md border border-slate-300 basis-2/6 h-max'>
+          <Filt filters={filters} category={category} filters_query={filters_query} />
+        </div>
+
+        <div className='row-span-2 col-span-2 w-full ml-5'>
+
+          <div className='rounded-md border border-slate-300 p-4 flex justify-between items-center'>
+
+            <Menu as='div' className='relative'>
+              <div className='hover:text-white'>
+                <Menu.Button className='flex items-center group'>
+                  <h5 className='text-sm text-gray-900'>Сортировка:</h5>
+                  <p className='font-medium text-sm text-gray-900 group-hover:text-orange-700'>Сначала недорогие</p>
+                  
+                  
+                  <ChevronDownIcon
+                      className="-mr-1 ml-1 h-5 w-5 flex-shrink-0 text-gray-400 group-hover:text-orange-700"
+                      aria-hidden="true"
+                  />
+                </Menu.Button>
+              </div>
+              <Menu.Items className='absolute z-10  top-10 rounded-md bg-white shadow-2xl border border-slate-300 w-full'>
+
+                <div>
+                  {sortOptions.map((option) => (
+                    <Menu.Item key={option.name}>
+                      {({ active }) => (
+                        <a
+                          href={option.href}
+                          className={classNames(
+                            option.current ? 'font-medium text-gray-900' : 'text-gray-500',
+                            active ? 'bg-yellow-100' : '',
+                            'block px-4 py-2 text-sm'
+                          )}
+                        >
+                          {option.name}
+                        </a>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </div>
+
+              </Menu.Items>
+            </Menu>
+
+            <div>
+              <button type="button" className='-m-2  p-2 text-gray-400 hover:text-orange-700'>
+                <Bars4Icon className='h-5 w-5' aria-hidden="true" />
+              </button>
+              <button type="button" className="-m-2 ml-2 p-2 text-gray-400 hover:text-orange-700">
+                <span className="sr-only">View grid</span>
+                <Squares2X2Icon className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+
+
+          </div>
+
+            <div className="lg:col-span-3">
+              <ProductList products={products}/>
+              <Pagination/>
+            </div>
+            
+        </div>
+      </div>
+
+      
       <div>
+
+
         {/* Mobile filter dialog */}
         <Transition.Root show={mobileFiltersOpen} as={Fragment}>
           <Dialog as="div" className="relative z-40 lg:hidden" onClose={setMobileFiltersOpen}>
@@ -132,7 +207,7 @@ export default function Filters() {
                       ))}
                     </ul>
 
-                    {filters.map((section) => (
+                    {filtersTest.map((section) => (
                       <Disclosure as="div" key={section.id} className="border-t border-gray-200 px-4 py-6">
                         {({ open }) => (
                           <>
@@ -181,9 +256,9 @@ export default function Filters() {
           </Dialog>
         </Transition.Root>
 
-        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <main className="">
           <div className="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-24">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1>
+            {/* <h1 className="text-4xl font-bold tracking-tight text-gray-900">New Arrivals</h1> */}
 
             <div className="flex items-center">
               <Menu as="div" className="relative inline-block text-left">
@@ -261,7 +336,7 @@ export default function Filters() {
                   ))}
                 </ul>
 
-                {filters.map((section) => (
+                {filtersTest.map((section) => (
                   <Disclosure as="div" key={section.id} className="border-b border-gray-200 py-6">
                     {({ open }) => (
                       <>
@@ -307,7 +382,7 @@ export default function Filters() {
 
               {/* Product grid */}
               <div className="lg:col-span-3">
-                <ProductList/>
+                <ProductList products={products}/>
                 <Pagination/>
               </div>
             </div>
