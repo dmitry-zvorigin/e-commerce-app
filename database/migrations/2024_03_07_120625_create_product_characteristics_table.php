@@ -17,6 +17,11 @@ return new class extends Migration
             $table->foreignId('attribute_id')->constrained('product_attributes');
             $table->foreignId('value_id')->constrained('attribute_values');
             $table->timestamps();
+
+            // Добавление индексов
+            $table->index('product_id');
+            $table->index('attribute_id');
+            $table->index('value_id');
         });
     }
 

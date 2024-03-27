@@ -23,10 +23,11 @@ class DatabaseSeeder extends Seeder
             CategoryImageSeeder::class,
             AttributeGroupSeeder::class,
             ProductAttributeSeeder::class,
-            AttributeValueSeeder::class,
-            CategoryAttributeRelationshipSeeder::class,
+            // AttributeValueSeeder::class,
             ProductSeeder::class,
             ProductCharacteristicSeeder::class,
+            CategoryAttributeRelationshipSeeder::class,
+            ProductAdditionallySeeder::class,
         ]);
     }
 }

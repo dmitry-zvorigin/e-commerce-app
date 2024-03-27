@@ -14,9 +14,15 @@ return new class extends Migration
         Schema::create('attribute_values', function (Blueprint $table) {
             $table->id();
             $table->foreignId('attribute_id')->constrained('product_attributes');
-            $table->string('name');
-            $table->string('slug');
+            $table->string('value_string')->nullable();
+            // $table->integer('value_int')->nullable();
+            // $table->decimal('value_int', 8, 2)->nullable();
+            $table->float('value_int')->nullable();
+            $table->string('unit_type')->nullable();
+            // $table->string('slug');
             $table->timestamps();
+
+            $table->index('attribute_id');
         });
     }
 

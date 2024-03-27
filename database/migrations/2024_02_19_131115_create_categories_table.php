@@ -18,6 +18,8 @@ return new class extends Migration
             $table->boolean('is_final')->default(false);
             $table->nestedSet();
             $table->timestamps();
+
+            $table->index('slug');
         });
     }
 

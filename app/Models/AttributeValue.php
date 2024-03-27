@@ -11,7 +11,7 @@ use Spatie\Sluggable\SlugOptions;
 
 class AttributeValue extends Model
 {
-    use HasFactory, HasSlug;
+    use HasFactory;
 
     public function attribute() : BelongsTo
     {
@@ -23,9 +23,11 @@ class AttributeValue extends Model
         return $this->hasMany(ProductCharacteristic::class);
     }
 
-    public function getSlugOptions() : SlugOptions
-    {
-        // Добавление slug
-        return SlugOptions::create()->generateSlugsFrom('name')->saveSlugsTo('slug');
-    }
+    // public function getSlugOptions() : SlugOptions
+    // {
+    //     // Добавление slug
+    //     return SlugOptions::create()->generateSlugsFrom('name')->saveSlugsTo('slug');
+    // }
+
+
 }

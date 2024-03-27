@@ -1,8 +1,11 @@
 import { HeartIcon, ShoppingBagIcon, StarIcon } from "@heroicons/react/24/outline";
 import { InertiaLink } from "@inertiajs/inertia-react";
+import { usePage } from "@inertiajs/react";
 
 
-  export default function ProductList({ products }) {
+  export default function ProductList() {
+
+    const { products } = usePage().props;
 
     return (
       <div className="bg-white">
@@ -10,7 +13,7 @@ import { InertiaLink } from "@inertiajs/inertia-react";
           {/* <h2 className="text-2xl font-bold tracking-tight text-gray-900">Customers also purchased</h2> */}
   
           <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-            {products.map((product) => (
+            {products.data.map((product) => (
               <div 
                 key={product.id}
                 className="border border-slate-300 rounded-lg bg-white hover:drop-shadow-2xl p-3 group"

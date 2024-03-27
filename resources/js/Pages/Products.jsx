@@ -12,7 +12,7 @@ export default function Products({ categories_menu, breadcrumbs, category, produ
                 <div className="max-w-full py-16 sm:py-24 lg:max-w-7xl">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
-                        {category.name} {declineProductCount(products.length)}
+                        {category.name} {declineProductCount(products.total)}
                     </h2>
                     <Filters products={products} filters={filters} category={category} filters_query={filters_query} />
                 </div>

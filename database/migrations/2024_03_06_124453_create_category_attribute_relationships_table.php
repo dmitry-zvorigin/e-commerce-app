@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained();
             $table->foreignId('attribute_id')->constrained('product_attributes');
             $table->boolean('is_required')->default(false);
+            $table->string('type')->nullable();
+            $table->integer('order')->nullable();
             $table->timestamps();
         });
     }

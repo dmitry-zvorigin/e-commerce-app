@@ -14,62 +14,210 @@ class AttributeValueSeeder extends Seeder
     public function run(): void
     {
         $attributesValues = [
-            1 => ['12 мес.', '36 мес.'],
-            2 => ['Вьетнам', 'Малайзия'],
-            3 => ['AMD', 'Intel'],
-            4 => ['Intel Core i3-10105F', 'AMD FX-4300'],
-            5 => ['LGA 1200', 'AM3+'],
-            6 => ['[CM8070104291323-SRH8V]', '[FD4300WMW4MHK]'],
-            7 => ['2020', '2012'],
-            8 => ['нет'],
-            9 => ['нет'],
+            1 => [
+                ['value' => 12, 'unit_type' => 'мес.'], 
+                ['value' => 36, 'unit_type' => 'мес.'],
+            ],
+            2 => [
+                ['value' => 'Вьетнам', 'unit_type' => null], 
+                ['value' => 'Малайзия', 'unit_type' => null], 
+            ],
+            3 => [
+                ['value' => 'AMD', 'unit_type' => null], 
+                ['value' => 'Intel', 'unit_type' => null], 
+            ],
+            4 => [
+                ['value' => 'Intel Core i3-10105F', 'unit_type' => null], 
+                ['value' => 'AMD FX-4300', 'unit_type' => null], 
+            ],
+            5 => [
+                ['value' => 'LGA 1200', 'unit_type' => null], 
+                ['value' => 'AM3+', 'unit_type' => null], 
+            ],
+            6 => [
+                ['value' => '[CM8070104291323-SRH8V]', 'unit_type' => null], 
+                ['value' => '[FD4300WMW4MHK]', 'unit_type' => null], 
+            ],
+            7 => [
+                ['value' => 2020, 'unit_type' => null], 
+                ['value' => 2012, 'unit_type' => null], 
+            ],
+            8 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            9 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
             
             10 => [
-                'AMD Ryzen 3', 'AMD Ryzen 5', 'AMD Ryzen 7', 'AMD Ryzen 9', 'AMD FX', 'AMD Athlon', 
-                'Intel Celeron', 'Intel Pentium', 'Intel Core i3', 'Intel Core i5', 'Intel Core i7', 'Intel Core i9',
+                ['value' => 'AMD Ryzen 3', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 5', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 7', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 9', 'unit_type' => null], 
+                ['value' => 'AMD FX', 'unit_type' => null], 
+                ['value' => 'AMD Athlon', 'unit_type' => null], 
+                ['value' => 'Intel Celeron', 'unit_type' => null], 
+                ['value' => 'Intel Pentium', 'unit_type' => null], 
+                ['value' => 'Intel Core i3', 'unit_type' => null], 
+                ['value' => 'Intel Core i5', 'unit_type' => null], 
+                ['value' => 'Intel Core i7', 'unit_type' => null], 
+                ['value' => 'Intel Core i9', 'unit_type' => null], 
             ],
-            11 => ['нет', 'да'],
+            11 => [
+                ['value' => 'да', 'unit_type' => null], 
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
             12 => [
-                'Intel 14-e поколение', 'Intel 13-e поколение', 'Intel 12-e поколение', 
-                'Intel 11-e поколение', 'Intel 10-e поколение', 'Intel 9-e поколение', 'Intel 8-e поколение',
-                'AMD FX', 'AMD Ryzen 2000', 'AMD Ryzen 2000', 'AMD Ryzen 3000', 'AMD Ryzen 4000', 'AMD Ryzen 5000',
-                'AMD Ryzen 6000', 'AMD Ryzen 7000', 'AMD Ryzen 8000'  
+                ['value' => 'Intel 14-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 13-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 12-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 11-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 10-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 9-e поколение', 'unit_type' => null], 
+                ['value' => 'Intel 8-e поколение', 'unit_type' => null], 
+                ['value' => 'AMD FX', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 2000', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 3000', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 4000', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 5000', 'unit_type' => null], 
+                ['value' => 'AMD Ryzen 6000', 'unit_type' => null],
+                ['value' => 'AMD Ryzen 7000', 'unit_type' => null],
+                ['value' => 'AMD Ryzen 8000', 'unit_type' => null],
             ],
 
-
-            13 => ['4', '2'],
-            14 => ['4', '2'],
-            15 => ['нет'],
-            16 => ['8', '4'],
-            17 => ['1 МБ', '0.5 МБ', '4 МБ'],
-            18 => ['6 МБ', '4 МБ'],
-            19 => ['14 нм', '14 нм', '32 нм'],
-            20 => ['Intel Comet Lake-S', 'AMD Vishera'],
-            21 => ['3.7 ГГц', '3.8 ГГц'],
-            22 => ['4.4 ГГц', '4 ГГц'],
-            23 => ['нет'],
-            24 => ['нет'],
-            25 => ['нет', 'есть'],
-            26 => ['DDR4', 'DDR3'],
-            27 => ['128 ГБ'],
-            28 => ['2'],
-            29 => ['DDR4-2666', 'DDR3-1866'],
-            30 => ['нет'],
-            31 => ['65 Вт', '95 Вт'],
-            32 => ['65 Вт', '95 Вт'],
-            33 => ['100 °C', '70.5 °C'],
-            34 => ['нет'],
-            35 => ['PCI-E 3.0', 'нет'],
-            36 => ['16 шт', 'нет'],
-            37 => ['есть'],
-            38 => ['поддержка Intel Optane'],
+            13 => [
+                ['value' => 4, 'unit_type' => null], 
+                ['value' => 2, 'unit_type' => null], 
+            ],
+            14 => [
+                ['value' => 4, 'unit_type' => null], 
+                ['value' => 2, 'unit_type' => null], 
+            ],
+            15 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            16 => [
+                ['value' => 8, 'unit_type' => null], 
+                ['value' => 4, 'unit_type' => null], 
+            ],
+            17 => [
+                ['value' => '1', 'unit_type' => 'МБ'], 
+                ['value' => '0.5', 'unit_type' => 'МБ'], 
+                ['value' => '4', 'unit_type' => 'МБ'],
+            ],
+            18 => [
+                ['value' => '6', 'unit_type' => 'МБ'], 
+                ['value' => '4', 'unit_type' => 'МБ'], 
+            ],
+            19 => [
+                ['value' => '14 нм', 'unit_type' => null], 
+                ['value' => '32 нм', 'unit_type' => null], 
+                ['value' => 'TSMC 7FF', 'unit_type' => null], 
+            ],
+            20 => [
+                ['value' => 'Intel Comet Lake-S', 'unit_type' => null], 
+                ['value' => 'AMD Vishera', 'unit_type' => null], 
+            ],
+            21 => [
+                ['value' => 2.7, 'unit_type' => 'ГГц'], 
+                ['value' => 2.8, 'unit_type' => 'ГГц'], 
+                ['value' => 3.8, 'unit_type' => 'ГГц'], 
+                ['value' => 3.9, 'unit_type' => 'ГГц'], 
+                ['value' => 4.0, 'unit_type' => 'ГГц'], 
+                ['value' => 4.1, 'unit_type' => 'ГГц'], 
+                ['value' => 4.2, 'unit_type' => 'ГГц'], 
+                ['value' => 4.3, 'unit_type' => 'ГГц'], 
+                ['value' => 4.5, 'unit_type' => 'ГГц'], 
+                ['value' => 4.8, 'unit_type' => 'ГГц'], 
+                ['value' => 4.9, 'unit_type' => 'ГГц'], 
+            ],
+            22 => [
+                ['value' => 4.3, 'unit_type' => 'ГГц'], 
+                ['value' => 4.5, 'unit_type' => 'ГГц'], 
+                ['value' => 4.8, 'unit_type' => 'ГГц'], 
+                ['value' => 4.9, 'unit_type' => 'ГГц'], 
+                ['value' => 5.5, 'unit_type' => 'ГГц'], 
+                ['value' => 5.7, 'unit_type' => 'ГГц'], 
+            ],
+            23 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            24 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            25 => [
+                ['value' => 'нет', 'unit_type' => null], 
+                ['value' => 'есть', 'unit_type' => null], 
+            ],
+            26 => [
+                ['value' => 'DDR4', 'unit_type' => null], 
+                ['value' => 'DDR3', 'unit_type' => null], 
+            ],
+            27 => [
+                ['value' => 64, 'unit_type' => 'ГБ'], 
+                ['value' => 128, 'unit_type' => 'ГБ'], 
+                ['value' => 192, 'unit_type' => 'ГБ'], 
+                ['value' => 256, 'unit_type' => 'ГБ'], 
+            ],
+            28 => [
+                ['value' => '2', 'unit_type' => null], 
+            ],
+            29 => [
+                ['value' => 'DDR4-2666', 'unit_type' => null], 
+                ['value' => 'DDR3-1866', 'unit_type' => null], 
+            ],
+            30 => [
+                ['value' => 'нет', 'unit_type' => null],             
+            ],
+            31 => [
+                ['value' => 65, 'unit_type' => 'Вт'], 
+                ['value' => 70, 'unit_type' => 'Вт'], 
+                ['value' => 75, 'unit_type' => 'Вт'], 
+                ['value' => 80, 'unit_type' => 'Вт'], 
+                ['value' => 85, 'unit_type' => 'Вт'], 
+                ['value' => 90, 'unit_type' => 'Вт'], 
+                ['value' => 95, 'unit_type' => 'Вт'], 
+                ['value' => 100, 'unit_type' => 'Вт'], 
+            ],
+            32 => [
+                ['value' => 65, 'unit_type' => 'Вт'], 
+                ['value' => 70, 'unit_type' => 'Вт'], 
+                ['value' => 75, 'unit_type' => 'Вт'], 
+                ['value' => 80, 'unit_type' => 'Вт'], 
+                ['value' => 85, 'unit_type' => 'Вт'], 
+                ['value' => 90, 'unit_type' => 'Вт'], 
+                ['value' => 95, 'unit_type' => 'Вт'], 
+                ['value' => 100, 'unit_type' => 'Вт'], 
+            ],
+            33 => [
+                ['value' => 70.5, 'unit_type' => '°C'], 
+                ['value' => 100, 'unit_type' => '°C'], 
+            ],
+            34 => [
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            35 => [
+                ['value' => 'PCI-E 3.0', 'unit_type' => null], 
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            36 => [
+                ['value' => '16 шт', 'unit_type' => null], 
+                ['value' => 'нет', 'unit_type' => null], 
+            ],
+            37 => [
+                ['value' => 'есть', 'unit_type' => null], 
+            ],
+            38 => [
+                ['value' => 'поддержка Intel Optane', 'unit_type' => null], 
+            ],
         ];
 
         foreach ($attributesValues  as $attributeId => $values) {
-            foreach ($values as $value) {
+            foreach ($values as $item) {
                 AttributeValue::create([
                     'attribute_id' => $attributeId,
-                    'name' => $value,
+                    'name' => $item['value'],
+                    'unit_type' => $item['unit_type'],
                 ]);
             }
         }
