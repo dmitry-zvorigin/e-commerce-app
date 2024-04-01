@@ -18,6 +18,11 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function ratings() : HasMany
+    {
+        return $this->hasMany(Rating::class);
+    }
+
     public function characteristics() : HasMany
     {
         return $this->hasMany(ProductCharacteristic::class);

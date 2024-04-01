@@ -62,6 +62,7 @@ class CategoryController extends Controller
 
         if($category->is_final) {
 
+            // TODO Если значение просто go ?
             $filters_query = [];
             foreach ($request->all() as $key => $values) {
                 $filters_query[$key] = explode(',', $values[0]);
@@ -79,8 +80,7 @@ class CategoryController extends Controller
                     $attributeId = $attributesBySlug[$key];
                     $attributeType = CategoryAttributeRelationship::where('attribute_id', $attributeId)->value('type');
             
-                    // dump(isset($attributesBySlug['price']));
-                    if (isset($attributesBySlug['price'])) {
+                    if ($key === 'price') {
                         $minPrice = $filterValues[0];
                         $maxPrice = $filterValues[1]; 
 
@@ -125,6 +125,12 @@ class CategoryController extends Controller
                     case 4:
                         $productsQuery->orderByDesc('products.created_at');
                         break;
+                    case 6: 
+                        $productsQuery->join('ratings', 'products.id', '=', 'ratings.product_id')
+                            ->select('products.*', DB::raw('AVG(ratings.rating_value) as average_rating'))
+                            ->groupBy('products.id')
+                            ->orderByDesc('average_rating');
+                        break;
                     default:
                         // Если значение 'sorting' не соответствует ни одному из ожидаемых, ничего не делаем
                         break;
@@ -134,7 +140,11 @@ class CategoryController extends Controller
             }
 
             // 18
-            $products = $productsQuery->paginate(18)->appends(Requ::all());
+            $products = $productsQuery
+                ->withCount('ratings')
+                ->withAvg('ratings', 'rating_value')
+                ->paginate(18)
+                ->appends(Requ::all());
 
             // dump($products);
             

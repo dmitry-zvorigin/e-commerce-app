@@ -1,10 +1,14 @@
 import { Disclosure } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
+import { useEffect, useState } from "react";
 
 export default function Filt({ values, setValues, setShowFilters, reset }) {
 
     const { filters } = usePage().props;
+
+    const [lastClickedValue, setLastClickedValue] = useState(null);
+    const [timerId, setTimerId] = useState(null);
 
     function handleCheckboxChange(e) {
         const key = e.target.name;
@@ -28,8 +32,31 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
             }
 
             return newValues;
-        })
+        });
     }
+
+    function handleCheckboxChangeAll(e) {
+        const key = e.target.name;
+        const isChecked = e.target.checked;
+
+        setValues(prevValues => {
+            const newValues = { ...prevValues };
+
+            if (isChecked) {
+                // Получаем значения всех элементов как массив строк
+                const attribute = filters.find(filter => filter.attribute.slug === key);
+                const values = attribute.values.map(val => val.id.toString());
+                // Устанавливаем выбранные значения в состояние
+                newValues[key] = values;
+            } else {
+                // Если не выбраны, удаляем ключ из состояния
+                delete newValues[key];
+            }
+
+            return newValues;
+        });
+    }
+
 
     function handleRangeChange(e) {
         const key = e.target.name;
@@ -114,8 +141,53 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
 
     }
 
+    const handleResetFilter = (filterId) => {
+        setValues(prevValues => {
+            const newValues = { ...prevValues };
+    
+            // Удаляем значения выбранного фильтра из состояния
+            delete newValues[filterId];
+    
+            return newValues;
+        });
+    };
+
+
+    
+    const handleValueClick = (e) => {
+        // TODO
+        // const labelRect = e.target.getBoundingClientRect();
+        const labelElement = e.target.closest('label');
+        const labelRect = labelElement.getBoundingClientRect();
+        // const parentElement = labelElement.parentElement;
+        // console.log(parentElement);
+        // Сбрасываем предыдущий таймер, если он есть
+        if (timerId) {
+            clearTimeout(timerId);
+        }
+
+        const buttonLeft = labelRect.right + window.scrollX + 10; // Добавляем 10 пикселей отступа
+        const buttonTop = labelRect.top + window.scrollY + (labelRect.height / 2) - 385; // Позиционируем по середине метки
+
+        console.log(labelRect);
+        setLastClickedValue({
+            position: {
+                left: buttonLeft,
+                top: buttonTop,
+                right: -107,
+            },
+        });
+
+
+        // Устанавливаем новый таймер для скрытия кнопки "Показать" через 5 секунд
+        const newTimerId = setTimeout(() => {
+            setLastClickedValue(null); // Скрываем кнопку "Показать" через 5 секунд
+        }, 2000);
+        setTimerId(newTimerId); // Сохраняем идентификатор нового таймера
+    };
+
     return (
-            <div className="flex flex-col p-5">
+            <div className="flex flex-col p-5 relative">
                 <div className="flex flex-col">
 
                     {filters.map((filter) => {
@@ -137,12 +209,41 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
                                     filter={filter}
                                     values={values}
                                     handleCheckboxChange={handleCheckboxChange}
+                                    handleCheckboxChangeAll={handleCheckboxChangeAll}
+                                    handleResetFilter={handleResetFilter}
+                                    setShowFilters={setShowFilters}
+                                    handleValueClick={handleValueClick}
                                 />
                             )
                         }
 
                     })}
 
+
+                    {lastClickedValue !== null && (
+                        <div>
+                            <div 
+                                className="absolute flex z-10 items-center"
+                                style={{
+                                    right: `${lastClickedValue.position.right}px`,
+                                    top: `${lastClickedValue.position.top}px`, // Верхний край label
+                                }}
+                            >
+                                <div className="w-0 h-0 
+                                    border-t-[20px] border-t-transparent
+                                    border-r-[28px] border-r-blue-500
+                                    border-b-[20px] border-b-transparent">
+                                </div>
+
+                                <button 
+                                    className="bg-blue-500 text-white p-5 rounded-md"
+                                    onClick={() => setShowFilters(true)}
+                                >
+                                    Показать
+                                </button>
+                            </div>  
+                        </div>
+                    )}
                 </div>
                 <button onClick={ () => setShowFilters(true) } className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold">Применить</button>
                 <button onClick={reset} className="border rounded-md p-3 text-sm font-semibold ">Сбросить</button>
@@ -226,7 +327,33 @@ const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
     );
 }
 
-const FilterChecbox = ({ filter, handleCheckboxChange, values }) => {
+const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxChangeAll, handleResetFilter, handleValueClick, setShowFilters }) => {
+
+    const [showAll, setShowAll] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+
+
+    const allValuesSelected = filter.values.every(value => {
+        return values[filter.attribute.slug]?.includes(value.id.toString());
+    });
+
+    const toggleShowAll = () => {
+        setShowAll(!showAll);
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchTerm(e.target.value);
+        setIsSearching(e.target.value !== ''); 
+        setShowAll(true);
+    };
+
+    const filteredValues = filter.values.filter(value => {
+        return value.name && value.name.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    });
+
+
+
     return (
         <Disclosure 
             as="div" 
@@ -254,26 +381,89 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values }) => {
 
                     <Disclosure.Panel>
                         <div className="flex flex-col p-2 w-full">
-                            {filter.values.map((value) => (
-                                <label 
-                                    htmlFor={value.id} 
-                                    key={value.id} 
-                                    className="flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
-                                >
+
+                            {filter.values.length > 7 && (
+                                <>
+                                <div className="flex items-center p-2 w-full">
                                     <input 
-                                        name={filter.attribute.slug}
-                                        value={value.id}
-                                        id={value.id}
-                                        checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
-                                        type="checkbox" 
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                        onChange={handleCheckboxChange}
+                                        type="text" 
+                                        placeholder="Поиск..." 
+                                        className="px-2 py-1 border rounded-md border-gray-300 mr-2"
+                                        value={searchTerm}
+                                        onChange={handleSearchChange}
                                     />
-                                    <span className="ml-2 text-sm text-gray-600">
-                                        {value.name}
-                                    </span>
-                                </label>
-                            ))}
+                                </div>
+
+                                {!isSearching && (
+                                    <>
+                                    <label 
+                                        className="flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
+                                    >
+                                        <input 
+                                            name={filter.attribute.slug}
+                                            value={filter.attribute.slug}
+                                            type="checkbox" 
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            checked={allValuesSelected}
+                                            onChange={handleCheckboxChangeAll}
+                                            onClick={handleValueClick}
+                                        />
+                                        <span className="ml-2 text-sm text-gray-600">
+                                            Выбрать все
+                                        </span>
+                                    </label>
+                                    <hr/>
+                                    </>
+
+                                )}
+
+                                </>
+                            )}
+                            
+                            <div className={`flex flex-col w-full max-h-64 overflow-y-auto`}>
+                                
+                                {filteredValues.map((value, index) => (
+                                    <label 
+                                        htmlFor={value.id} 
+                                        key={value.id} 
+                                        className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
+                                    >
+                                        <input 
+                                            name={filter.attribute.slug}
+                                            value={value.id}
+                                            id={value.id}
+                                            checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
+                                            type="checkbox" 
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            onChange={handleCheckboxChange}
+                                            // onClick={() => handleValueClick(value.id)}
+                                            onClick={handleValueClick}
+                                        />
+                                        <span className="ml-2 text-sm text-gray-600 " >
+                                            {value.name}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                                <div>
+                                {!isSearching && filter.values.length > 7 && (
+                                    <button onClick={toggleShowAll} className="px-3 py-1 bg-blue-500 text-white rounded-md mt-5">
+                                        {showAll ? 'Скрыть все' : 'Показать все'}
+                                    </button>
+                                )}
+                                </div>
+                                <div>
+                                    {values.hasOwnProperty(filter.attribute.slug) && (
+                                        <button 
+                                            onClick={() => handleResetFilter(filter.attribute.slug)}
+                                            className="px-3 py-1 bg-red-500 text-white rounded-md mt-5">
+                                            Сбросить
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </Disclosure.Panel>
                 </div>

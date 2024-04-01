@@ -77,8 +77,7 @@ class ProductAttributeSeeder extends Seeder
         $groupedAttributes = [
             'Основные' => [
                 ['attribute' => 'Цена', 'slug' => 'price'],
-            ],
-                
+            ],   
         ];
 
         foreach ($groupedAttributes  as $groupName => $attributes) {
