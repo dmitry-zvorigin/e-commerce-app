@@ -141,6 +141,7 @@ class CategoryController extends Controller
 
             // 18
             $products = $productsQuery
+                ->with(['images'])
                 ->withCount('ratings')
                 ->withAvg('ratings', 'rating_value')
                 ->paginate(18)
@@ -158,6 +159,25 @@ class CategoryController extends Controller
 
 
             foreach ($relationships as $relationship) {
+
+                // $relationship->values->product_count = $relationship->values()
+                //     ->select('attribute_values.*', DB::raw('COUNT(products.id) as product_count'))
+                //     ->leftJoin('product_characteristics', 'product_characteristics.value_id', '=', 'product_characteristics.id')
+                //     ->leftJoin('products', 'products.id', '=', 'product_characteristics.product_id')
+                //     ->groupBy('attribute_values.id')
+                //     ->get();
+
+                $valuesWithCount = [];
+                // TODO
+                foreach ($relationship->values as $value) {
+                    $count = Product::whereHas('characteristics', function ($query) use ($value) {
+                        $query->where('value_id', $value->id);
+                    })->count();
+
+                    $value->product_count = $count;
+                    $valuesWithCount[] = $value;
+                }
+
                 // TODO ищу фильтр цены по id
                 if ($relationship->attribute->slug === 'price') {
                     $relationship->findMinMaxPrice();
@@ -167,7 +187,7 @@ class CategoryController extends Controller
                 $relationship->getNameAttribute();
             }        
 
-            // dump($relationships);
+            // dump($relationships[7]);
 
 
             return Inertia::render('Products', [

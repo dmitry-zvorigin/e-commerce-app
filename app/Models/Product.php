@@ -28,6 +28,11 @@ class Product extends Model
         return $this->hasMany(ProductCharacteristic::class);
     }
 
+    public function images() : HasMany
+    {
+        return $this->hasMany(ProductImage::class);
+    }
+
     public function getSlugOptions() : SlugOptions
     {
         // Добавление slug

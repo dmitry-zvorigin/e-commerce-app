@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             ProductAdditionallySeeder::class,
             AttributeValueSeeder::class,
             RatingSeeder::class,
+            ProductImageSeeder::class,
         ]);
     }
 }

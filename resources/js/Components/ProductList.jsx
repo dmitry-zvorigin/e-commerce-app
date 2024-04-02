@@ -8,6 +8,8 @@ export default function ProductList() {
 
     const { products } = usePage().props;
 
+	console.log(products);
+
     return (
 		<div className="bg-white">
 			<div className="mx-auto max-w-2xl lg:max-w-7xl mt-5 mb-5">
@@ -22,14 +24,26 @@ export default function ProductList() {
 								<InertiaLink
 									href="#"
 								>
-									<div className="h-52 bg-slate-800"/>
-										<div className="flex mt-2 relative text-" style={{ height: '45px' }}>
-											<h2 
-												className="font-medium text-gray-900 line-clamp-2 hover:line-clamp-none hover:absolute hover:text-orange-700"
-											>
-												{product.name}
-											</h2>
-										</div>
+									{/* <div className="h-52 bg-slate-800"/> */}
+									<div className="h-52 flex justify-center">
+										{product.images && product.images.length > 0 ? (
+											<img
+												src={`/products_images/${product.images[0].image_url_thumbnail}`}
+												alt={product.name}
+												className="object-cover"
+											/>
+										) : (
+											<div className="bg-slate-800 h-52 w-full"/>
+										)}
+									</div>
+
+									<div className="flex mt-2 relative text-" style={{ height: '45px' }}>
+										<h2 
+											className="font-medium text-gray-900 line-clamp-2 hover:line-clamp-none hover:absolute hover:text-orange-700"
+										>
+											{product.name}
+										</h2>
+									</div>
 								</InertiaLink>
 							</div>
 

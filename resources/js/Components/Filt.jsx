@@ -352,7 +352,7 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
         return value.name && value.name.toString().toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-
+    // console.log(filter);
 
     return (
         <Disclosure 
@@ -439,8 +439,11 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                             // onClick={() => handleValueClick(value.id)}
                                             onClick={handleValueClick}
                                         />
-                                        <span className="ml-2 text-sm text-gray-600 " >
-                                            {value.name}
+                                        <span className="ml-2 text-sm text-gray-600 flex ">
+                                            <p>{value.name}</p> 
+                                            {value.product_count > 0 && (
+                                                <p className="text-gray-400 ml-1">({value.product_count})</p>
+                                            )}
                                         </span>
                                     </label>
                                 ))}
