@@ -29,7 +29,7 @@ class CategoryAttributeRelationshipSeeder extends Seeder
                 ['attribute' => 'Тепловыделение (TDP)', 'is_required' => true, 'type' => 'range', 'order' => 11],
                 ['attribute' => 'Интегрированное графическое ядро', 'is_required' => true, 'type' => 'checkbox', 'order' => 6],
                 ['attribute' => 'Встроенный контроллер PCI Express', 'is_required' => true, 'type' => 'checkbox', 'order' => 13],
-                ['attribute' => 'Цена', 'is_required' => true, 'type' => 'range', 'order' => 1],
+                ['attribute' => 'Цена', 'is_required' => true, 'type' => 'price', 'order' => 1],
 
                 ['attribute' => 'Гарантия продавца', 'is_required' => false, 'type' => 'checkbox'],
                 ['attribute' => 'Система охлаждения в комплекте', 'is_required' => false, 'type' => 'checkbox'],

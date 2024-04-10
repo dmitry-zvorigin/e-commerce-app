@@ -286,8 +286,8 @@ class CategoryController extends Controller
                 $valuesWithCount[] = $value;
             }
 
-            // TODO ищу фильтр цены по id
-            if ($relationship->attribute->slug === 'price') {
+
+            if ($relationship->type === 'price') {
                 $relationship->findMinMaxPrice();
             } elseif ($relationship->type === 'range') {
                 $relationship->findMinMaxValues();
