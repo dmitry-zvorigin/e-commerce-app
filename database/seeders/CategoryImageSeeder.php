@@ -24,6 +24,7 @@ class CategoryImageSeeder extends Seeder
             474 => '001e15e1b809f1dacbfa7d2eb3f95dba5cb5552ea55c1b84aa6a8f1bca495fac.jpg',
             484 => '746949c94e4c9edf6616a18338c0690448fe99dff702eb94ad2b741b6ded5880.jpg',
             500 => '1e15d6c32b6caeb028b29178f21bbc8bee0ade279d5354ee307dfb67906b9396.jpg',
+            427 => 'processors.png',
         ];
 
         foreach ($categoriesImage as $categoryId => $imagePath) {

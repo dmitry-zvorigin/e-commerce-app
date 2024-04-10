@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Product;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -20,9 +22,11 @@ use Inertia\Inertia;
 
 
 Route::inertia('/', 'Home')->name('home');
+
 Route::inertia('/catalog', 'Catalog')->name('catalog');
 Route::get('catalog', [CategoryController::class, 'catalog'])->name('catalog');
 Route::get('catalog/{categorySlug}', [CategoryController::class, 'categories'])->name('categories');
+Route::get('product/{productSlug}', [ProductController::class, 'show'])->name('product.show');
 
 // Route::get('compare')->name('compare')->uses([CategoryController::class, 'test']);
 Route::get('/compare', [CategoryController::class, 'test'])->name('compare');

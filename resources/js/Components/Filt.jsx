@@ -202,6 +202,17 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
                                     handleBlur={handleBlur}
                                 />
                             )
+                        } else if (filter.type === 'price') {
+                            return (
+                                <FilterRange
+                                    key={filter.attribute.id}
+                                    filter={filter}
+                                    handleRangeChange={handleRangeChange}
+                                    values={values}
+                                    handleBlur={handleBlur}
+                                />
+                            )
+
                         } else if (filter.type === 'checkbox') {
                             return (
                                 <FilterChecbox 

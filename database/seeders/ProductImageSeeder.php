@@ -18,8 +18,8 @@ class ProductImageSeeder extends Seeder
     public function run(): void
     {
         $imagePath = [
-            ['Производитель' => 'AMD', 'path' => 'processor amd.png'],
-            ['Производитель' => 'Intel', 'path' => 'processor intel.png'],
+            ['Производитель' => 'AMD', 'path_thumb' => 'processor amd.png', 'path_detail' => 'amd_full.png'],
+            ['Производитель' => 'Intel', 'path_thumb' => 'processor intel.png', 'path_detail' => 'intel_full.png'],
         ];
 
         $productAttributeName = 'Производитель';
@@ -38,9 +38,9 @@ class ProductImageSeeder extends Seeder
             if ($image) {
                 ProductImage::create([
                         'product_id' => $product->product_id,
-                        'image_url_original' => $image['path'],
-                        'image_url_thumbnail' => $image['path'],
-                        'image_url_detail' => $image['path'],
+                        'image_url_original' => $image['path_detail'],
+                        'image_url_thumbnail' => $image['path_thumb'],
+                        'image_url_detail' => $image['path_detail'],
                         'order' => 1,
                         'is_primary' => true,
                 ]);

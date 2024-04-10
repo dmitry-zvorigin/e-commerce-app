@@ -2,38 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AttributeValue;
+use App\Breadcrumbs\BreadcrumbsManager;
 use App\Models\Category;
 use App\Models\CategoryAttributeRelationship;
 use App\Models\Product;
 use App\Models\ProductAttribute;
-use App\Models\ProductCharacteristic;
+use App\Services\Filters\ProductFilterService;
+use App\Services\Sorting\ProductSorterService;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as Requ;
 use Inertia\Inertia;
 
-Breadcrumbs::for('catalog', function($trail) {
-    $trail->push('Главная', route('catalog'));
-});
-
-Breadcrumbs::for('categories', function($trail, $categories) {
-    $trail->parent('catalog');
-    foreach($categories as $category) {
-        $trail->push($category->name, $category->show_url);
-    } 
-});
-
 class CategoryController extends Controller
 {
-    public function test()
+    protected $productFilterService;
+    protected $productSortingSerivce;
+
+    public function __construct(ProductFilterService $productFilterService, ProductSorterService $productSorterService)
     {
-        $str = 'Привет';
-
-        return Inertia::render('Compare', ['str' => $str]);
+        $this->productFilterService = $productFilterService;
+        $this->productSortingSerivce = $productSorterService;
+        BreadcrumbsManager::registerCatalog();
+        BreadcrumbsManager::registerCatagories();
     }
-
 
     public function catalog() 
     {
@@ -50,7 +43,7 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function categories($categorySlug, Request $request)
+    public function categoriesTest($categorySlug, Request $request)
     {
         $category = Category::where('slug', $categorySlug)->first();
 
@@ -212,4 +205,104 @@ class CategoryController extends Controller
         ]);
 
     }
+
+    public function categories($categorySlug, Request $request)
+    {
+        $category = Category::where('slug', $categorySlug)->first();
+        $categoriesMenu = Category::get()->toTree();
+
+        $result = Category::ancestorsAndSelf($category->id);
+        $breadcrumbs = Breadcrumbs::generate('categories', $result);
+
+        if ($category->is_final) {
+            return $this->renderProductsView($category, $request, $breadcrumbs, $categoriesMenu);
+        } else {
+            return $this->renderCategoryView($category, $breadcrumbs, $categoriesMenu);
+        }
+    }
+
+    protected function renderCategoryView(Category $category, $breadcrumbs, $categoriesMenu)
+    {
+        $categories = $category->load('children', 'children.images');
+
+        return Inertia::render('Categories', [
+            'categories' => $categories, 
+            'breadcrumbs' => $breadcrumbs, 
+            'categories_menu' => $categoriesMenu
+        ]);
+    }
+
+    protected function renderProductsView(Category $category, Request $request, $breadcrumbs, $categoriesMenu)
+    {
+        $filters_query = [];
+        foreach ($request->all() as $key => $values) {
+            $filters_query[$key] = explode(',', $values[0]);
+        }
+
+        $productsQuery = $this->productFilterService->filterProducts($category, $filters_query);
+        $productsQuery = $this->productSortingSerivce->sortingProducts($productsQuery, $filters_query);
+
+        $products = $productsQuery
+            ->with(['images'])
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating_value')
+            ->paginate(18)
+            ->appends(Requ::all());
+
+
+        // $productsQuery = Product::query()->where('category_id', $category->id);
+        // $products = $productsQuery
+        //     ->with(['images'])
+        //     ->withCount('ratings')
+        //     ->withAvg('ratings', 'rating_value')
+        //     ->paginate(18)
+        //     ->appends(Requ::all());
+
+        $relationships = CategoryAttributeRelationship::with('values', 'attribute')
+            ->where('category_id', $category->id)
+            ->where('is_required', true)
+            // ->with('attribute')
+            ->orderBy('order')
+            ->get();
+
+
+        foreach ($relationships as $relationship) {
+
+            // $relationship->values->product_count = $relationship->values()
+            //     ->select('attribute_values.*', DB::raw('COUNT(products.id) as product_count'))
+            //     ->leftJoin('product_characteristics', 'product_characteristics.value_id', '=', 'product_characteristics.id')
+            //     ->leftJoin('products', 'products.id', '=', 'product_characteristics.product_id')
+            //     ->groupBy('attribute_values.id')
+            //     ->get();
+
+            $valuesWithCount = [];
+            // TODO
+            foreach ($relationship->values as $value) {
+                $count = Product::whereHas('characteristics', function ($query) use ($value) {
+                    $query->where('value_id', $value->id);
+                })->count();
+
+                $value->product_count = $count;
+                $valuesWithCount[] = $value;
+            }
+
+            // TODO ищу фильтр цены по id
+            if ($relationship->attribute->slug === 'price') {
+                $relationship->findMinMaxPrice();
+            } elseif ($relationship->type === 'range') {
+                $relationship->findMinMaxValues();
+            }
+            $relationship->getNameAttribute();
+        }  
+
+        return Inertia::render('Products', [
+            'category' => $category, 
+            'products' => $products, 
+            'categories_menu' => $categoriesMenu, 
+            'breadcrumbs' => $breadcrumbs,
+            'filters' => $relationships,
+            'filters_query' => $filters_query,
+        ]);
+    }
+
 }

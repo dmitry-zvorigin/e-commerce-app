@@ -8,7 +8,7 @@ export default function ProductList() {
 
     const { products } = usePage().props;
 
-	console.log(products);
+	// console.log(products);
 
     return (
 		<div className="bg-white">
@@ -21,14 +21,14 @@ export default function ProductList() {
 							className="border border-slate-300 rounded-lg bg-white hover:drop-shadow-2xl p-3 group flex flex-col justify-between "
 						>
 							<div>
-								<InertiaLink
-									href="#"
-								>
-									{/* <div className="h-52 bg-slate-800"/> */}
+							<InertiaLink
+                                className="font-bold mb-1" 
+                                href={route('product.show', { productSlug: product.slug })}
+                            >
 									<div className="h-52 flex justify-center">
 										{product.images && product.images.length > 0 ? (
 											<img
-												src={`/products_images/${product.images[0].image_url_thumbnail}`}
+												src={`/products_images/image_thumbnail/${product.images[0].image_url_thumbnail}`}
 												alt={product.name}
 												className="object-cover"
 											/>
@@ -109,7 +109,7 @@ const MyRating = ({ value }) => {
 		name="customized-empty"
 		size="small"
 		value={value}
-		precision={0.5}
+		precision={0.1}
 		readOnly
 	  />
 	);

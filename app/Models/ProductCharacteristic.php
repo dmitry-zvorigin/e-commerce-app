@@ -19,4 +19,9 @@ class ProductCharacteristic extends Model
     {
         return $this->belongsTo(AttributeValue::class);
     }
+
+    public function product() : BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
 }
