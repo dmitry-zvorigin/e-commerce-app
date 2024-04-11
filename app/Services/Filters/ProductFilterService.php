@@ -25,10 +25,8 @@ class ProductFilterService
 
     }
 
-    public function filterProducts(Category $category, array $filtersQuery)
+    public function filterProducts($productsQuery, array $filtersQuery)
     {
-        $productsQuery = Product::where('category_id', $category->id);
-
         $slugs = array_keys($filtersQuery);
         $attributesBySlug = $this->attributeRepository->getAttributeIdsBySlugs($slugs);
 

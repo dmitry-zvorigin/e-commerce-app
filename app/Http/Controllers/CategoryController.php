@@ -8,6 +8,7 @@ use App\Models\CategoryAttributeRelationship;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Services\Filters\ProductFilterService;
+use App\Services\ProductService;
 use App\Services\Sorting\ProductSorterService;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Http\Request;
@@ -19,11 +20,13 @@ class CategoryController extends Controller
 {
     protected $productFilterService;
     protected $productSortingSerivce;
+    protected $productService;
 
-    public function __construct(ProductFilterService $productFilterService, ProductSorterService $productSorterService)
+    public function __construct(ProductFilterService $productFilterService, ProductSorterService $productSorterService, ProductService $productService)
     {
         $this->productFilterService = $productFilterService;
         $this->productSortingSerivce = $productSorterService;
+        $this->productService = $productService;
         BreadcrumbsManager::registerCatalog();
         BreadcrumbsManager::registerCatagories();
     }
@@ -234,21 +237,31 @@ class CategoryController extends Controller
 
     protected function renderProductsView(Category $category, Request $request, $breadcrumbs, $categoriesMenu)
     {
-        $filters_query = [];
+        $filtersQuery = [];
         foreach ($request->all() as $key => $values) {
-            $filters_query[$key] = explode(',', $values[0]);
+            $filtersQuery[$key] = explode(',', $values[0]);
         }
 
-        $productsQuery = $this->productFilterService->filterProducts($category, $filters_query);
-        $productsQuery = $this->productSortingSerivce->sortingProducts($productsQuery, $filters_query);
+        // $productsQuery = $this->productFilterService->filterProducts($category, $filtersQuery);
+        // $productsQuery = $this->productSortingSerivce->sortingProducts($productsQuery, $filtersQuery);
 
-        $products = $productsQuery
+        // $products = $this->productService->filterAndSortProducts($category, $filtersQuery)
+        //     ->with(['images'])
+        //     ->withCount('ratings')
+        //     ->withAvg('ratings', 'rating_value')
+        //     ->paginate(18)
+        //     ->appends(Requ::all());
+        // dd($this->productService->createProductQuery($category));
+        $products = $this->productService
+            ->createProductQuery($category)
+            ->filter($filtersQuery)
+            ->sort($filtersQuery)
+            ->getProductQuery()
             ->with(['images'])
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->paginate(18)
             ->appends(Requ::all());
-
 
         // $productsQuery = Product::query()->where('category_id', $category->id);
         // $products = $productsQuery
@@ -301,7 +314,7 @@ class CategoryController extends Controller
             'categories_menu' => $categoriesMenu, 
             'breadcrumbs' => $breadcrumbs,
             'filters' => $relationships,
-            'filters_query' => $filters_query,
+            'filters_query' => $filtersQuery,
         ]);
     }
 
