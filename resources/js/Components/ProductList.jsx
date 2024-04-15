@@ -30,7 +30,7 @@ export default function ProductList() {
 											<img
 												src={`/products_images/image_thumbnail/${product.images[0].image_url_thumbnail}`}
 												alt={product.name}
-												className="object-cover"
+												className="object-contain"
 											/>
 										) : (
 											<div className="bg-slate-800 h-52 w-full"/>

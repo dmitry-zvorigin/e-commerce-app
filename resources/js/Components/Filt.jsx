@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Filt({ values, setValues, setShowFilters, reset }) {
 
     const { filters } = usePage().props;
-
+    console.log(filters);
     const [lastClickedValue, setLastClickedValue] = useState(null);
     const [timerId, setTimerId] = useState(null);
 
@@ -45,7 +45,7 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
             if (isChecked) {
                 // Получаем значения всех элементов как массив строк
                 const attribute = filters.find(filter => filter.attribute.slug === key);
-                const values = attribute.values.map(val => val.id.toString());
+                const values = attribute.attribute.values.map(val => val.id.toString());
                 // Устанавливаем выбранные значения в состояние
                 newValues[key] = values;
             } else {
@@ -169,7 +169,6 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
         const buttonLeft = labelRect.right + window.scrollX + 10; // Добавляем 10 пикселей отступа
         const buttonTop = labelRect.top + window.scrollY + (labelRect.height / 2) - 385; // Позиционируем по середине метки
 
-        console.log(labelRect);
         setLastClickedValue({
             position: {
                 left: buttonLeft,
@@ -344,8 +343,7 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
     const [searchTerm, setSearchTerm] = useState('');
     const [isSearching, setIsSearching] = useState(false);
 
-
-    const allValuesSelected = filter.values.every(value => {
+    const allValuesSelected = filter.attribute.values.every(value => {
         return values[filter.attribute.slug]?.includes(value.id.toString());
     });
 
@@ -359,11 +357,10 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
         setShowAll(true);
     };
 
-    const filteredValues = filter.values.filter(value => {
+    const filteredValues = filter.attribute.values.filter(value => {
         return value.name && value.name.toString().toLowerCase().includes(searchTerm.toLowerCase());
     });
 
-    // console.log(filter);
 
     return (
         <Disclosure 
@@ -393,7 +390,7 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                     <Disclosure.Panel>
                         <div className="flex flex-col p-2 w-full">
 
-                            {filter.values.length > 7 && (
+                            {filter.attribute.values.length > 7 && (
                                 <>
                                 <div className="flex items-center p-2 w-full">
                                     <input 
@@ -432,7 +429,6 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                             )}
                             
                             <div className={`flex flex-col w-full max-h-64 overflow-y-auto`}>
-                                
                                 {filteredValues.map((value, index) => (
                                     <label 
                                         htmlFor={value.id} 
@@ -451,18 +447,43 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                             onClick={handleValueClick}
                                         />
                                         <span className="ml-2 text-sm text-gray-600 flex ">
-                                            <p>{value.name}</p> 
+                                            <p>{value.name}</p>
+                                            {value.product_characteristics_count > 0 && (
+                                                <p className="text-gray-400 ml-1">({value.product_characteristics_count})</p>
+                                            )}
+                                        </span>
+                                    </label>
+                                ))}
+                                {/* {filteredValues.map((value, index) => (
+                                    <label 
+                                        htmlFor={value.id} 
+                                        key={value.id} 
+                                        className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
+                                    >
+                                        <input 
+                                            name={filter.attribute.slug}
+                                            value={value.id}
+                                            id={value.id}
+                                            checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
+                                            type="checkbox" 
+                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                            onChange={handleCheckboxChange}
+                                            // onClick={() => handleValueClick(value.id)}
+                                            onClick={handleValueClick}
+                                        />
+                                        <span className="ml-2 text-sm text-gray-600 flex ">
+                                            <p>{value.name}</p>
                                             {value.product_count > 0 && (
                                                 <p className="text-gray-400 ml-1">({value.product_count})</p>
                                             )}
                                         </span>
                                     </label>
-                                ))}
+                                ))} */}
                             </div>
 
                             <div className="flex justify-between items-center">
                                 <div>
-                                {!isSearching && filter.values.length > 7 && (
+                                {!isSearching && filter.attribute.values.length > 7 && (
                                     <button onClick={toggleShowAll} className="px-3 py-1 bg-blue-500 text-white rounded-md mt-5">
                                         {showAll ? 'Скрыть все' : 'Показать все'}
                                     </button>

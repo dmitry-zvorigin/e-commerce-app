@@ -23,7 +23,7 @@ export default function ProductCard({ product, groupedCharacteristics }) {
 								<img
 									src={`/products_images/image_detail/${product.images[0].image_url_detail}`}
 									alt={product.name}
-									className="object-cover"
+									className="object-contain"
 								/>
 							) : (
 								<div className="bg-slate-800 h-full w-full"/>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Breadcrumbs\BreadcrumbsManager;
+use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\CategoryAttributeRelationship;
 use App\Models\Product;
@@ -242,16 +243,6 @@ class CategoryController extends Controller
             $filtersQuery[$key] = explode(',', $values[0]);
         }
 
-        // $productsQuery = $this->productFilterService->filterProducts($category, $filtersQuery);
-        // $productsQuery = $this->productSortingSerivce->sortingProducts($productsQuery, $filtersQuery);
-
-        // $products = $this->productService->filterAndSortProducts($category, $filtersQuery)
-        //     ->with(['images'])
-        //     ->withCount('ratings')
-        //     ->withAvg('ratings', 'rating_value')
-        //     ->paginate(18)
-        //     ->appends(Requ::all());
-        // dd($this->productService->createProductQuery($category));
         $products = $this->productService
             ->createProductQuery($category)
             ->filter($filtersQuery)
@@ -263,6 +254,31 @@ class CategoryController extends Controller
             ->paginate(18)
             ->appends(Requ::all());
 
+        // TODO рабочий метод 
+        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
+        //     ->where('is_required', true)
+        //     ->with(['attribute.values' => function ($query) use ($category) {
+        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
+        //             $query->where('category_id', $category->id);
+        //         })
+        //         ->withCount(['productCharacteristics' => function ($query) use ($category) {
+        //             $query->whereHas('product', function ($query) use ($category) {
+        //                 $query->where('category_id', $category->id);
+        //             });
+        //         }])
+        //         ->orderBy('value_string')->orderBy('value_int');
+        //     }])
+        //     ->orderBy('order')
+        //     ->get();
+
+
+
+
+
+
+
+
+
         // $productsQuery = Product::query()->where('category_id', $category->id);
         // $products = $productsQuery
         //     ->with(['images'])
@@ -271,42 +287,63 @@ class CategoryController extends Controller
         //     ->paginate(18)
         //     ->appends(Requ::all());
 
-        $relationships = CategoryAttributeRelationship::with('values', 'attribute')
-            ->where('category_id', $category->id)
+
+        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
+        //     ->where('is_required', true)
+        //     ->with(['attribute.values' => function ($query) use ($category) {
+        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
+        //             $query->where('category_id', $category->id);
+        //         })->orderBy('value_string')->orderBy('value_int');
+        //     }])
+        //     ->orderBy('order')
+        //     ->get();
+        
+        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
+        //     ->where('is_required', true)
+        //     ->with(['attribute.values' => function ($query) use ($category) {
+        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
+        //             $query->where('category_id', $category->id);
+        //         })->orderBy('value_string')->orderBy('value_int');
+        //     }])
+        //     ->orderBy('order')
+        //     ->get();
+
+
+        $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
             ->where('is_required', true)
-            // ->with('attribute')
+            ->with(['attribute.values' => function ($query) use ($category) {
+                $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
+                    $query->where('category_id', $category->id);
+                })
+                ->withCount(['productCharacteristics' => function ($query) use ($category) {
+                    $query->whereHas('product', function ($query) use ($category) {
+                        $query->where('category_id', $category->id);
+                    });
+                }])
+                ->orderBy('value_string')->orderBy('value_int');
+            }])
             ->orderBy('order')
             ->get();
 
-
         foreach ($relationships as $relationship) {
-
-            // $relationship->values->product_count = $relationship->values()
-            //     ->select('attribute_values.*', DB::raw('COUNT(products.id) as product_count'))
-            //     ->leftJoin('product_characteristics', 'product_characteristics.value_id', '=', 'product_characteristics.id')
-            //     ->leftJoin('products', 'products.id', '=', 'product_characteristics.product_id')
-            //     ->groupBy('attribute_values.id')
-            //     ->get();
-
-            $valuesWithCount = [];
-            // TODO
-            foreach ($relationship->values as $value) {
-                $count = Product::whereHas('characteristics', function ($query) use ($value) {
-                    $query->where('value_id', $value->id);
-                })->count();
-
-                $value->product_count = $count;
-                $valuesWithCount[] = $value;
-            }
-
-
             if ($relationship->type === 'price') {
-                $relationship->findMinMaxPrice();
+                $relationship->findMinMaxPrice($relationship->category_id);
             } elseif ($relationship->type === 'range') {
-                $relationship->findMinMaxValues();
+                $relationship->findMinMaxValues($relationship->category_id);
             }
-            $relationship->getNameAttribute();
-        }  
+        }
+
+        // dd($relationships[4]);
+
+
+        // foreach ($relationships as $relationship) {
+
+        //     if ($relationship->type === 'price') {
+        //         $relationship->findMinMaxPrice();
+        //     } elseif ($relationship->type === 'range') {
+        //         $relationship->findMinMaxValues();
+        //     }
+        // }  
 
         return Inertia::render('Products', [
             'category' => $category, 

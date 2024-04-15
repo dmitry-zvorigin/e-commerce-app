@@ -20,6 +20,11 @@ class ProductImageSeeder extends Seeder
         $imagePath = [
             ['Производитель' => 'AMD', 'path_thumb' => 'processor amd.png', 'path_detail' => 'amd_full.png'],
             ['Производитель' => 'Intel', 'path_thumb' => 'processor intel.png', 'path_detail' => 'intel_full.png'],
+
+            ['Производитель' => 'ASRock', 'path_thumb' => 'thumb_asrock.png', 'path_detail' => 'full_asrock.png'],
+            ['Производитель' => 'GIGABYTE', 'path_thumb' => 'tumb_gigabyte.png', 'path_detail' => 'full_gigabyte.png'],
+            ['Производитель' => 'Palit', 'path_thumb' => 'thumb_palit.png', 'path_detail' => 'full_palit.png'],
+            ['Производитель' => 'Sapphire', 'path_thumb' => 'thumb_sapphire.png', 'path_detail' => 'full_sapphire.png'],
         ];
 
         $productAttributeName = 'Производитель';

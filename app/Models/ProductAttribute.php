@@ -24,13 +24,15 @@ class ProductAttribute extends Model
         return $this->hasMany(ProductCharacteristic::class);
     }
     
+    public function values() : HasMany
+    {
+        return $this->hasMany(AttributeValue::class, 'attribute_id', 'id');
+    }
+    
     public function getSlugOptions() : SlugOptions
     {
         // Добавление slug
         return SlugOptions::create()->generateSlugsFrom('name')->saveSlugsTo('slug');
     }
-    public function values() : HasMany
-    {
-        return $this->hasMany(AttributeValue::class, 'attribute_id', 'id');
-    }
+
 }
