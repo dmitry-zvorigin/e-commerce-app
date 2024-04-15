@@ -26,12 +26,17 @@ class CategoryAttributeRelationship extends Model
         return $this->hasMany(AttributeValue::class, 'attribute_id', 'attribute_id');
     }
 
-    public function findMinMaxValues()
+    public function findMinMaxValues($categoryId)
     {
-        $intValues = $this->values()->pluck('value_int')->map(function ($value) {
-            return (float) $value;
-        });
-    
+        $intValues = $this->values()
+            ->whereHas('productCharacteristics.product', function ($query) use ($categoryId) {
+                $query->where('category_id', $categoryId);
+            })
+            ->pluck('value_int')
+            ->map(function ($value) {
+                return (float) $value;
+            });
+
         $this->setAttribute('min_value', $intValues->min());
         $this->setAttribute('max_value', $intValues->max());
     }
@@ -42,10 +47,7 @@ class CategoryAttributeRelationship extends Model
             ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
             ->first();
 
-        $minPrice = $prices->min_price;
-        $maxPrice = $prices->max_price;
-
-        $this->setAttribute('min_value', $minPrice);
-        $this->setAttribute('max_value', $maxPrice);
+        $this->setAttribute('min_value', $prices->min_price);
+        $this->setAttribute('max_value', $prices->max_price);
     }    
 }

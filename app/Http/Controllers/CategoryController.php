@@ -227,7 +227,7 @@ class CategoryController extends Controller
 
     protected function renderCategoryView(Category $category, $breadcrumbs, $categoriesMenu)
     {
-        $categories = $category->load('children', 'children.images');
+        $categories = $category->load('children.images');
 
         return Inertia::render('Categories', [
             'categories' => $categories, 
@@ -238,11 +238,13 @@ class CategoryController extends Controller
 
     protected function renderProductsView(Category $category, Request $request, $breadcrumbs, $categoriesMenu)
     {
+        // Формируем request, разделяем его на значения
         $filtersQuery = [];
         foreach ($request->all() as $key => $values) {
             $filtersQuery[$key] = explode(',', $values[0]);
         }
 
+        // Фильтруем, сортируем продукты, так же получаем отношения.
         $products = $this->productService
             ->createProductQuery($category)
             ->filter($filtersQuery)
@@ -254,31 +256,6 @@ class CategoryController extends Controller
             ->paginate(18)
             ->appends(Requ::all());
 
-        // TODO рабочий метод 
-        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
-        //     ->where('is_required', true)
-        //     ->with(['attribute.values' => function ($query) use ($category) {
-        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
-        //             $query->where('category_id', $category->id);
-        //         })
-        //         ->withCount(['productCharacteristics' => function ($query) use ($category) {
-        //             $query->whereHas('product', function ($query) use ($category) {
-        //                 $query->where('category_id', $category->id);
-        //             });
-        //         }])
-        //         ->orderBy('value_string')->orderBy('value_int');
-        //     }])
-        //     ->orderBy('order')
-        //     ->get();
-
-
-
-
-
-
-
-
-
         // $productsQuery = Product::query()->where('category_id', $category->id);
         // $products = $productsQuery
         //     ->with(['images'])
@@ -287,34 +264,15 @@ class CategoryController extends Controller
         //     ->paginate(18)
         //     ->appends(Requ::all());
 
-
-        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
-        //     ->where('is_required', true)
-        //     ->with(['attribute.values' => function ($query) use ($category) {
-        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
-        //             $query->where('category_id', $category->id);
-        //         })->orderBy('value_string')->orderBy('value_int');
-        //     }])
-        //     ->orderBy('order')
-        //     ->get();
-        
-        // $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
-        //     ->where('is_required', true)
-        //     ->with(['attribute.values' => function ($query) use ($category) {
-        //         $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
-        //             $query->where('category_id', $category->id);
-        //         })->orderBy('value_string')->orderBy('value_int');
-        //     }])
-        //     ->orderBy('order')
-        //     ->get();
-
-
-        $relationships = CategoryAttributeRelationship::where('category_id', $category->id)
+        // Получаем фильтры которые относятся к определенной категориям. 
+        $filters = CategoryAttributeRelationship::where('category_id', $category->id)
             ->where('is_required', true)
+            // Отношение на получение атрибутов и значений
             ->with(['attribute.values' => function ($query) use ($category) {
                 $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
                     $query->where('category_id', $category->id);
                 })
+                // Подсчитываем количество продуктов для значения
                 ->withCount(['productCharacteristics' => function ($query) use ($category) {
                     $query->whereHas('product', function ($query) use ($category) {
                         $query->where('category_id', $category->id);
@@ -325,32 +283,22 @@ class CategoryController extends Controller
             ->orderBy('order')
             ->get();
 
-        foreach ($relationships as $relationship) {
-            if ($relationship->type === 'price') {
-                $relationship->findMinMaxPrice($relationship->category_id);
-            } elseif ($relationship->type === 'range') {
-                $relationship->findMinMaxValues($relationship->category_id);
+        foreach ($filters as $filter) {
+            if ($filter->type === 'price') {
+                // Для типа price получаем минимальную и максимальную цену у продуктов
+                $filter->findMinMaxPrice($filter->category_id);
+            } elseif ($filter->type === 'range') {
+                // Для типа range получаем минимальное и максимальное значение
+                $filter->findMinMaxValues($filter->category_id);
             }
         }
-
-        // dd($relationships[4]);
-
-
-        // foreach ($relationships as $relationship) {
-
-        //     if ($relationship->type === 'price') {
-        //         $relationship->findMinMaxPrice();
-        //     } elseif ($relationship->type === 'range') {
-        //         $relationship->findMinMaxValues();
-        //     }
-        // }  
 
         return Inertia::render('Products', [
             'category' => $category, 
             'products' => $products, 
             'categories_menu' => $categoriesMenu, 
             'breadcrumbs' => $breadcrumbs,
-            'filters' => $relationships,
+            'filters' => $filters,
             'filters_query' => $filtersQuery,
         ]);
     }
