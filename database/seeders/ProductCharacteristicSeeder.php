@@ -19,68 +19,68 @@ class ProductCharacteristicSeeder extends Seeder
         $product_characteristics = [
             1 => [
                 'Заводские данные' => [
-                    [ 'attribute' => 'Гарантия продавца', 'value' => 12, 'unit_type' => 'мес.'],
-                    [ 'attribute' => 'Страна-производитель', 'value' => 'Вьетнам'],
+                    [ 'attribute' => 'Гарантия продавца', 'value' => 12, 'unit_type' => 'мес.', 'is_visible' => true, 'order' => 1,],
+                    [ 'attribute' => 'Страна-производитель', 'value' => 'Вьетнам', 'is_visible' => true, 'order' => 2],
                 ],
 
                 'Общие параметры' => [
-                    [ 'attribute' => 'Модель', 'value' => 'Intel Core i3-10105F'],
-                    [ 'attribute' => 'Сокет ', 'value' => 'LGA 1200'],
-                    [ 'attribute' => 'Код производителя', 'value' => '[CM8070104291323-SRH8V]'],
-                    [ 'attribute' => 'Год релиза', 'value' => 2020],
-                    [ 'attribute' => 'Система охлаждения в комплекте', 'value' => 'нет'],
-                    [ 'attribute' => 'Термоинтерфейс в комплекте', 'value' => 'нет'],
-                    [ 'attribute' => 'Производитель', 'value' => 'Intel'],
-                    [ 'attribute' => 'Семейство процессоров', 'value' => 'Intel Core i3'],
-                    [ 'attribute' => 'Для игрового компьютера', 'value' => 'нет'],
-                    [ 'attribute' => 'Поколение процессоров', 'value' => 'Intel 9-e поколение'],
+                    [ 'attribute' => 'Модель', 'value' => 'Intel Core i3-10105F', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Сокет ', 'value' => 'LGA 1200', 'is_visible' => true, 'order' => 2],
+                    [ 'attribute' => 'Код производителя', 'value' => '[CM8070104291323-SRH8V]', 'is_visible' => true, 'order' => 3],
+                    [ 'attribute' => 'Год релиза', 'value' => 2020, 'is_visible' => true, 'order' => 4],
+                    [ 'attribute' => 'Система охлаждения в комплекте', 'value' => 'нет', 'is_visible' => true, 'order' => 5],
+                    [ 'attribute' => 'Термоинтерфейс в комплекте', 'value' => 'нет', 'is_visible' => true, 'order' => 6],
+                    [ 'attribute' => 'Производитель', 'value' => 'Intel', 'is_visible' => false, 'order' => null],
+                    [ 'attribute' => 'Семейство процессоров', 'value' => 'Intel Core i3', 'is_visible' => false, 'order' => null],
+                    [ 'attribute' => 'Для игрового компьютера', 'value' => 'нет', 'is_visible' => false, 'order' => null],
+                    [ 'attribute' => 'Поколение процессоров', 'value' => 'Intel 9-e поколение', 'is_visible' => false, 'order' => null],
                 ],
 
                 'Ядро и архитектура' => [
-                    [ 'attribute' => 'Общее количество ядер', 'value' => 4],
-                    [ 'attribute' => 'Количество производительных ядер ', 'value' => 4],
-                    [ 'attribute' => 'Количество энергоэффективных ядер', 'value' => 'нет'],
-                    [ 'attribute' => 'Максимальное число потоков', 'value' => 8],
-                    [ 'attribute' => 'Объем кэша L2', 'value' => 1, 'unit_type' => 'МБ'],
-                    [ 'attribute' => 'Объем кэша L3', 'value' => 6, 'unit_type' => 'МБ'],
-                    [ 'attribute' => 'Техпроцесс', 'value' => '14 нм'],
-                    [ 'attribute' => 'Ядро', 'value' => 'Intel Comet Lake-S'],
+                    [ 'attribute' => 'Общее количество ядер', 'value' => 4, 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Количество производительных ядер ', 'value' => 4, 'is_visible' => true, 'order' => 2],
+                    [ 'attribute' => 'Количество энергоэффективных ядер', 'value' => 'нет', 'is_visible' => true, 'order' => 3],
+                    [ 'attribute' => 'Максимальное число потоков', 'value' => 8, 'is_visible' => true, 'order' => 4],
+                    [ 'attribute' => 'Объем кэша L2', 'value' => 1, 'unit_type' => 'МБ', 'is_visible' => true, 'order' => 5],
+                    [ 'attribute' => 'Объем кэша L3', 'value' => 6, 'unit_type' => 'МБ', 'is_visible' => true, 'order' => 6],
+                    [ 'attribute' => 'Техпроцесс', 'value' => '14 нм', 'is_visible' => true, 'order' => 7],
+                    [ 'attribute' => 'Ядро', 'value' => 'Intel Comet Lake-S', 'is_visible' => true, 'order' => 8],
                 ],
 
                 'Частота и возможность разгона' => [
-                    [ 'attribute' => 'Базовая частота процессора', 'value' => 3.7, 'unit_type' => 'ГГц'],
-                    [ 'attribute' => 'Максимальная частота в турбо режиме', 'value' => 4.4, 'unit_type' => 'ГГц'],
-                    [ 'attribute' => 'Базовая частота энергоэффективных ядер', 'value' => 'нет'],
-                    [ 'attribute' => 'Частота в турбо режиме энергоэффективных ядер', 'value' => 'нет'],
-                    [ 'attribute' => 'Свободный множитель', 'value' => 'нет'],
+                    [ 'attribute' => 'Базовая частота процессора', 'value' => 3.7, 'unit_type' => 'ГГц', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Максимальная частота в турбо режиме', 'value' => 4.4, 'unit_type' => 'ГГц', 'is_visible' => true, 'order' => 2],
+                    [ 'attribute' => 'Базовая частота энергоэффективных ядер', 'value' => 'нет', 'is_visible' => true, 'order' => 3],
+                    [ 'attribute' => 'Частота в турбо режиме энергоэффективных ядер', 'value' => 'нет', 'is_visible' => true, 'order' => 4],
+                    [ 'attribute' => 'Свободный множитель', 'value' => 'нет', 'is_visible' => true, 'order' => 5],
                 ],
 
                 'Параметры оперативной памяти' => [
-                    [ 'attribute' => 'Тип памяти', 'value' => 'DDR4'],
-                    [ 'attribute' => 'Максимально поддерживаемый объем памяти', 'value' => 128, 'unit_type' => 'ГБ'],
-                    [ 'attribute' => 'Количество каналов', 'value' => 2],
-                    [ 'attribute' => 'Частота оперативной памяти', 'value' => 'DDR4-2666'],
-                    [ 'attribute' => 'Поддержка режима ECC', 'value' => 'нет'],
+                    [ 'attribute' => 'Тип памяти', 'value' => 'DDR4', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Максимально поддерживаемый объем памяти', 'value' => 128, 'unit_type' => 'ГБ', 'is_visible' => true, 'order' => 2],
+                    [ 'attribute' => 'Количество каналов', 'value' => 2, 'is_visible' => true, 'order' => 3],
+                    [ 'attribute' => 'Частота оперативной памяти', 'value' => 'DDR4-2666', 'is_visible' => true, 'order' => 4],
+                    [ 'attribute' => 'Поддержка режима ECC', 'value' => 'нет', 'is_visible' => true, 'order' => 5],
                 ],
 
                 'Тепловые характеристики' => [
-                    [ 'attribute' => 'Тепловыделение (TDP)', 'value' => 65, 'unit_type' => 'Вт'],
-                    [ 'attribute' => 'Базовое тепловыделение', 'value' => 65, 'unit_type' => 'Вт'],
-                    [ 'attribute' => 'Максимальная температура процессора', 'value' => 100, 'unit_type' => '°C'],
+                    [ 'attribute' => 'Тепловыделение (TDP)', 'value' => 65, 'unit_type' => 'Вт', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Базовое тепловыделение', 'value' => 65, 'unit_type' => 'Вт', 'is_visible' => true, 'order' => 2],
+                    [ 'attribute' => 'Максимальная температура процессора', 'value' => 100, 'unit_type' => '°C', 'is_visible' => true, 'order' => 3],
                 ],
 
                 'Графическое ядро' => [
-                    [ 'attribute' => 'Интегрированное графическое ядро', 'value' => 'нет'],
+                    [ 'attribute' => 'Интегрированное графическое ядро', 'value' => 'нет', 'is_visible' => true, 'order' => 1],
                 ],
                 
                 'Шина и контроллеры' => [
-                    [ 'attribute' => 'Встроенный контроллер PCI Express', 'value' => 'PCI-E 3.0'],
-                    [ 'attribute' => 'Число линий PCI Express', 'value' => '16 шт'],
+                    [ 'attribute' => 'Встроенный контроллер PCI Express', 'value' => 'PCI-E 3.0', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Число линий PCI Express', 'value' => '16 шт', 'is_visible' => true, 'order' => 2],
                 ],
 
                 'Дополнительно' => [
-                    [ 'attribute' => 'Технология виртуализации', 'value' => 'есть'],
-                    [ 'attribute' => 'Особенности, дополнительно', 'value' => 'поддержка Intel Optane'],
+                    [ 'attribute' => 'Технология виртуализации', 'value' => 'есть', 'is_visible' => true, 'order' => 1],
+                    [ 'attribute' => 'Особенности, дополнительно', 'value' => 'поддержка Intel Optane', 'is_visible' => true, 'order' => 2],
                 ],
 
             ],
@@ -1519,7 +1519,9 @@ class ProductCharacteristicSeeder extends Seeder
                     ProductCharacteristic::create([
                         'product_id' => $product_id,
                         'attribute_id' => $productAttribute->id,
-                        'value_id' => $attributeValue->id
+                        'value_id' => $attributeValue->id,
+                        'is_visible' => $attribute['is_visible'] ?? true,
+                        'order' => $attribute['order'] ?? null,
                     ]);
                 }
             }

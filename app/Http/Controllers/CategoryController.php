@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Breadcrumbs\BreadcrumbsManager;
-use App\Models\AttributeValue;
 use App\Models\Category;
 use App\Models\CategoryAttributeRelationship;
 use App\Models\Product;

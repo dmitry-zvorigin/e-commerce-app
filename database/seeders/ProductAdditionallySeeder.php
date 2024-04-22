@@ -223,7 +223,8 @@ class ProductAdditionallySeeder extends Seeder
             $product->characteristics()->create([
                 'product_id' => $product->id,
                 'attribute_id' => $productAttribute->id,
-                'value_id' => $randomValueId
+                'value_id' => $randomValueId,
+                'is_visible' => true,
             ]);
             // Теперь у вас есть только те значения этого атрибута, которые используются в продуктах этой категории
         }

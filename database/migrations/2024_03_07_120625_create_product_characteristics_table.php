@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained();
             $table->foreignId('attribute_id')->constrained('product_attributes');
             $table->foreignId('value_id')->constrained('attribute_values');
+            $table->string('is_visible')->nullable();
+            $table->integer('order')->nullable();
             $table->timestamps();
 
             // Добавление индексов

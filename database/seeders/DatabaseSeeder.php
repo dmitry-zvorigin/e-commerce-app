@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             AttributeValueSeeder::class,
             RatingSeeder::class,
             ProductImageSeeder::class,
+            AttributeGroupOrderSeeder::class,
         ]);
     }
 }
