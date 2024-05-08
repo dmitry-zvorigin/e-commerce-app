@@ -360,8 +360,8 @@ const ImageFullSlider = ({ productName, images, selectedImage, handleCloseButton
                     </div>
 
                     <div className="grow flex">
-                        {images.map((image) => (
-                            <div className="size-24">
+                        {images.map((image, index) => (
+                            <div className="size-24" key={image.id}>
                                 <img
                                     key={image.id}
                                     className={`cursor-pointer object-contain border rounded-lg w-full h-full ${image === images[selectedImageIndex] ? 'border-orange-400' : ''}`}

@@ -35,6 +35,7 @@ class DatabaseSeeder extends Seeder
             ReviewUsageTermsSeeder::class,
             ReviewAdditionalAssessmentOptionSeeder::class,
             ReviewSeeder::class,
+            ReviewReactionSeeder::class,
         ]);
     }
 }
