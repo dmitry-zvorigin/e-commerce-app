@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductCharacteristic;
+use App\Models\ReviewAdditionalAssessmentOption;
 use Illuminate\Http\Request;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Inertia\Inertia;
@@ -94,13 +95,44 @@ class ProductController extends Controller
 
         $groupedCharacteristics = $groupedCharacteristics->groupBy('name');
 
-        // dd($groupedCharacteristics->toArray());
+
+        $popularReview = $product->popularReview();
+
+        if ($popularReview) {
+            $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
+        }
 
         return Inertia::render('Product', [
             'product' => $product, 
             'categories_menu' => $categoriesMenu, 
             'breadcrumbs' => $breadcrumbs,
             'groupedCharacteristics' => $groupedCharacteristics,
+            'popularReview' => $popularReview,
         ]);
+    }
+
+    public function test() 
+    {
+        $productId = 3;
+
+        $product = Product::where('id', $productId)
+            ->with(
+                'reviews', 'reviews.rating', 'reviews.options', 'reviews.images', 
+                'reviews.user', 'reviews.usageTerm', 'reviews.likes', 'reviews.dislikes',
+            )
+            ->first();
+
+        $reviews = $product['reviews'];
+
+        $popularReview = $product->popularReview();
+
+        if ($popularReview) {
+            $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
+        }
+        // dd($popularReview);
+        
+        // dd($product->toArray());
+
+        return Inertia::render('Test', ['reviews' => $reviews, 'popularReview' => $popularReview]);
     }
 }

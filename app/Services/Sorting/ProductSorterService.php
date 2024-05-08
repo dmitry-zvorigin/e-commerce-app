@@ -25,8 +25,8 @@ class ProductSorterService
                     $productsQuery->orderByDesc('products.created_at');
                     break;
                 case 6: 
-                    $productsQuery->join('ratings', 'products.id', '=', 'ratings.product_id')
-                        ->select('products.*', DB::raw('AVG(ratings.rating_value) as average_rating'))
+                    $productsQuery->join('review_ratings', 'products.id', '=', 'review_ratings.product_id')
+                        ->select('products.*', DB::raw('AVG(review_ratings.rating_value) as average_rating'))
                         ->groupBy('products.id')
                         ->orderByDesc('average_rating');
                     break;

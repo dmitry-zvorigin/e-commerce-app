@@ -1,4 +1,4 @@
-import { Disclosure } from "@headlessui/react";
+import { Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from "react";
@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export default function Filt({ values, setValues, setShowFilters, reset }) {
 
     const { filters } = usePage().props;
-    console.log(filters);
+    // console.log(filters);
     const [lastClickedValue, setLastClickedValue] = useState(null);
     const [timerId, setTimerId] = useState(null);
 
@@ -289,48 +289,59 @@ const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
                         </Disclosure.Button>
                     </h3>
 
-                    <Disclosure.Panel>
-                        <div className="flex flex-col p-2 w-full">
-                            <div className="flex justify-between">
-                                <input 
-                                    name={filter.attribute.slug}
-                                    value={
-                                        values[filter.attribute.slug] && values[filter.attribute.slug][0] != filter.min_value
-                                            ? values[filter.attribute.slug][0]
-                                            : ''
-                                    }
-                                    data-type="min"
-                                    placeholder={`от ${filter.min_value}`} 
-                                    min={filter.min_value}
-                                    max={filter.max_value}
-                                    type="number" 
-                                    className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
-                                    onBlur={handleBlur}
-                                    onChange={handleRangeChange}
-                                    onWheel={(e) => e.currentTarget.blur()}
-                                />
+                    <Transition
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform scale-95 opacity-0"
+                        enterTo="transform scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 opacity-100"
+                        leaveTo="transform scale-95 opacity-0"
+                    >
 
-                                <input 
-                                    name={filter.attribute.slug}
-                                    value={
-                                        values[filter.attribute.slug] && values[filter.attribute.slug][1] != filter.max_value
-                                            ? values[filter.attribute.slug][1]
-                                            : ''
-                                    }
-                                    data-type="max"
-                                    placeholder={`до ${filter.max_value}`} 
-                                    min={filter.min_value}
-                                    max={filter.max_value}
-                                    type="number" 
-                                    className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
-                                    onBlur={handleBlur}
-                                    onChange={handleRangeChange}
-                                    onWheel={(e) => e.currentTarget.blur()}
-                                />
+                        <Disclosure.Panel>
+                            <div className="flex flex-col p-2 w-full">
+                                <div className="flex justify-between">
+                                    <input 
+                                        name={filter.attribute.slug}
+                                        value={
+                                            values[filter.attribute.slug] && values[filter.attribute.slug][0] != filter.min_value
+                                                ? values[filter.attribute.slug][0]
+                                                : ''
+                                        }
+                                        data-type="min"
+                                        placeholder={`от ${filter.min_value}`} 
+                                        min={filter.min_value}
+                                        max={filter.max_value}
+                                        type="number" 
+                                        className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
+                                        onBlur={handleBlur}
+                                        onChange={handleRangeChange}
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                    />
+
+                                    <input 
+                                        name={filter.attribute.slug}
+                                        value={
+                                            values[filter.attribute.slug] && values[filter.attribute.slug][1] != filter.max_value
+                                                ? values[filter.attribute.slug][1]
+                                                : ''
+                                        }
+                                        data-type="max"
+                                        placeholder={`до ${filter.max_value}`} 
+                                        min={filter.min_value}
+                                        max={filter.max_value}
+                                        type="number" 
+                                        className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
+                                        onBlur={handleBlur}
+                                        onChange={handleRangeChange}
+                                        onWheel={(e) => e.currentTarget.blur()}
+                                    />
+                                </div>
+
                             </div>
+                        </Disclosure.Panel>
 
-                        </div>
-                    </Disclosure.Panel>
+                    </Transition>
                 </div>
             )}
         </Disclosure>
@@ -386,121 +397,131 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                         </span>
                         </Disclosure.Button>
                     </h3>
+                    <Transition
+                        enter="transition duration-100 ease-out"
+                        enterFrom="transform scale-95 opacity-0"
+                        enterTo="transform scale-100 opacity-100"
+                        leave="transition duration-75 ease-out"
+                        leaveFrom="transform scale-100 opacity-100"
+                        leaveTo="transform scale-95 opacity-0"
+                    >
 
-                    <Disclosure.Panel>
-                        <div className="flex flex-col p-2 w-full">
+                        <Disclosure.Panel>
+                            <div className="flex flex-col p-2 w-full">
 
-                            {filter.attribute.values.length > 7 && (
-                                <>
-                                <div className="flex items-center p-2 w-full">
-                                    <input 
-                                        type="text" 
-                                        placeholder="Поиск..." 
-                                        className="px-2 py-1 border rounded-md border-gray-300 mr-2"
-                                        value={searchTerm}
-                                        onChange={handleSearchChange}
-                                    />
-                                </div>
-
-                                {!isSearching && (
+                                {filter.attribute.values.length > 7 && (
                                     <>
-                                    <label 
-                                        className="flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
-                                    >
+                                    <div className="flex items-center p-2 w-full">
                                         <input 
-                                            name={filter.attribute.slug}
-                                            value={filter.attribute.slug}
-                                            type="checkbox" 
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            checked={allValuesSelected}
-                                            onChange={handleCheckboxChangeAll}
-                                            onClick={handleValueClick}
+                                            type="text" 
+                                            placeholder="Поиск..." 
+                                            className="px-2 py-1 border rounded-md border-gray-300 mr-2"
+                                            value={searchTerm}
+                                            onChange={handleSearchChange}
                                         />
-                                        <span className="ml-2 text-sm text-gray-600">
-                                            Выбрать все
-                                        </span>
-                                    </label>
-                                    <hr/>
+                                    </div>
+
+                                    {!isSearching && (
+                                        <>
+                                        <label 
+                                            className="flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
+                                        >
+                                            <input 
+                                                name={filter.attribute.slug}
+                                                value={filter.attribute.slug}
+                                                type="checkbox" 
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                checked={allValuesSelected}
+                                                onChange={handleCheckboxChangeAll}
+                                                onClick={handleValueClick}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-600">
+                                                Выбрать все
+                                            </span>
+                                        </label>
+                                        <hr/>
+                                        </>
+
+                                    )}
+
                                     </>
-
                                 )}
-
-                                </>
-                            )}
-                            
-                            <div className={`flex flex-col w-full max-h-64 overflow-y-auto`}>
-                                {filteredValues.map((value, index) => (
-                                    <label 
-                                        htmlFor={value.id} 
-                                        key={value.id} 
-                                        className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
-                                    >
-                                        <input 
-                                            name={filter.attribute.slug}
-                                            value={value.id}
-                                            id={value.id}
-                                            checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
-                                            type="checkbox" 
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            onChange={handleCheckboxChange}
-                                            // onClick={() => handleValueClick(value.id)}
-                                            onClick={handleValueClick}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600 flex ">
-                                            <p>{value.name}</p>
-                                            {value.product_characteristics_count > 0 && (
-                                                <p className="text-gray-400 ml-1">({value.product_characteristics_count})</p>
-                                            )}
-                                        </span>
-                                    </label>
-                                ))}
-                                {/* {filteredValues.map((value, index) => (
-                                    <label 
-                                        htmlFor={value.id} 
-                                        key={value.id} 
-                                        className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
-                                    >
-                                        <input 
-                                            name={filter.attribute.slug}
-                                            value={value.id}
-                                            id={value.id}
-                                            checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
-                                            type="checkbox" 
-                                            className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                            onChange={handleCheckboxChange}
-                                            // onClick={() => handleValueClick(value.id)}
-                                            onClick={handleValueClick}
-                                        />
-                                        <span className="ml-2 text-sm text-gray-600 flex ">
-                                            <p>{value.name}</p>
-                                            {value.product_count > 0 && (
-                                                <p className="text-gray-400 ml-1">({value.product_count})</p>
-                                            )}
-                                        </span>
-                                    </label>
-                                ))} */}
-                            </div>
-
-                            <div className="flex justify-between items-center">
-                                <div>
-                                {!isSearching && filter.attribute.values.length > 7 && (
-                                    <button onClick={toggleShowAll} className="px-3 py-1 bg-blue-500 text-white rounded-md mt-5">
-                                        {showAll ? 'Скрыть все' : 'Показать все'}
-                                    </button>
-                                )}
+                                
+                                <div className={`flex flex-col w-full ${showAll ? 'max-h-64 overflow-y-auto' : ''}`}>
+                                    {filteredValues.map((value, index) => (
+                                        <label 
+                                            htmlFor={value.id} 
+                                            key={value.id} 
+                                            className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
+                                        >
+                                            <input 
+                                                name={filter.attribute.slug}
+                                                value={value.id}
+                                                id={value.id}
+                                                checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
+                                                type="checkbox" 
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                onChange={handleCheckboxChange}
+                                                // onClick={() => handleValueClick(value.id)}
+                                                onClick={handleValueClick}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-600 flex ">
+                                                <p>{value.name}</p>
+                                                {value.product_characteristics_count > 0 && (
+                                                    <p className="text-gray-400 ml-1">({value.product_characteristics_count})</p>
+                                                )}
+                                            </span>
+                                        </label>
+                                    ))}
+                                    {/* {filteredValues.map((value, index) => (
+                                        <label 
+                                            htmlFor={value.id} 
+                                            key={value.id} 
+                                            className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
+                                        >
+                                            <input 
+                                                name={filter.attribute.slug}
+                                                value={value.id}
+                                                id={value.id}
+                                                checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
+                                                type="checkbox" 
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                onChange={handleCheckboxChange}
+                                                // onClick={() => handleValueClick(value.id)}
+                                                onClick={handleValueClick}
+                                            />
+                                            <span className="ml-2 text-sm text-gray-600 flex ">
+                                                <p>{value.name}</p>
+                                                {value.product_count > 0 && (
+                                                    <p className="text-gray-400 ml-1">({value.product_count})</p>
+                                                )}
+                                            </span>
+                                        </label>
+                                    ))} */}
                                 </div>
-                                <div>
-                                    {values.hasOwnProperty(filter.attribute.slug) && (
-                                        <button 
-                                            onClick={() => handleResetFilter(filter.attribute.slug)}
-                                            className="px-3 py-1 bg-red-500 text-white rounded-md mt-5">
-                                            Сбросить
+
+                                <div className="flex justify-between items-center">
+                                    <div>
+                                    {!isSearching && filter.attribute.values.length > 7 && (
+                                        <button onClick={toggleShowAll} className="px-3 py-1 bg-blue-500 text-white rounded-md mt-5">
+                                            {showAll ? 'Скрыть все' : 'Показать все'}
                                         </button>
                                     )}
+                                    </div>
+                                    <div>
+                                        {values.hasOwnProperty(filter.attribute.slug) && (
+                                            <button 
+                                                onClick={() => handleResetFilter(filter.attribute.slug)}
+                                                className="px-3 py-1 bg-red-500 text-white rounded-md mt-5">
+                                                Сбросить
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </Disclosure.Panel>
+                        </Disclosure.Panel>
+
+                    </Transition>
                 </div>
             )}
         </Disclosure>

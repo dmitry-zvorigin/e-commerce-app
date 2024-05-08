@@ -2,7 +2,7 @@ import Breadcrumbs from "@/Components/Breadcrumbs";
 import ProductCard from "@/Components/ProductCard";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 
-export default function Product({ categories_menu, breadcrumbs, product, groupedCharacteristics }) {
+export default function Product({ categories_menu, breadcrumbs, product, groupedCharacteristics, popularReview }) {
 
     return (
         <>
@@ -13,11 +13,10 @@ export default function Product({ categories_menu, breadcrumbs, product, grouped
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
                         {product.name}
                     </h2>
-                    <ProductCard product={product} groupedCharacteristics={groupedCharacteristics} />
+                    <ProductCard product={product} groupedCharacteristics={groupedCharacteristics} popularReview={popularReview}/>
                 </div>
             </div>
             </DefaultLayout>
-            
         </>
     );
 

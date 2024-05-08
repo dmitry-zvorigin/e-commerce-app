@@ -21,7 +21,7 @@ class Product extends Model
 
     public function ratings() : HasMany
     {
-        return $this->hasMany(Rating::class);
+        return $this->hasMany(ReviewRating::class);
     }
 
     public function characteristics() : HasMany
@@ -38,6 +38,25 @@ class Product extends Model
     {
         // Добавление slug
         return SlugOptions::create()->generateSlugsFrom('name')->saveSlugsTo('slug');
+    }
+
+    public function reviews() : HasMany
+    {
+        return $this->hasMany(Review::class);
+    }
+
+    public function popularReview()
+    {
+        return $this->reviews()
+            ->withCount([
+                'likes as likes_count',
+                'dislikes as dislikes_count',
+            ])
+            ->get()
+            ->sortByDesc(function ($review) {
+                return $review->likes_count - $review->dislikes_count;
+            })
+            ->first();
     }
 
 }

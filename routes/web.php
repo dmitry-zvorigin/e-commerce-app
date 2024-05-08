@@ -19,6 +19,7 @@ use Inertia\Inertia;
 |
 */
 
+Route::get('/test', [ProductController::class, 'test'])->name('test');
 
 
 Route::inertia('/', 'Home')->name('home');

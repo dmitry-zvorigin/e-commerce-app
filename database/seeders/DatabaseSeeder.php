@@ -28,9 +28,13 @@ class DatabaseSeeder extends Seeder
             CategoryAttributeRelationshipSeeder::class,
             ProductAdditionallySeeder::class,
             AttributeValueSeeder::class,
-            RatingSeeder::class,
+            // RatingSeeder::class,
             ProductImageSeeder::class,
             AttributeGroupOrderSeeder::class,
+            TestImageSeeder::class,
+            ReviewUsageTermsSeeder::class,
+            ReviewAdditionalAssessmentOptionSeeder::class,
+            ReviewSeeder::class,
         ]);
     }
 }
