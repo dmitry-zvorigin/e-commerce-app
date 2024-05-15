@@ -21,6 +21,7 @@ class ProductController extends Controller
         BreadcrumbsManager::registerCatalog();
         BreadcrumbsManager::registerCatagories();
         BreadcrumbsManager::registerProduct();
+        BreadcrumbsManager::registerProductReviews();
     }
 
 
@@ -102,12 +103,50 @@ class ProductController extends Controller
             $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
         }
 
+        $reviewsImages = $product->reviews->flatMap(function ($review) {
+            return $review->images;
+        });
+
         return Inertia::render('Product', [
             'product' => $product, 
             'categories_menu' => $categoriesMenu, 
             'breadcrumbs' => $breadcrumbs,
             'groupedCharacteristics' => $groupedCharacteristics,
             'popularReview' => $popularReview,
+            'reviewImages' => $reviewsImages,
+        ]);
+    }
+
+    public function reviews($productSlug)
+    {
+        $categoriesMenu = Category::get()->toTree();
+
+        $product = Product::where('slug', $productSlug)
+            ->with('images', 'reviews', 'reviews.rating', 'reviews.options', 'reviews.images', 
+            'reviews.user', 'reviews.usageTerm', 'reviews.likes', 'reviews.dislikes')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating_value')
+            ->first();
+
+        $breadcrumbs = Breadcrumbs::generate('productReviews', $product);
+
+        $reviewsImages = $product->reviews->flatMap(function ($review) {
+            return $review->images;
+        });
+
+        $popularReview = $product->popularReview();
+
+        if ($popularReview) {
+            $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
+        }
+
+        return Inertia::render('ProductReviews', [
+            'product' => $product,
+            'categories_menu' => $categoriesMenu,
+            'breadcrumbs' => $breadcrumbs,
+            'reviewImages' => $reviewsImages,
+            'popularReview' => $popularReview,
+
         ]);
     }
 

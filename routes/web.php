@@ -28,6 +28,7 @@ Route::inertia('/catalog', 'Catalog')->name('catalog');
 Route::get('catalog', [CategoryController::class, 'catalog'])->name('catalog');
 Route::get('catalog/{categorySlug}', [CategoryController::class, 'categories'])->name('categories');
 Route::get('product/{productSlug}', [ProductController::class, 'show'])->name('product.show');
+Route::get('product/{productSlug}/reviews', [ProductController::class, 'reviews'])->name('product.reviews');
 
 // Route::get('compare')->name('compare')->uses([CategoryController::class, 'test']);
 Route::get('/compare', [CategoryController::class, 'test'])->name('compare');

@@ -1,31 +1,7 @@
-import Rating from "@/MyComponents/Rating";
 import { ChevronDownIcon, HandThumbDownIcon, HandThumbUpIcon, ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
+import Rating from "@/MyComponents/Rating";
 
-export default function Test({ reviews, popularReview }) {
-
-    console.log(reviews);
-
-    return (
-        <>
-        <div className="container mx-auto">
-            <h1>Самый популярный отзыв</h1>
-            <Review review={popularReview}/>
-            {reviews.map((review, index) =>  (
-                <div>
-                    <Review review={review}/>
-                    <hr/>
-                </div>
-            ))}
-            
-        </div>
-            
-        </>
-
-    );
-}
-
-const Review = ({ review }) => {
-
+export default function ReviewCard ({ review }) {
     const averageReactions = review.likes.length - review.dislikes.length;
 
     return (
@@ -52,14 +28,14 @@ const Review = ({ review }) => {
                 </div>
             </div>
 
-            <div className="flex flex-wrap mb-5 gap-2">
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex justify-center items-center">
+            <div className="flex flex-wrap gap-2 mb-5">
+                <div className="border mr-2 p-1 border-gray-100 rounded-lg bg-gray-100 flex justify-center items-center">
                     <div className="pr-1">Общая:</div> 
-                    <Rating value={review.rating.rating_value} />
+                    <Rating value={review.rating.rating_value} size="small" />
                 </div>
 
                 {review.options.map((option, index) => (
-                    <div className="border p-1 border-gray-100 rounded-lg bg-gray-100"> 
+                    <div className="border p-1 border-gray-100 rounded-lg bg-gray-100" key={option.id}> 
                         {option.title}: {option.pivot.rating_value}
                     </div>
                 ))}
@@ -106,8 +82,13 @@ const Review = ({ review }) => {
                         <h1 className="font-bold">Фотографии</h1>
                         <div className="flex flex-wrap gap-5">
                             {review.images.map((image, index) => (
-                                <div className="">
-                                    <img src={`/reviews_images/image_thumbnail/${image.image_url_thumbnail}`}/>
+                                <div className="contrast-50 hover:filter-none" key={image.id}>
+                                    <button>
+                                        <img 
+                                            className="rounded-lg"
+                                            src={`/reviews_images/image_thumbnail/${image.image_url_thumbnail}`}
+                                        />
+                                    </button>
                                 </div>
                             ))}                            
                         </div>
@@ -136,6 +117,7 @@ const Review = ({ review }) => {
                     <button className="m-2"><HandThumbDownIcon className="h-7 w-7 hover:text-red-800"/></button>
                 </div>
             </div>
+            
         </>
     );
-};
+}

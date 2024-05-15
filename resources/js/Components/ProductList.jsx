@@ -1,8 +1,8 @@
-import { StarIcon } from "@heroicons/react/20/solid";
 import { HeartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { InertiaLink } from "@inertiajs/inertia-react";
 import { usePage } from "@inertiajs/react";
-import Rating from '@mui/material/Rating';
+import Rating from "@/MyComponents/Rating";
+
 
 export default function ProductList() {
 
@@ -67,11 +67,11 @@ export default function ProductList() {
 										
 									</div>
 
-									<div className="ml-2 p-1 rounded-md flex bg-gray-100 text-sm text-gray-600 items-center">
-										<button className="flex ">
-											<MyRating value={parseFloat(product.ratings_avg_rating_value)}/>
-											<p className="ml-1 mr-1">{product.ratings_count}</p>
-										</button>
+									<div className="ml-2 p-1 rounded-md flex bg-gray-100  items-center hover:bg-gray-200 cursor-pointer">
+										<InertiaLink className="flex" href={route('product.reviews', { productSlug: product.slug })}>
+											<Rating value={product.ratings_avg_rating_value} precision={0.1} size="small"/>
+											<p className="ml-1 mr-1 text-gray-600 text-sm">{product.ratings_count}</p>
+										</InertiaLink>
 									</div>
 									
 								</div>
@@ -101,62 +101,3 @@ export default function ProductList() {
       	</div>
     )
 }
-  
-
-const MyRating = ({ value }) => {
-	return (
-		<Rating
-		name="customized-empty"
-		size="small"
-		value={value}
-		precision={0.1}
-		readOnly
-	  />
-	);
-};
-
-
-// const Rating = ({ rating }) => {
-//     const fullStars = Math.floor(rating);
-//     const lastStarFill = (rating - fullStars) * 100;
-//     const emptyStars = 5 - Math.ceil(rating);
-
-//     return (
-//         <>
-//             <div className="flex pl-1">
-// 				<Rating name="half-rating-read" defaultValue={2.5} precision={0.5} readOnly />
-//                 {/* Отрисовываем звезды, заполненные полностью */}
-//                 {[...Array(fullStars)].map((_, index) => (
-//                     <StarIcon key={index} className="w-3.5 h-3.5" fill="orange" />
-//                 ))}
-//                 {/* Отрисовываем последнюю звезду с частичным заполнением */}
-// 				{rating > fullStars && (
-// 					<svg className="w-3.5 h-3.5">
-// 						<polygon points="50,3 61,21 83,25 68,40 71,62 50,50 29,62 32,40 17,25 39,21" fill="url(#star-gradient)">
-// 							<linearGradient id="star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-// 								<stop offset={`${lastStarFill}%`} stopColor="orange" />
-// 								<stop offset={`${lastStarFill}%`} stopColor="gray" />
-// 							</linearGradient>
-// 						</polygon>
-// 					</svg>
-//            	 	)}
-//                 {/* Отрисовываем пустые звезды */}
-//                 {[...Array(emptyStars)].map((_, index) => (
-//                     <StarIcon key={index} className="w-3.5 h-3.5" fill="gray" />
-//                 ))}
-//             </div>
-//         </>
-//     );
-// };
-
-
-// {/* <svg className="w-3.5 h-3.5">
-// <defs>
-// 	<linearGradient id="star-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-// 		<stop offset={`${lastStarFill}%`} style={{ stopColor: "orange" }} />
-// 		<stop offset={`${lastStarFill}%`} style={{ stopColor: "grey" }} />
-// 	</linearGradient>
-// </defs>
-// {/* Убедитесь, что последняя звезда отображается даже при нулевом заполнении */}
-// <polygon points="50,3 61,21 83,25 68,40 71,62 50,50 29,62 32,40 17,25 39,21" fill="url(#star-gradient)" />
-// </svg> */}

@@ -39,4 +39,13 @@ class BreadcrumbsManager
             $trail->push($product->name, route('product.show', $product->slug));
         });
     }
+
+    public static function registerProductReviews()
+    {
+        Breadcrumbs::for('productReviews', function($trail, $product) {
+            Breadcrumbs::generate('product', $product, $trail);
+
+            $trail->push('Отзывы');
+        });
+    }
 }

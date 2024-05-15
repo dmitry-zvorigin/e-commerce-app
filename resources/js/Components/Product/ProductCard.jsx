@@ -1,14 +1,13 @@
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, HandThumbDownIcon, HandThumbUpIcon, HeartIcon, ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { useCollapse } from 'react-collapsed'
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useEffect } from "react";
-import Review from "./Review";
-import React from "react";
+import { InertiaLink } from "@inertiajs/inertia-react";
+import ProductImageGallery from "./ProductImageGallery";
 import Rating from "@/MyComponents/Rating";
 
 
-export default function ProductCard({ product, groupedCharacteristics, popularReview, reviewImages }) {
+export default function ProductCard({ product, reviewImages }) {
 
     return (
         <div>
@@ -23,6 +22,7 @@ export default function ProductCard({ product, groupedCharacteristics, popularRe
 
                     <div className="w-full p-5">
 
+                        {/* TODO */}
                         <h2>AM3+, 4 x 3.8 ГГц, L2 - 4 МБ, L3 - 4 МБ, 2 х DDR3-1866 МГц, TDP 95 Вт, кулер подробнее</h2>
 
                         <div className="flex mt-3 mb-3">
@@ -43,10 +43,12 @@ export default function ProductCard({ product, groupedCharacteristics, popularRe
                             </div>
 
                             <div className="ml-2 p-1 rounded-md flex bg-gray-100 text-sm text-gray-600 items-center">
-                                <button className="flex ">
-                                    <Rating value={product.ratings_avg_rating_value}/>
+                                <InertiaLink 
+                                    className="flex" 
+                                    href={route('product.reviews', { productSlug: product.slug })}>
+                                    <Rating value={product.ratings_avg_rating_value} size={'small'} precision={0.1}/>
                                     <p className="ml-1 mr-1">{product.ratings_count}</p>
-                                </button>
+                                </InertiaLink>
                             </div>
 
                         </div>
@@ -81,101 +83,20 @@ export default function ProductCard({ product, groupedCharacteristics, popularRe
                 </div>
 
                 {reviewImages.length > 0 ? (
-                    <ImageGallery images={reviewImages}/>
+                    <ProductImageGallery images={reviewImages}/>
                 ) : (
                     <div className="h-24 border rounded-lg m-2 bg-slate-200 flex flex-col justify-center pl-5">
                         <h1 className="text-2xl ">Пока нет отзывов с фото</h1>
                         <p className="text-1xl">Будьте первыми и помогите другим с выбором</p>
                     </div>
                 )}
-                
-            </div>
-
-            <div className="flex mt-5">
-                <div className="w-2/5 mr-8">
-                    <div className="border border-slate-300 rounded-lg p-2">
-                        <h2>Характеристики</h2>
-                        <h2>Отзывы {product.ratings_count}</h2>
-                    </div>
-                </div>
-                
-                <div className="w-full">
-
-                    <Characteristics productName={product.name} characteristics={groupedCharacteristics} />
-                
-					<div className="border border-slate-300 rounded-lg w-full p-2 mt-5">
-						<h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-5">Описание</h2>
-						<p>{product.description}</p>
-					</div>
-
-					<div className="border border-slate-300 rounded-lg w-full p-2 mt-5">
-                        <div className="flex justify-between items-center">
-                            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Самый популярный отзыв</h2>
-                            <button className="text-blue-600 hover:text-orange-400">Все отзывы</button>
-                        </div>
-                        <Review review={popularReview}/>
-                        <button 
-                            className="border border-slate-300 rounded-lg p-2 
-                            flex justify-center items-center mt-5 w-full bg-gray-200
-                            hover:bg-gray-300
-                            "
-                        >
-                            Все отзывы 576
-                        </button>
-					</div>						
-												
-                </div>
-
-            </div>
-
-        </div>
-    );
-}
-
-
-const Characteristics = ({ productName, characteristics }) => {
-    const [isExpanded, setExpanded] = useState(false);
-    const { getCollapseProps, getToggleProps} = useCollapse({ isExpanded, collapsedHeight: 200 });
-
-    return (
-        <div className="border border-slate-300 rounded-lg w-full p-2">
-            <h2 className="text-2xl font-bold tracking-tight text-gray-900 mb-5">Характеристики {productName}</h2>
-
-                    <div {...getCollapseProps()}>
-                        {Object.keys(characteristics).map(groupName => (
-                            <div className={`product-characteristics__group mb-5`} key={groupName}>
-                                <h2 className="text-1xl font-bold tracking-tight text-gray-900">{groupName}</h2>
-                                {characteristics[groupName].map((char, index) => (
-                                    <div className="product-characteristics__spec flex mt-2" key={index}>
-                                        <div className="product-characteristics__spec-title border-b w-96">
-                                            {char.attribute.name}
-                                        </div>
-                                        <div className="product-characteristics__spec-value">
-                                            {/* TODO */}
-                                            {char.value.name} {char.value.unit_type}
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-
-            <div>
-                <button 
-                    {...getToggleProps({
-                        onClick: () => setExpanded((prevExpanded) => !prevExpanded),
-                    })}
-                    className="px-3 py-1 border border-slate-300 rounded-lg mt-5 d-flex items-center flex">
-                    {isExpanded ? 'Скрыть все' : 'Показать все'}
-                    <ChevronDownIcon
-                        className={`h-4 w-4 ml-2 transform ${isExpanded ? "rotate-180" : ""}`}
-                    />
-                </button>
-            </div>
             
+            </div>
+
         </div>
     );
 }
+
 
 const ImageSlider = ({images, productName}) => {
     const [fullSizeImage, setFullSizeImage] = useState(null);
@@ -393,58 +314,3 @@ const ImageFullSlider = ({ productName, images, selectedImage, handleCloseButton
 }
 
 
-class ImageGallery extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            containerWidth: 0,
-            imagePerRow: 0,
-        };
-        this.blockWidth = React.createRef();
-        this.buttonRef = React.createRef();
-    }
-
-    componentDidMount() {
-        this.updateContainerWidth();
-        window.addEventListener('resize', this.updateContainerWidth);
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.updateContainerWidth);
-    }
-
-    updateContainerWidth = () => {
-        const blockWidth = this.blockWidth.current.clientWidth;
-        const buttonWidth = this.buttonRef.current.clientWidth + 16;
-        const containWidth = blockWidth - buttonWidth;
-        const imageWidth = 112;
-        const imagesPerRow = Math.floor(containWidth / imageWidth);
-        this.setState({ containWidth, imagesPerRow });
-    };
-
-    render() {
-        const { images } = this.props;
-        const { imagesPerRow } = this.state;
-
-        return (
-            <div className="m-2 flex items-center h-24" ref={this.blockWidth}>
-                <div className="flex">
-                    {images.map((image, index) => (
-                        index < imagesPerRow && (
-                            <img
-                                key={index}
-                                src={`/reviews_images/image_thumbnail/${image.image_url_thumbnail}`}
-                                alt={image.image_url_thumbnail}
-                                width={96}
-                                className="object-contain cursor-zoom-in rounded-lg m-2 border hover:brightness-125"
-                            />
-                        )
-                    ))}
-                </div>
-
-                <button className="rounded-lg h-full w-24 bg-slate-200 m-2" ref={this.buttonRef}>
-                    <p>Всего</p> {images.length}</button>
-            </div>
-        );
-    }
-}

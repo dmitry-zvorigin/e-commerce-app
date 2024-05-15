@@ -1,3 +1,4 @@
+import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
 import { Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
@@ -167,8 +168,8 @@ export default function Filt({ values, setValues, setShowFilters, reset }) {
         }
 
         const buttonLeft = labelRect.right + window.scrollX + 10; // Добавляем 10 пикселей отступа
-        const buttonTop = labelRect.top + window.scrollY + (labelRect.height / 2) - 385; // Позиционируем по середине метки
-
+        const buttonTop = labelRect.top + window.scrollY + (labelRect.height / 2) - 350; // Позиционируем по середине метки
+        // 385
         setLastClickedValue({
             position: {
                 left: buttonLeft,
@@ -452,7 +453,9 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                         <label 
                                             htmlFor={value.id} 
                                             key={value.id} 
-                                            className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
+                                            className={
+                                                `flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`
+                                            }
                                         >
                                             <input 
                                                 name={filter.attribute.slug}
@@ -465,6 +468,7 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                                 // onClick={() => handleValueClick(value.id)}
                                                 onClick={handleValueClick}
                                             />
+
                                             <span className="ml-2 text-sm text-gray-600 flex ">
                                                 <p>{value.name}</p>
                                                 {value.product_characteristics_count > 0 && (
@@ -473,31 +477,6 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                             </span>
                                         </label>
                                     ))}
-                                    {/* {filteredValues.map((value, index) => (
-                                        <label 
-                                            htmlFor={value.id} 
-                                            key={value.id} 
-                                            className={`flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`}
-                                        >
-                                            <input 
-                                                name={filter.attribute.slug}
-                                                value={value.id}
-                                                id={value.id}
-                                                checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
-                                                type="checkbox" 
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                                onChange={handleCheckboxChange}
-                                                // onClick={() => handleValueClick(value.id)}
-                                                onClick={handleValueClick}
-                                            />
-                                            <span className="ml-2 text-sm text-gray-600 flex ">
-                                                <p>{value.name}</p>
-                                                {value.product_count > 0 && (
-                                                    <p className="text-gray-400 ml-1">({value.product_count})</p>
-                                                )}
-                                            </span>
-                                        </label>
-                                    ))} */}
                                 </div>
 
                                 <div className="flex justify-between items-center">

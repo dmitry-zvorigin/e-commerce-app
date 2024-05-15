@@ -10,7 +10,7 @@ export default function Categories({ categories, breadcrumbs, categories_menu })
     return (
         <DefaultLayout categories_menu={categories_menu}>
          <div className="bg-white">
-            <div className="max-w-full py-16 sm:py-24 lg:max-w-7xl">
+            <div className="max-w-full py-16">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h2 className="text-4xl font-bold tracking-tight text-gray-900">{categories.name}</h2>
         
