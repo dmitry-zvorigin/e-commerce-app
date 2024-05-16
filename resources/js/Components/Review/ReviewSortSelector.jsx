@@ -3,7 +3,7 @@ import Order from "./Order";
 import Filter from "./Filter";
 import RatingFilter from "./RatingFilter";
 
-export default function ReviewSortSelector({}) {
+export default function ReviewSortSelector({ ratingsGroups }) {
 
     return (
         <div className="border rounded-lg mt-5">
@@ -31,7 +31,7 @@ export default function ReviewSortSelector({}) {
             </div>
 
 
-            <RatingFilter/>
+            <RatingFilter ratingsGroups={ratingsGroups}/>
 
 
         </div>

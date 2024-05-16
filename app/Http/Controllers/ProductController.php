@@ -119,26 +119,52 @@ class ProductController extends Controller
 
     public function reviews($productSlug)
     {
+        // Категории для меню
         $categoriesMenu = Category::get()->toTree();
 
+        // Получаем продукт
         $product = Product::where('slug', $productSlug)
-            ->with('images', 'reviews', 'reviews.rating', 'reviews.options', 'reviews.images', 
-            'reviews.user', 'reviews.usageTerm', 'reviews.likes', 'reviews.dislikes')
+            ->with('images')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->first();
-
+        
+        // Хлебные крошки
         $breadcrumbs = Breadcrumbs::generate('productReviews', $product);
 
+        // Получаем отзывы
+        $reviews = $product->reviews()
+            ->with('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes')
+            ->paginate(5); 
+
+        // Получить все изображения у отзывов
         $reviewsImages = $product->reviews->flatMap(function ($review) {
             return $review->images;
         });
 
+        // Получаем самый популярый отзыв
         $popularReview = $product->popularReview();
 
         if ($popularReview) {
             $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
         }
+
+        // Получить рейтинг и их количество
+        $ratingsGroups = $product->ratings->groupBy('rating_value')->map(function ($group) {
+            return $group->count();
+        })->toArray();
+
+        $product = Product::where('slug', $productSlug)->with(['reviews.options.option'])->first();
+
+        $additionalAssessments = $product->reviews->flatMap->options->groupBy('option_id');
+
+        $averageRatings = $additionalAssessments->map(function ($assessments) {
+            return [
+                'title' => $assessments->first()->options->title,
+                'average_rating' => $assessments->avg('rating_value')
+            ];
+        });
+        dd($averageRatings->toArray());
 
         return Inertia::render('ProductReviews', [
             'product' => $product,
@@ -146,7 +172,8 @@ class ProductController extends Controller
             'breadcrumbs' => $breadcrumbs,
             'reviewImages' => $reviewsImages,
             'popularReview' => $popularReview,
-
+            'reviews' => $reviews,
+            'ratingsGroups' => $ratingsGroups,
         ]);
     }
 

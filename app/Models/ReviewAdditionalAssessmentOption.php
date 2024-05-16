@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ReviewAdditionalAssessmentOption extends Model
 {
@@ -12,6 +13,11 @@ class ReviewAdditionalAssessmentOption extends Model
 
     public function assessment() : BelongsTo
     {
-        return $this->belongsTo(ReviewAdditionalAssessment::class, 'additional_assessment_id');
+        return $this->belongsTo(ReviewAdditionalAssessment::class, 'option_id');
+    }
+
+    public function ratings() : HasMany
+    {
+        return $this->hasMany(ReviewAdditionalAssessmentRating::class, 'option_id');
     }
 }

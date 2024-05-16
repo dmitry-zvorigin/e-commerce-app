@@ -63,4 +63,9 @@ class Review extends Model
                 )
         ->withPivot('rating_value', 'order');
     }
+
+    public function additionalAssessments() : HasMany
+    {
+        return $this->hasMany(ReviewAdditionalAssessmentRating::class, 'review_id');
+    }
 }

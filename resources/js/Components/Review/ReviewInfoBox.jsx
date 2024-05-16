@@ -2,8 +2,9 @@ import Rating from "@/MyComponents/Rating";
 import ProductImageGallery from "../Product/ProductImageGallery";
 import ProgressBar from "./ProgressBar";
 
-export default function ReviewInfoBox({ name, rating, ratingCount, images }) {
+export default function ReviewInfoBox({ name, rating, ratingCount, images, ratingsGroups }) {
 
+    // console.log(ratingsGroups);
     return (
         <div className="border rounded-lg p-5">
             <h1 className="text-2xl font-bold">
@@ -16,7 +17,7 @@ export default function ReviewInfoBox({ name, rating, ratingCount, images }) {
                     <p className="text-slate-400">{ratingCount} отзывов</p>
                 </div>
                 <div>
-                    <ProgressBar/>
+                    <ProgressBar ratingsGroups={ratingsGroups}/>
                 </div>
                 <div>
                     <h1>Есть что рассказать?</h1>

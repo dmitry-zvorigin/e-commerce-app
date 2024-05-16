@@ -13,7 +13,7 @@ class ReviewAdditionalAssessment extends Model
 
     public function options() : HasMany
     {
-        return $this->hasMany(ReviewAdditionalAssessmentOption::class);
+        return $this->hasMany(ReviewAdditionalAssessmentOption::class, 'option_id');
     }
 
     public function ratings() : BelongsToMany

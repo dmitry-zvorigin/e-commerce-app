@@ -1,4 +1,4 @@
-export default function ButtonCheckbox({}) {
+export default function ButtonCheckbox({ disabled }) {
 
     return (
         <input 
@@ -11,6 +11,7 @@ export default function ButtonCheckbox({}) {
             focus:ring-0
             mr-1
             "
+            disabled={disabled}
         />
     );
 }

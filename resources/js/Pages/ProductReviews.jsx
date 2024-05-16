@@ -1,17 +1,17 @@
 import Breadcrumbs from "@/Components/Breadcrumbs";
+import Pagination from "@/Components/Pagination";
 import ProductCard from "@/Components/Product/ProductCard";
-import ProductCharacteristics from "@/Components/Product/ProductCharacteristics";
-import ProductDescription from "@/Components/Product/ProductDescription";
 import ReviewCard from "@/Components/Review/ReviewCard";
 import ReviewInfoBox from "@/Components/Review/ReviewInfoBox";
-import ReviewPopular from "@/Components/Review/ReviewPopular";
 import ReviewSortSelector from "@/Components/Review/ReviewSortSelector";
 import ReviewsAll from "@/Components/Review/ReviewsAll";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 
-export default function ProductReviews({ categories_menu, breadcrumbs, product, groupedCharacteristics, popularReview, reviewImages, reviews }) {
+export default function ProductReviews({ categories_menu, breadcrumbs, product, popularReview, reviewImages, reviews, ratingsGroups }) {
 
-    console.log(product);
+    // console.log(product);
+    // console.log(reviews);
+    // console.log(ratingsGroups);
     return (
         <>
             <DefaultLayout categories_menu={categories_menu}>
@@ -31,20 +31,17 @@ export default function ProductReviews({ categories_menu, breadcrumbs, product, 
                                 <h2>Отзывы {product.ratings_count}</h2>
                             </div>
                         </div>
-                        {/* <div className="w-full">
-                            <ProductCharacteristics productName={product.name} characteristics={groupedCharacteristics} />
-                            <ProductDescription description={product.description} />
-                            <ReviewPopular review={popularReview} />
-                        </div> */}
+
                         <div className="w-full">
                             <ReviewInfoBox 
                                 name={product.name} 
                                 rating={product.ratings_avg_rating_value} 
                                 ratingCount={product.ratings_count} 
                                 images={reviewImages}
+                                ratingsGroups={ratingsGroups}
                             />
 
-                            <ReviewSortSelector/>
+                            <ReviewSortSelector ratingsGroups={ratingsGroups}/>
 
                             <div className="w-full p-2 mt-5">
                                 <div className="flex justify-between items-center">
@@ -54,10 +51,18 @@ export default function ProductReviews({ categories_menu, breadcrumbs, product, 
                                 <hr/>
                             </div>	     
 
-                            <ReviewsAll reviews={product.reviews} />
+                            <ReviewsAll reviews={reviews.data} />
 
-                            <div>Show All</div>
-                            <div>Paginate</div>
+                            <div className="my-5">
+                                <button 
+                                    className="border rounded-lg w-full h-full justify-center items-center bg-gray-200 p-2 hover:bg-gray-300"
+                                >
+                                    Показать еще
+                                </button>
+                            </div>
+                            <div>
+                                <Pagination products={reviews}/>
+                            </div>
                         </div>
                     </div>
 
