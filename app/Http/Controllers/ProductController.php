@@ -154,17 +154,15 @@ class ProductController extends Controller
             return $group->count();
         })->toArray();
 
-        $product = Product::where('slug', $productSlug)->with(['reviews.options.option'])->first();
+        // Получаем дополнительне опции и их средний рейтинг
+        $additionalAssessments = $product->reviews->flatMap->additionalAssessments->groupBy('option_id');
 
-        $additionalAssessments = $product->reviews->flatMap->options->groupBy('option_id');
-
-        $averageRatings = $additionalAssessments->map(function ($assessments) {
+        $averageOptionRatings = $additionalAssessments->map(function ($assessments) {
             return [
-                'title' => $assessments->first()->options->title,
+                'title' => $assessments->first()->option->title,
                 'average_rating' => $assessments->avg('rating_value')
             ];
         });
-        dd($averageRatings->toArray());
 
         return Inertia::render('ProductReviews', [
             'product' => $product,
@@ -174,6 +172,7 @@ class ProductController extends Controller
             'popularReview' => $popularReview,
             'reviews' => $reviews,
             'ratingsGroups' => $ratingsGroups,
+            'averageOptionRatings' => $averageOptionRatings,
         ]);
     }
 

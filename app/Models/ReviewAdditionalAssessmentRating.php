@@ -17,6 +17,6 @@ class ReviewAdditionalAssessmentRating extends Model
 
     public function option() : BelongsTo
     {
-        return $this->belongsTo(ReviewAdditionalAssessmentOption::class, 'option_id');
+        return $this->belongsTo(ReviewAdditionalAssessment::class, 'option_id');
     }
 }

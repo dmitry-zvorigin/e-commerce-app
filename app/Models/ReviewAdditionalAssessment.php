@@ -18,7 +18,7 @@ class ReviewAdditionalAssessment extends Model
 
     public function ratings() : BelongsToMany
     {
-        return $this->belongsToMany(Review::class, 'review_additional_assessment_ratings', 'additional_assessment_id', 'review_id')
+        return $this->belongsToMany(Review::class, 'review_additional_assessment_ratings', 'option_id', 'review_id')
             ->withPivot('rating_value', 'order');
     }
 }

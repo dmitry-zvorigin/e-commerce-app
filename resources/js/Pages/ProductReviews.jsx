@@ -7,7 +7,9 @@ import ReviewSortSelector from "@/Components/Review/ReviewSortSelector";
 import ReviewsAll from "@/Components/Review/ReviewsAll";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 
-export default function ProductReviews({ categories_menu, breadcrumbs, product, popularReview, reviewImages, reviews, ratingsGroups }) {
+export default function ProductReviews({ 
+    categories_menu, breadcrumbs, product, popularReview, reviewImages, reviews, ratingsGroups, averageOptionRatings 
+}) {
 
     // console.log(product);
     // console.log(reviews);
@@ -39,6 +41,7 @@ export default function ProductReviews({ categories_menu, breadcrumbs, product, 
                                 ratingCount={product.ratings_count} 
                                 images={reviewImages}
                                 ratingsGroups={ratingsGroups}
+                                averageOptionRatings={averageOptionRatings}
                             />
 
                             <ReviewSortSelector ratingsGroups={ratingsGroups}/>

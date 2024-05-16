@@ -1,8 +1,9 @@
 import Rating from "@/MyComponents/Rating";
 import ProductImageGallery from "../Product/ProductImageGallery";
 import ProgressBar from "./ProgressBar";
+import OptionsAverage from "./OptionsAverage";
 
-export default function ReviewInfoBox({ name, rating, ratingCount, images, ratingsGroups }) {
+export default function ReviewInfoBox({ name, rating, ratingCount, images, ratingsGroups, averageOptionRatings }) {
 
     // console.log(ratingsGroups);
     return (
@@ -30,26 +31,7 @@ export default function ReviewInfoBox({ name, rating, ratingCount, images, ratin
                 </div>
             </div>
             <div className="flex flex-wrap gap-2 mb-5 mt-5">
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex">
-                    <h1>Производительность:</h1>
-                    <p className="font-bold">4.9</p>
-                </div>
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex">
-                    <h1>Энергопотребление:</h1>
-                    <p className="font-bold">4.8</p>
-                </div>
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex">
-                    <h1>Эффективность системы охлаждения:</h1>
-                    <p className="font-bold">4.9</p>
-                </div>
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex">
-                    <h1>Уровень шума:</h1>
-                    <p className="font-bold">4.6</p>
-                </div>
-                <div className="border p-1 border-gray-100 rounded-lg bg-gray-100 flex">
-                    <h1>Внешний вид:</h1>
-                    <p className="font-bold">4.8</p>
-                </div>
+                <OptionsAverage averageOptionRatings={averageOptionRatings} />
             </div>
             <div>
                 <ProductImageGallery images={images}/>
