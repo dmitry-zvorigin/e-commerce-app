@@ -2,37 +2,30 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Order from "./Order";
 import Filter from "./Filter";
 import RatingFilter from "./RatingFilter";
+import { useState } from "react";
+import Search from "./Search";
 
-export default function ReviewSortSelector({ ratingsGroups }) {
+export default function ReviewSortSelector({ ratingsGroups, filters, onFilterChange }) {
 
     return (
         <div className="border rounded-lg mt-5">
 
             <div className="flex justify-between items-center">
-                <div 
-                    className='w-full h-full flex border border-white rounded-lg 
-                    hover:border hover:border-slate-400 hover:shadow-lg 
-                    focus-within:border-slate-400 focus-within:shadow-lg m-5 bg-gray-100'
-                >
-                    <input 
-                        className='w-full h-full ml-2 focus:outline-none border-none focus:ring-0 focus:border-none bg-gray-100'
-                        placeholder='Поиск по отзывам...'
-                    />
-                    <button><MagnifyingGlassIcon className='w-6 mr-2 ml-2 text-gray-400'/></button>
+
+                <div className="m-5 w-full">
+                    <Search filters={filters} onFilterChange={onFilterChange}/>
                 </div>
 
                 <div className="m-5">
-                    <Order/>
+                    <Order filters={filters} onFilterChange={onFilterChange}/>
                 </div>
 
                 <div className="m-5">
-                    <Filter/>
+                    <Filter filters={filters} onFilterChange={onFilterChange} />
                 </div>
             </div>
 
-
-            <RatingFilter ratingsGroups={ratingsGroups}/>
-
+            <RatingFilter filters={filters} ratingsGroups={ratingsGroups} onFilterChange={onFilterChange}/>
 
         </div>
     );

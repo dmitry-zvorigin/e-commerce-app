@@ -1,7 +1,11 @@
-export default function ButtonSwitch({ enabled, setEnabled }) {
+export default function ButtonSwitch({ enabled = false, onToggle  }) {
 
     return (
-        <div className="inline-flex relative items-center mr-5 cursor-pointer" >
+        <div className="inline-flex relative items-center mr-5 cursor-pointer" onClick={(e) => {            
+            e.stopPropagation();
+            onToggle();
+            }} 
+        >
             <input
                 type="checkbox"
                 className="sr-only peer"
@@ -9,10 +13,10 @@ export default function ButtonSwitch({ enabled, setEnabled }) {
                 readOnly
             />
             <label
-                onClick={(e) => {
-                    e.stopPropagation();
-                    setEnabled(!enabled);
-                }}
+                // onClick={(e) => {
+                //     e.stopPropagation();
+                //     setEnabled(!enabled);
+                // }}
                 className="w-11 h-6
                     bg-gray-200 rounded-full 
                     peer  

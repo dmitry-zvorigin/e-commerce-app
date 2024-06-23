@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Breadcrumbs\BreadcrumbsManager;
+use App\Http\Resources\ProductResource;
 use App\Models\AttributeGroup;
 use App\Models\AttributeGroupOrder;
 use App\Models\Category;
@@ -117,7 +118,7 @@ class ProductController extends Controller
         ]);
     }
 
-    public function reviews($productSlug)
+    public function reviews(Request $request, $productSlug)
     {
         // Категории для меню
         $categoriesMenu = Category::get()->toTree();
@@ -125,23 +126,41 @@ class ProductController extends Controller
         // Получаем продукт
         $product = Product::where('slug', $productSlug)
             ->with('images')
+            ->with('ratings')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
-            ->first();
-        
+            ->firstOrFail();
+
+        // dd($product->toArray());
         // Хлебные крошки
         $breadcrumbs = Breadcrumbs::generate('productReviews', $product);
 
-        // Получаем отзывы
+        // Параметры фильтрации и сортировки
+        $order = $request->input('order', '1');
+        $filterRealBuyer = $request->input('filter_real_buyer', false);
+        $filterWithPhoto = $request->input('filter_with_photo', false);
+        $filterRating = $request->input('filter_ratings', '');
+        $searchQuery = $request->input('search', '');
+
+        // Создаем запрос для получения отзывов
         $reviews = $product->reviews()
-            ->with('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes')
-            ->paginate(5); 
+            ->with(
+                'rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes', 
+                'comments.user', 'comments.replies.user', 'comments.replies.userReply' 
+                )
+            ->filterRealBuyer($filterRealBuyer)
+            ->filterWithPhoto($filterWithPhoto)
+            ->filterRatings($filterRating)
+            ->search($searchQuery)
+            ->sortOrder($order)
+            ->paginate(5);
 
         // Получить все изображения у отзывов
-        $reviewsImages = $product->reviews->flatMap(function ($review) {
+        $reviewsImages = $reviews->flatMap(function ($review) {
             return $review->images;
         });
 
+    
         // Получаем самый популярый отзыв
         $popularReview = $product->popularReview();
 
@@ -164,6 +183,9 @@ class ProductController extends Controller
             ];
         });
 
+        // dd($reviews->items()[0]->comments->toArray()[0]);
+        // dd($reviews->items()[4]->comments->toArray());
+
         return Inertia::render('ProductReviews', [
             'product' => $product,
             'categories_menu' => $categoriesMenu,
@@ -175,6 +197,7 @@ class ProductController extends Controller
             'averageOptionRatings' => $averageOptionRatings,
         ]);
     }
+
 
     public function test() 
     {

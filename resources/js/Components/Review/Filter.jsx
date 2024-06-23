@@ -2,31 +2,32 @@ import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { Listbox } from '@headlessui/react'
 import ButtonSwitch from "@/MyComponents/ButtonSwitch";
-
+import { useEffect } from "react";
 
 const FilterOptions = [
-    { key: 'filter', name: 'Реальный покупатель', value: false },
-    { key: 'filter', name: 'С фото', value: false },
+    { name: 'Реальный покупатель', key: 'filter_real_buyer' },
+    { name: 'С фото', key: 'filter_with_photo' },
 ];
 
-export default function Filter({}) {
+export default function Filter({ filters, onFilterChange }) {
 
-    function handleOrderChange(e) {
-        e.preventDefault();
-    }
+    const [enabled, setEnabled] = useState({
+        filter_real_buyer: filters.filter_real_buyer || false,
+        filter_with_photo: filters.filter_with_photo || false,
+    });
 
-    const [enabled, setEnabled] = useState(Array(FilterOptions.length).fill(false));
-
-    const toggleEnabled = (index) => {
-        let newEnabled = [...enabled];
-        newEnabled[index] = !newEnabled[index];
+    const toggleEnabled = (key) => {
+        const newEnabled = { ...enabled, [key]: !enabled[key] };
         setEnabled(newEnabled);
+        
+        const newFilters = { ...filters, [key]: newEnabled[key] };
+        onFilterChange(newFilters);
     };
 
     return (
         <>
 
-        <Listbox as='div' className='relative' onChange={handleOrderChange}>
+        <Listbox as='div' className='relative'>
 
             <Listbox.Button className='flex items-center group justify-between bg-gray-100 p-2 rounded-lg hover:bg-gray-200'>
                 <AdjustmentsHorizontalIcon className="w-5 h-5 "/>
@@ -36,17 +37,18 @@ export default function Filter({}) {
                 {FilterOptions.map((option, index) => (
                     <Listbox.Option
                         key={index}
-                        name={option.key}
+                        name={option.name}
                         value={option}
-                        className={({ active }) =>
-                        `relative cursor-default select-none text-sm py-2`
-                      }
+                        className="relative cursor-default select-none text-sm py-2"
                     >
-                        <div className="flex justify-between cursor-pointer py-1 group" onClick={() => toggleEnabled(index)}>
+                        <div className="flex justify-between cursor-pointer py-1 group" onClick={(e) => {toggleEnabled(option.key), e.stopPropagation()}}>
                             <span className="ml-2 text-sm font-medium text-gray-900">
                                 {option.name}
                             </span>
-                            <ButtonSwitch enabled={enabled[index]} setEnabled={(value) => toggleEnabled(index)} />
+                            <ButtonSwitch 
+                                enabled={enabled[option.key]} 
+                                onToggle={() => toggleEnabled(option.key)} 
+                            />
                         </div>
                         
                     </Listbox.Option>

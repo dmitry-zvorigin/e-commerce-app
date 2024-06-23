@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Scopes\ReviewCountScope;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -13,6 +14,11 @@ use Spatie\Sluggable\SlugOptions;
 class Product extends Model
 {
     use HasFactory, HasSlug;
+
+    // protected static function booted()
+    // {
+    //     static::addGlobalScope(new ReviewCountScope);
+    // }
 
     public function category() : BelongsTo
     {

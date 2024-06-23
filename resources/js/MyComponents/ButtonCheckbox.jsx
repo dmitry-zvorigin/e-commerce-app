@@ -1,4 +1,4 @@
-export default function ButtonCheckbox({ disabled }) {
+export default function ButtonCheckbox({ disabled, checked, onChange }) {
 
     return (
         <input 
@@ -12,6 +12,8 @@ export default function ButtonCheckbox({ disabled }) {
             mr-1
             "
             disabled={disabled}
+            checked={checked}
+            onChange={onChange}
         />
     );
 }

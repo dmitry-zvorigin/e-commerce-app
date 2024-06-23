@@ -2,7 +2,7 @@ export default function ButtonSelect({ checked, onChange }) {
 
     return (
         <input
-            class="
+            className="
                 peer/draft cursor-pointer ml-2
                 checked:bg-orange-400
                 checked:hover:bg-orange-400 
@@ -16,7 +16,6 @@ export default function ButtonSelect({ checked, onChange }) {
                 active:ring-0
             " 
             type="radio" 
-            name="status" 
             checked={checked}
             onChange={onChange}
         />

@@ -48,7 +48,7 @@ export default function Product({ categories_menu, breadcrumbs, product, grouped
                                         hover:bg-gray-300
                                         "
                                         href={route('product.reviews', { productSlug: product.slug })}>
-                                            Все отзывы 576
+                                            Все отзывы {product.reviews_count}
                                 </InertiaLink>
                             </div>	
                         </div>

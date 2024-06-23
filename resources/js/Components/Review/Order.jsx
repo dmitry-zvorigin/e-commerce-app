@@ -3,21 +3,22 @@ import { Listbox } from '@headlessui/react'
 import ButtonSelect from "@/MyComponents/ButtonSelect";
 import { useState } from "react";
 
-
 const sortOptions = [
-    { key: 'order', name: 'По дате', value: '1' },
-    { key: 'order', name: 'По рейтингу', value: '2' },
-    { key: 'order', name: 'По популярности', value: '3' },
-    { key: 'order', name: 'По дате изменения', value: '4' },
+    { name: 'По дате', value: '1' },
+    { name: 'По рейтингу', value: '2' },
+    { name: 'По популярности', value: '3' },
+    { name: 'По дате изменения', value: '4' },
 ];
 
-export default function Order({}) {
+export default function Order({ filters, onFilterChange }) {
 
     const [selectedOption, setSelectedOption] = useState(sortOptions[0]);
 
-    function handleOrderChange(option) {
+    const handleOrderOptions = (option) => {
         setSelectedOption(option);
-    }
+        const newFilters = { ...filters, order: option.value }
+        onFilterChange(newFilters);
+    };
 
     return (
         <>
@@ -36,21 +37,19 @@ export default function Order({}) {
                 {sortOptions.map((option, index) => (
                     <Listbox.Option
                         key={index}
-                        name={option.key}
+                        name={option.name}
                         value={option}
-                        className={({ active }) =>
-                            `relative cursor-default select-none py-0 p-5 text-sm font-medium `
-                        }
+                        className="relative cursor-default select-none py-0 p-5 text-sm font-medium"
                     >
                         <div 
                             className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full hover:text-amber-900 hover:bg-gray-200" 
-                            onClick={() => handleOrderChange(option)}
+                            onClick={() => handleOrderOptions(option)}
                         >
                             <ButtonSelect
                                 checked={selectedOption.value === option.value}
-                                onChange={() => handleOrderChange(option)}
+                                onChange={() => handleOrderOptions(option)}
                             />
-                            <label for={index} class="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">{option.name}</label>
+                            <label className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">{option.name}</label>
                         </div>
                     </Listbox.Option>
                 ))}
