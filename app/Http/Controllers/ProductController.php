@@ -32,7 +32,7 @@ class ProductController extends Controller
         $categoriesMenu = Category::get()->toTree();
 
         $product = Product::where('slug', $productSlug)
-            ->with('images')
+            ->with('images', 'reviews.images')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->first();
@@ -125,8 +125,7 @@ class ProductController extends Controller
 
         // Получаем продукт
         $product = Product::where('slug', $productSlug)
-            ->with('images')
-            ->with('ratings')
+            ->with('images', 'ratings', 'reviews.additionalAssessments')
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->firstOrFail();

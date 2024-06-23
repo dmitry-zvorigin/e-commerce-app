@@ -58,7 +58,6 @@ class Review extends Model
         return $this->hasMany(ReviewReaction::class)->where('estimation', false);
     }
 
-
     public function getCreatedAtAttribute($value)
     {
         return date('d.m.Y', strtotime($value));
