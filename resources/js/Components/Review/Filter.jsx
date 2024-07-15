@@ -16,6 +16,13 @@ export default function Filter({ filters, onFilterChange }) {
         filter_with_photo: filters.filter_with_photo || false,
     });
 
+    useEffect(() => {
+        setEnabled({
+            filter_real_buyer: filters.filter_real_buyer || false,
+            filter_with_photo: filters.filter_with_photo || false,
+        });
+    }, [filters])
+
     const toggleEnabled = (key) => {
         const newEnabled = { ...enabled, [key]: !enabled[key] };
         setEnabled(newEnabled);

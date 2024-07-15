@@ -142,4 +142,20 @@ class Review extends Model
                 return $query->orderBy('created_at', 'desc');
         }
     }
+
+    public function scopeWithReviewsAllOptions(Builder $query)
+    {
+        return $query->with([
+            'rating', 
+            'options', 
+            'images', 
+            'user', 
+            'usageTerm', 
+            'likes', 
+            'dislikes', 
+            'comments.user', 
+            'comments.replies.user', 
+            'comments.replies.userReply' 
+        ]);
+    }
 }

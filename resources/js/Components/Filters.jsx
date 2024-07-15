@@ -84,7 +84,7 @@ export default function Filters() {
 
           <div className="lg:col-span-3">
             <ProductList products={products}/>
-            <Pagination products={products}/>
+            <Pagination data={products}/>
           </div>
             
         </div>

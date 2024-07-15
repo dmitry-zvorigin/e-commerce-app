@@ -5,10 +5,14 @@ export default function ReviewsAll({ reviews }) {
     // console.log(reviews);
     return (
         <div>
-            {reviews.map((review, index) => (
+            {reviews.map((review) => (
                 <div key={review.id}>
-                    <ReviewCard review={review} key={review.id} />
-                    <hr/>
+                    <div>
+                        <ReviewCard review={review} key={review.id} />
+                    </div>
+                    <div className="px-5">
+                        <hr/>
+                    </div>
                 </div>
             ))}
         </div>

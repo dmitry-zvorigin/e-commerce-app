@@ -1,10 +1,19 @@
 import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
 import Rating from "@/MyComponents/Rating";
+import { useEffect } from "react";
 import { useState } from "react";
 
 export default function RatingFilter({ filters, ratingsGroups, onFilterChange }) {
 
-    const [selectedRatings, setSelectedRatings] = useState(filters.filter_ratings || []);
+    // const [selectedRatings, setSelectedRatings] = useState(filters.filter_ratings || []);
+
+    const [selectedRatings, setSelectedRatings] = useState(filters.filter_ratings ? filters.filter_ratings.split(',').map(Number) : []);
+
+
+    // console.log(filters.filter_ratings.split(',').map(Number));
+    useEffect(() => {
+        setSelectedRatings(filters.filter_ratings ? filters.filter_ratings.split(',').map(Number) : []);
+    }, [filters]);
 
     const handleFilterRatings = (rating) => {
         let newSelectedRatings;
@@ -37,7 +46,7 @@ export default function RatingFilter({ filters, ratingsGroups, onFilterChange })
                         {/* Добавляем disabled для ButtonCheckbox */}
                         <ButtonCheckbox 
                             disabled={!ratingsGroups[rating]} 
-                            // checked={selectedRatings.includes(rating)}
+                            checked={selectedRatings.includes(rating)}
                             onChange={() => handleFilterRatings(rating)}
                         />
                         <Rating value={rating} max={rating} size="small"/>

@@ -2,6 +2,7 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { Listbox } from '@headlessui/react'
 import ButtonSelect from "@/MyComponents/ButtonSelect";
 import { useState } from "react";
+import { useEffect } from "react";
 
 const sortOptions = [
     { name: 'По дате', value: '1' },
@@ -13,6 +14,19 @@ const sortOptions = [
 export default function Order({ filters, onFilterChange }) {
 
     const [selectedOption, setSelectedOption] = useState(sortOptions[0]);
+
+    useEffect(() => {
+        if (filters.order) {
+            const currentOption = sortOptions.find(option => option.value === filters.order);
+            if (currentOption) {
+                setSelectedOption(currentOption);
+            } else {
+                setSelectedOption(sortOptions[0]);
+            }
+        } else {
+            setSelectedOption(sortOptions[0]);
+        }
+    }, [filters.order]);
 
     const handleOrderOptions = (option) => {
         setSelectedOption(option);

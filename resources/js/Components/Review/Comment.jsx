@@ -181,7 +181,7 @@ import { useCollapse } from "react-collapsed";
 export default function Comment({ comments }) {
 
     return (
-        <div className="">
+        <div className="ml-10">
             <Form />
             {comments && comments.map(comment => (
                 <CommentItem key={comment.id} comment={comment} />
@@ -257,7 +257,6 @@ const CommentDetail = ({ isReply, comment }) => {
                         {comment.user_reply.email}
                     </button>
                 )}
-                {/* <p className="text-gray-400 text-sm">7 июня 2024 г. 10:37</p> */}
                 <p className="text-gray-400 text-sm">{comment.created_at}</p>
             </div>
             <div className="my-2">
@@ -313,7 +312,7 @@ const ReactionButtons = ({ averageReactions }) => {
             <div className="flex items-center">
                 <button className="m-2"><HandThumbUpIcon className="h-5 w-5 hover:text-green-800" /></button>
                 <div
-                    className={`border border-gray-300 rounded-lg p-1 bg-gray-300 font-bold
+                    className={`border border-gray-300 rounded-lg px-3 bg-gray-300 font-bold
                     ${averageReactions < 0 ? 'text-red-600' : 'text-green-600'} 
                 `}
                 >

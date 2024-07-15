@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Scopes\ReviewCountScope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -54,6 +55,7 @@ class Product extends Model
     public function popularReview()
     {
         return $this->reviews()
+            ->with('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes')
             ->withCount([
                 'likes as likes_count',
                 'dislikes as dislikes_count',
@@ -64,5 +66,30 @@ class Product extends Model
             })
             ->first();
     }
+
+    public function scopeWithAllReviews(Builder $query)
+    {
+        return $query->with([
+            'images', 
+            'ratings', 
+            'reviews.additionalAssessments.option'
+        ]);
+    }
+
+    public function scopeWithAllReviewsAndImages(Builder $query)
+    {
+        return $query->with([
+            'images', 
+            'reviews.images'
+        ]);
+    }
+
+    public function scopeWithAggregateData(Builder $query)
+    {
+        return $query->withCount('ratings')
+            ->withAvg('ratings', 'rating_value');
+    }
+
+
 
 }

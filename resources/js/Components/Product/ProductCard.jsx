@@ -191,7 +191,7 @@ const ImageSlider = ({images, productName}) => {
 
 const ImageFullSlider = ({ productName, images, selectedImage, handleCloseButtonClick }) => {
 
-    console.log(selectedImage);
+    // console.log(selectedImage);
     const [selectedImageIndex, setSelectedImageIndex] = useState(images.findIndex(img => img === selectedImage));
 
     const handlePreviousImage = () => {
