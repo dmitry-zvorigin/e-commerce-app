@@ -1,5 +1,5 @@
 import Breadcrumbs from "@/Components/Breadcrumbs";
-import Filters from "@/Components/Filters";
+import ProductControls from "@/Components/Catalog/ProductControls";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { declineProductCount } from "@/helpers";
 
@@ -14,7 +14,7 @@ export default function Products({ breadcrumbs, category, products, filters, fil
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
                         {category.name} {declineProductCount(products.total)}
                     </h2>
-                    <Filters products={products} filters={filters} category={category} filters_query={filters_query} />
+                    <ProductControls products={products} filters={filters} category={category} filters_query={filters_query} />
                 </div>
             </div>
             </DefaultLayout>

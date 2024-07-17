@@ -1,14 +1,11 @@
 import { HeartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
-import { InertiaLink } from "@inertiajs/inertia-react";
+import { Link } from '@inertiajs/react'
 import { usePage } from "@inertiajs/react";
 import Rating from "@/MyComponents/Rating";
-
 
 export default function ProductList() {
 
     const { products } = usePage().props;
-
-	// console.log(products);
 
     return (
 		<div className="bg-white">
@@ -21,7 +18,7 @@ export default function ProductList() {
 							className="border border-slate-300 rounded-lg bg-white hover:drop-shadow-2xl p-3 group flex flex-col justify-between "
 						>
 							<div>
-							<InertiaLink
+							<Link
                                 className="font-bold mb-1" 
                                 href={route('product.show', { productSlug: product.slug })}
                             >
@@ -44,7 +41,7 @@ export default function ProductList() {
 											{product.name}
 										</h2>
 									</div>
-								</InertiaLink>
+								</Link>
 							</div>
 
 							<div>
@@ -68,10 +65,10 @@ export default function ProductList() {
 									</div>
 
 									<div className="ml-2 p-1 rounded-md flex bg-gray-100  items-center hover:bg-gray-200 cursor-pointer">
-										<InertiaLink className="flex" href={route('product.reviews', { productSlug: product.slug })}>
+										<Link className="flex" href={route('product.reviews', { productSlug: product.slug })}>
 											<Rating value={product.ratings_avg_rating_value} precision={0.1} size="small"/>
 											<p className="ml-1 mr-1 text-gray-600 text-sm">{product.ratings_count}</p>
-										</InertiaLink>
+										</Link>
 									</div>
 									
 								</div>

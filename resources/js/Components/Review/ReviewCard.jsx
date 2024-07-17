@@ -1,4 +1,3 @@
-
 import { ChevronDownIcon, HandThumbDownIcon, HandThumbUpIcon, ShoppingBagIcon, UserIcon } from "@heroicons/react/24/outline";
 import Rating from "@/MyComponents/Rating";
 import Comment from "./Comment";

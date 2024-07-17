@@ -1,5 +1,4 @@
 import { ChevronDoubleRightIcon, ChevronDoubleLeftIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid'
-import { InertiaLink } from '@inertiajs/inertia-react';
 import { usePage } from '@inertiajs/react';
 
 export default function Pagination({ data, onPageChange }) {

@@ -4,7 +4,7 @@ import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
 import { useEffect, useState } from "react";
 
-export default function Filt({ values, setValues, setShowFilters, reset }) {
+export default function Filters({ values, setValues, setShowFilters, reset }) {
 
     const { filters } = usePage().props;
     // console.log(filters);

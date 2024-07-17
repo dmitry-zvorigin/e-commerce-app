@@ -2,7 +2,7 @@ import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, HeartIcon } from "@
 import { useState } from "react";
 import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useEffect } from "react";
-import { InertiaLink } from "@inertiajs/inertia-react";
+import { Link } from '@inertiajs/react'
 import ProductImageGallery from "./ProductImageGallery";
 import Rating from "@/MyComponents/Rating";
 
@@ -43,12 +43,12 @@ export default function ProductCard({ product, reviewImages }) {
                             </div>
 
                             <div className="ml-2 p-1 rounded-md flex bg-gray-100 text-sm text-gray-600 items-center">
-                                <InertiaLink 
+                                <Link 
                                     className="flex" 
                                     href={route('product.reviews', { productSlug: product.slug })}>
                                     <Rating value={product.ratings_avg_rating_value} size={'small'} precision={0.1}/>
                                     <p className="ml-1 mr-1">{product.ratings_count}</p>
-                                </InertiaLink>
+                                </Link>
                             </div>
 
                         </div>
@@ -288,7 +288,10 @@ const ImageFullSlider = ({ productName, images, selectedImage, handleCloseButton
                             <div className="size-24" key={image.id}>
                                 <img
                                     key={image.id}
-                                    className={`cursor-pointer object-contain border rounded-lg w-full h-full ${image === images[selectedImageIndex] ? 'border-orange-400' : ''}`}
+                                    className={
+                                        `cursor-pointer object-contain border rounded-lg w-full h-full 
+                                        ${image === images[selectedImageIndex] ? 'border-orange-400' : ''}`
+                                    }
                                     src={`/products_images/image_thumbnail/${image.image_url_thumbnail}`}
                                     alt={productName}
                                     onClick={() => hadleOpenImage(image)}
