@@ -54,17 +54,31 @@ class Product extends Model
 
     public function popularReview()
     {
-        return $this->reviews()
-            ->with('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes')
-            ->withCount([
-                'likes as likes_count',
-                'dislikes as dislikes_count',
-            ])
-            ->get()
-            ->sortByDesc(function ($review) {
+        // return $this->reviews()
+        //     ->with('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes')
+        //     ->withCount([
+        //         'likes as likes_count',
+        //         'dislikes as dislikes_count',
+        //     ])
+        //     ->get()
+        //     ->sortByDesc(function ($review) {
+        //         return $review->likes_count - $review->dislikes_count;
+        //     })
+        //     ->first();
+
+            $reviews = $this->reviews()
+                ->withCount(['likes as likes_count', 'dislikes as dislikes_count'])
+                ->get();
+
+            $popularReview = $reviews->sortByDesc(function ($review) {
                 return $review->likes_count - $review->dislikes_count;
-            })
-            ->first();
+            })->first();
+
+            if ($popularReview) {
+                $popularReview->load('rating', 'options', 'images', 'user', 'usageTerm', 'likes', 'dislikes');
+            }
+
+            return $popularReview;
     }
 
     public function scopeWithAllReviews(Builder $query)
@@ -72,9 +86,23 @@ class Product extends Model
         return $query->with([
             'images', 
             'ratings', 
-            'reviews.additionalAssessments.option'
+            'reviews.additionalAssessments.option',
         ]);
     }
+
+    public function getAllReviewImages()
+    {
+        return $this->reviews()->with('images')->get()->flatMap(function ($review) {
+            return $review->images;
+        });
+    }
+
+    // public function scopeWithAllReviewsImages(Builder $query)
+    // {
+    //     return $query->with([
+    //         'reviews.images',
+    //     ]);
+    // }
 
     public function scopeWithAllReviewsAndImages(Builder $query)
     {

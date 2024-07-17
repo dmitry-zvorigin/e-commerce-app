@@ -3,17 +3,15 @@ import ProductCard from "@/Components/Product/ProductCard";
 import ProductCharacteristics from "@/Components/Product/ProductCharacteristics";
 import ProductDescription from "@/Components/Product/ProductDescription";
 import ReviewCard from "@/Components/Review/ReviewCard";
-import ReviewPopular from "@/Components/Review/ReviewPopular";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { InertiaLink } from "@inertiajs/inertia-react";
 
-export default function Product({ categories_menu, breadcrumbs, product, groupedCharacteristics, popularReview, reviewImages }) {
+export default function Product({ breadcrumbs, product, groupedCharacteristics, popularReview, reviewImages }) {
 
     return (
-        <>
-            <DefaultLayout categories_menu={categories_menu}>
+        <DefaultLayout>
             <div className="bg-white">
-                <div className="max-w-full py-16">
+                <div className="max-w-full mb-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
                         {product.name}
@@ -48,7 +46,7 @@ export default function Product({ categories_menu, breadcrumbs, product, grouped
                                         hover:bg-gray-300
                                         "
                                         href={route('product.reviews', { productSlug: product.slug })}>
-                                            Все отзывы {product.reviews_count}
+                                            Все отзывы {product.ratings_count}
                                 </InertiaLink>
                             </div>	
                         </div>
@@ -58,8 +56,7 @@ export default function Product({ categories_menu, breadcrumbs, product, grouped
 
                 </div>
             </div>
-            </DefaultLayout>
-        </>
+        </DefaultLayout>
     );
 
 }

@@ -34,15 +34,12 @@ class CategoryController extends Controller
     public function catalog() 
     {
         $categories = Category::whereNull('parent_id')->with('children', 'images')->get();
-
-        $categoriesMenu = Category::get()->toTree();
         
         $breadcrumbs = Breadcrumbs::generate('catalog');
 
         return Inertia::render('Catalog', [
             'categories' => $categories, 
             'breadcrumbs' => $breadcrumbs, 
-            'categories_menu' => $categoriesMenu
         ]);
     }
 
@@ -212,30 +209,28 @@ class CategoryController extends Controller
     public function categories($categorySlug, Request $request)
     {
         $category = Category::where('slug', $categorySlug)->first();
-        $categoriesMenu = Category::get()->toTree();
 
         $result = Category::ancestorsAndSelf($category->id);
         $breadcrumbs = Breadcrumbs::generate('categories', $result);
 
         if ($category->is_final) {
-            return $this->renderProductsView($category, $request, $breadcrumbs, $categoriesMenu);
+            return $this->renderProductsView($category, $request, $breadcrumbs);
         } else {
-            return $this->renderCategoryView($category, $breadcrumbs, $categoriesMenu);
+            return $this->renderCategoryView($category, $breadcrumbs);
         }
     }
 
-    protected function renderCategoryView(Category $category, $breadcrumbs, $categoriesMenu)
+    protected function renderCategoryView(Category $category, $breadcrumbs)
     {
         $categories = $category->load('children.images');
 
         return Inertia::render('Categories', [
             'categories' => $categories, 
             'breadcrumbs' => $breadcrumbs, 
-            'categories_menu' => $categoriesMenu
         ]);
     }
 
-    protected function renderProductsView(Category $category, Request $request, $breadcrumbs, $categoriesMenu)
+    protected function renderProductsView(Category $category, Request $request, $breadcrumbs)
     {
         // Формируем request, разделяем его на значения
         $filtersQuery = [];
@@ -295,7 +290,6 @@ class CategoryController extends Controller
         return Inertia::render('Products', [
             'category' => $category, 
             'products' => $products, 
-            'categories_menu' => $categoriesMenu, 
             'breadcrumbs' => $breadcrumbs,
             'filters' => $filters,
             'filters_query' => $filtersQuery,

@@ -1,8 +1,8 @@
 import DefaultLayout from "@/Layouts/DefaultLayout";
 
-const Cart = ({ categories }) => {
+const Cart = ({  }) => {
     return (
-        <DefaultLayout categories={categories}>
+        <DefaultLayout>
             Корзина
         </DefaultLayout>
     );

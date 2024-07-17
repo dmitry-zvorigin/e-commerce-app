@@ -48,4 +48,13 @@ class BreadcrumbsManager
             $trail->push('Отзывы');
         });
     }
+
+    public static function registerProductCharacteristics()
+    {
+        Breadcrumbs::for('productCharacteristics', function($trail, $product) {
+            Breadcrumbs::generate('product', $product, $trail);
+
+            $trail->push('Характеристики');
+        });
+    }
 }

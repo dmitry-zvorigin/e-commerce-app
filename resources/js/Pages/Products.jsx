@@ -3,13 +3,13 @@ import Filters from "@/Components/Filters";
 import DefaultLayout from "@/Layouts/DefaultLayout";
 import { declineProductCount } from "@/helpers";
 
-export default function Products({ categories_menu, breadcrumbs, category, products, filters, filters_query }) {
+export default function Products({ breadcrumbs, category, products, filters, filters_query }) {
 
     return (
         <>
-            <DefaultLayout categories_menu={categories_menu}>
+            <DefaultLayout>
             <div className="bg-white">
-                <div className="max-w-full py-16">
+                <div className="max-w-full my-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
                         {category.name} {declineProductCount(products.total)}

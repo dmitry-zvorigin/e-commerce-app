@@ -1,16 +1,15 @@
 import Banners from "@/Components/Banners";
 import Breadcrumbs from "@/Components/Breadcrumbs";
 import DefaultLayout from "@/Layouts/DefaultLayout";
-import { InertiaLink } from "@inertiajs/inertia-react";
-import { useState } from "react";
+import { Link } from '@inertiajs/react'
 
-export default function Categories({ categories, breadcrumbs, categories_menu }) {
+export default function Categories({ categories, breadcrumbs }) {
 
 
     return (
-        <DefaultLayout categories_menu={categories_menu}>
+        <DefaultLayout>
          <div className="bg-white">
-            <div className="max-w-full py-16">
+            <div className="max-w-full my-8">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h2 className="text-4xl font-bold tracking-tight text-gray-900">{categories.name}</h2>
         
@@ -21,7 +20,7 @@ export default function Categories({ categories, breadcrumbs, categories_menu })
                             className="border border-slate-300 rounded-lg bg-white hover:drop-shadow-2xl"
                             key={category.id}
                         >
-                            <InertiaLink
+                            <Link
                                 className="font-bold mb-1" 
                                 href={route('categories', { categorySlug: category.slug })}
                             >
@@ -44,7 +43,7 @@ export default function Categories({ categories, breadcrumbs, categories_menu })
                                     </div>
 
                                 </div>
-                            </InertiaLink>
+                            </Link>
                         </div>
 
                     ))}

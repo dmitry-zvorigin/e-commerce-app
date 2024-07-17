@@ -12,8 +12,7 @@ import { useEffect } from "react";
 import { useState } from "react";
 import { useRef } from "react";
 
-export default function ProductReviews({ 
-    categories_menu, 
+export default function ProductReviews({  
     breadcrumbs, 
     product, popularReview, 
     reviewImages, 
@@ -85,43 +84,6 @@ export default function ProductReviews({
         });
     };
 
-
-    // const LoadMore = () => {
-    //     router.reload({
-    //         method: 'get',
-    //         preserveState: true,
-    //         preserveScroll: true,
-    //         data: { page: reviews.current_page + 1 },
-    //         onFinish: () => {
-    //             reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
-    //         },
-    //         only: ['reviews'],
-    //     });
-    // };
-
-    // const loadMore = () => {
-    //     if (loading) return;
-
-    //     const nextPage = currentPage + 1;
-
-    //     setLoading(true);
-
-    //     router.get(route('product.reviews', { productSlug: product.slug }), { ...filters, page: nextPage}, {
-    //         preserveState: true,
-    //         preserveScroll: true,
-    //         only: ['reviews'],
-    //         onSuccess: (page) => {
-    //             setCurrentReviews(prevReviews => [...prevReviews, ...page.props.reviews.data]);
-    //             setCurrentPage(page.props.reviews.current_page);
-    //             setLoading(false);
-    //         },
-    //         onError: () => setLoading(false),
-    //         // onFinish: () => {
-    //         //     reviewsRef.current.scrollIntoView({ behavior: 'smooth' });
-    //         // },
-    //     })
-    // }
-
     const loadMore = () => {
         if (loading) return;
 
@@ -191,9 +153,9 @@ export default function ProductReviews({
     return (
         
         <>
-            <DefaultLayout categories_menu={categories_menu}>
+            <DefaultLayout>
             <div className="bg-white">
-                <div className="max-w-full py-16">
+                <div className="max-w-full my-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">
                         {product.name}
@@ -229,53 +191,44 @@ export default function ProductReviews({
                                 </div>
 
                                 <div>
-                                    {/* {loading ? (
-                                        <div className="w-full p-2 mt-5 h-96">
-                                            <div className="flex justify-center items-center">
-                                                <div className="loader">Загрузка...</div>
+                                    <>
+                                        {enabledReviewPopular && (
+                                            <div>
+                                                <div className="w-full mt-5">
+                                                    <div className="flex justify-between items-center px-5">
+                                                        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Самый популярный отзыв</h2>
+                                                    </div>
+                                                    <ReviewCard review={popularReview}/>
+                                                </div>	
+                                                <div className="px-5">
+                                                    <hr/>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ) : ( */}
-                                        <>
-                                            {enabledReviewPopular && (
-                                                <div>
-                                                    <div className="w-full mt-5">
-                                                        <div className="flex justify-between items-center px-5">
-                                                            <h2 className="text-2xl font-bold tracking-tight text-gray-900">Самый популярный отзыв</h2>
-                                                        </div>
-                                                        <ReviewCard review={popularReview}/>
-                                                    </div>	
-                                                    <div className="px-5">
-                                                        <hr/>
-                                                    </div>
+
+                                        )}
+                
+                                        {currentReviews && currentReviews.length > 0 ? (
+                                            <ReviewsAll reviews={currentReviews} />
+                                        ) : (
+                                            <div>
+                                                <div className="flex flex-col justify-center items-center p-10">
+                                                    <h1 className="text-xl font-bold">Ничего не нашлось</h1>
+                                                    <p>Попробуйте изменить критерии поиска</p>
+                                                    <button 
+                                                        className="border py-2 px-5 rounded-lg mt-5"
+                                                        onClick={resetFilters}
+                                                    >
+                                                        Сбросить
+                                                    </button>
                                                 </div>
-
-                                            )}
-                    
-                                            {currentReviews && currentReviews.length > 0 ? (
-                                                <ReviewsAll reviews={currentReviews} />
-                                            ) : (
-                                                <div>
-                                                    <div className="flex flex-col justify-center items-center p-10">
-                                                        <h1 className="text-xl font-bold">Ничего не нашлось</h1>
-                                                        <p>Попробуйте изменить критерии поиска</p>
-                                                        <button 
-                                                            className="border py-2 px-5 rounded-lg mt-5"
-                                                            onClick={resetFilters}
-                                                        >
-                                                            Сбросить
-                                                        </button>
-                                                    </div>
-                                                    <div className="px-5">
-                                                        <hr/>
-                                                    </div>
+                                                <div className="px-5">
+                                                    <hr/>
                                                 </div>
+                                            </div>
 
-                                                
-                                            )}
-                                        </>
-
-                                    {/* )}  */}
+                                            
+                                        )}
+                                    </>
 
                                     {currentReviews.length > 0 && totalReviews > currentReviews.length && currentPage < Math.ceil(totalReviews / perPage) && (
                                         <div className="my-5 mx-5 h-10">

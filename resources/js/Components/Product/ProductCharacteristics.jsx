@@ -17,7 +17,7 @@ export default function ProductCharacteristics({ productName, characteristics })
                                 <h2 className="text-1xl font-bold tracking-tight text-gray-900">{groupName}</h2>
                                 {characteristics[groupName].map((char, index) => (
                                     <div className="product-characteristics__spec flex mt-2" key={index}>
-                                        <div className="product-characteristics__spec-title border-b w-96">
+                                        <div className="product-characteristics__spec-title border-b min-w-[500px]">
                                             {char.attribute.name}
                                         </div>
                                         <div className="product-characteristics__spec-value">
@@ -30,12 +30,12 @@ export default function ProductCharacteristics({ productName, characteristics })
                         ))}
                     </div>
 
-            <div>
+            <div className="pt-2">
                 <button 
                     {...getToggleProps({
                         onClick: () => setExpanded((prevExpanded) => !prevExpanded),
                     })}
-                    className="px-3 py-1 border border-slate-300 rounded-lg mt-5 d-flex items-center flex">
+                    className="px-3 py-1 border border-slate-300 rounded-lg  d-flex items-center flex">
                     {isExpanded ? 'Скрыть все' : 'Показать все'}
                     <ChevronDownIcon
                         className={`h-4 w-4 ml-2 transform ${isExpanded ? "rotate-180" : ""}`}

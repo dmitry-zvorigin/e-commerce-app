@@ -31,12 +31,19 @@ export default function Filter({ filters, onFilterChange }) {
         onFilterChange(newFilters);
     };
 
+    // Проверяем, есть ли хотя бы один активный фильтр
+    const hasActiveFilters = Object.values(enabled).some(value => value);
+
     return (
         <>
 
         <Listbox as='div' className='relative'>
 
-            <Listbox.Button className='flex items-center group justify-between bg-gray-100 p-2 rounded-lg hover:bg-gray-200'>
+            <Listbox.Button 
+                className={`flex items-center group justify-between p-2 
+                    rounded-lg hover:bg-gray-200 ${hasActiveFilters ? 'bg-orange-400 text-white' : 'bg-gray-100'}`
+                }
+            >
                 <AdjustmentsHorizontalIcon className="w-5 h-5 "/>
             </Listbox.Button>
         

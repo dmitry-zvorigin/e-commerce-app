@@ -27,12 +27,12 @@ Route::inertia('/', 'Home')->name('home');
 Route::inertia('/catalog', 'Catalog')->name('catalog');
 Route::get('catalog', [CategoryController::class, 'catalog'])->name('catalog');
 Route::get('catalog/{categorySlug}', [CategoryController::class, 'categories'])->name('categories');
+
 Route::get('product/{productSlug}', [ProductController::class, 'show'])->name('product.show');
 Route::get('product/{productSlug}/reviews', [ProductController::class, 'reviews'])->name('product.reviews');
+Route::get('product/{productSlug}/specifications', [ProductController::class, 'specifications'])->name('product.specifications');
 
-// Route::get('compare')->name('compare')->uses([CategoryController::class, 'test']);
-Route::get('/compare', [CategoryController::class, 'test'])->name('compare');
-// Route::inertia('/compare', 'Compare', ['str' => 'str'])->name('compare');
+Route::inertia('/compare', 'Compare')->name('compare');
 Route::inertia('/favorites', 'Favorites')->name('favorites');
 Route::inertia('/cart', 'Cart')->name('cart');
 Route::inertia('/user', 'User')->name('user');

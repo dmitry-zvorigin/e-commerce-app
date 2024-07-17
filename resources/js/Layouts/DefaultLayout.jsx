@@ -1,22 +1,22 @@
 import Banners from "@/Components/Banners";
 import Footer from "@/Components/Footer";
-import Navbar from "@/Test/Navbar";
+import Navbar from "@/Components/NavBar";
+import { usePage } from "@inertiajs/react";
 
-export default function ({ children, categories_menu }) {
+export default function ({ children }) {
+    const { categoriesMenu } = usePage().props;
 
     return (
-        <div>
+        <div className="flex flex-col min-h-screen">
             <Banners/>
             <header className="container mx-auto px-4">
-                <Navbar categoris_menu={categories_menu}/>
+                <Navbar categoris_menu={categoriesMenu}/>
             </header>
             <hr/>
-            <div className="container mx-auto px-4">
-                
+            <div className="container mx-auto px-4 flex-grow">
                 <main>{children}</main>
-
-                {/* <Footer/> */}
             </div>
+            <Footer/>
         </div>
     );
 }

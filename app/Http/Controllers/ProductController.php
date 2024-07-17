@@ -18,14 +18,111 @@ class ProductController extends Controller
         BreadcrumbsManager::registerCatagories();
         BreadcrumbsManager::registerProduct();
         BreadcrumbsManager::registerProductReviews();
+        BreadcrumbsManager::registerProductCharacteristics();
     }
 
 
+    // public function show(string $productSlug)
+    // {
+    //     // Категории для меню
+    //     $categoriesMenu = Category::get()->toTree();
+
+    //     // Получаем продукт
+    //     $product = Product::where('slug', $productSlug)
+    //         ->withAllReviewsAndImages()
+    //         ->withAggregateData()
+    //         ->firstOrFail();
+
+    //     // Хлебные крошки
+    //     $breadcrumbs = Breadcrumbs::generate('product', $product);
+        
+    //     // Получаем видимые характеристики продукта 
+    //     $groupedCharacteristics = ProductCharacteristic::getVisibleCharacteristics($product->id, $product->category_id);
+        
+    //     // Получаем самый популярый отзыв
+    //     $popularReview = $product->popularReview();
+
+    //     // Получить все изображения у отзывов
+    //     $reviewsImages = $product->reviews->flatMap(function ($review) {
+    //         return $review->images;
+    //     });
+
+    //     return Inertia::render('Product', [
+    //         'product' => $product, 
+    //         'categories_menu' => $categoriesMenu, 
+    //         'breadcrumbs' => $breadcrumbs,
+    //         'groupedCharacteristics' => $groupedCharacteristics,
+    //         'popularReview' => $popularReview,
+    //         'reviewImages' => $reviewsImages,
+    //     ]);
+    // }
+
+    // public function reviews(Request $request, string $productSlug)
+    // {
+    //     // Категории для меню
+    //     $categoriesMenu = Category::get()->toTree();
+
+    //     // Получаем продукт
+    //     $product = Product::where('slug', $productSlug)
+    //         ->withAllReviews()
+    //         ->withAggregateData()
+    //         ->firstOrFail();
+
+    //     // Хлебные крошки
+    //     $breadcrumbs = Breadcrumbs::generate('productReviews', $product);
+
+    //     // Параметры фильтрации и сортировки
+    //     $order = $request->input('order', '1');
+    //     $filterRealBuyer = $request->input('filter_real_buyer', false);
+    //     $filterWithPhoto = $request->input('filter_with_photo', false);
+    //     $filterRating = $request->input('filter_ratings', '');
+    //     $searchQuery = $request->input('search', '');
+
+    //     // Создаем запрос для получения отзывов
+    //     $reviews = $product->reviews()
+    //         ->withReviewsAllOptions()
+    //         ->filterRealBuyer($filterRealBuyer)
+    //         ->filterWithPhoto($filterWithPhoto)
+    //         ->filterRatings($filterRating)
+    //         ->search($searchQuery)
+    //         ->sortOrder($order)
+    //         ->paginate(5);
+
+    //     // Получить все изображения у отзывов
+    //     $reviewsImages = $product->getAllReviewImages();
+
+    //     // Получаем самый популярый отзыв
+    //     $popularReview = $product->popularReview();
+
+    //     // Получить рейтинг и их количество
+    //     $ratingsGroups = $product->ratings->groupBy('rating_value')->map(function ($group) {
+    //         return $group->count();
+    //     })->toArray();
+
+    //     // Получаем дополнительне опции и их средний рейтинг
+    //     $additionalAssessments = $product->reviews->flatMap->additionalAssessments->groupBy('option_id');
+    //     $averageOptionRatings = $additionalAssessments->map(function ($assessments) {
+    //         return [
+    //             'title' => $assessments->first()->option->title,
+    //             'average_rating' => $assessments->avg('rating_value')
+    //         ];
+    //     });
+
+    //     return Inertia::render('ProductReviews', [
+    //         'product' => $product,
+    //         'categories_menu' => $categoriesMenu,
+    //         'breadcrumbs' => $breadcrumbs,
+    //         'reviewImages' => $reviewsImages,
+    //         'popularReview' => $popularReview,
+    //         'reviews' => $reviews,
+    //         'ratingsGroups' => $ratingsGroups,
+    //         'averageOptionRatings' => $averageOptionRatings,
+    //         'request' => $request->all(),
+    //     ]);
+    // }
+
     public function show(string $productSlug)
     {
-        // Категории для меню
-        $categoriesMenu = Category::get()->toTree();
-
         // Получаем продукт
         $product = Product::where('slug', $productSlug)
             ->withAllReviewsAndImages()
@@ -38,29 +135,27 @@ class ProductController extends Controller
         // Получаем видимые характеристики продукта 
         $groupedCharacteristics = ProductCharacteristic::getVisibleCharacteristics($product->id, $product->category_id);
         
-        // Получаем самый популярый отзыв
-        $popularReview = $product->popularReview();
-
-        // Получить все изображения у отзывов
+        // Получить все изображения отзывов у продукта
         $reviewsImages = $product->reviews->flatMap(function ($review) {
             return $review->images;
         });
 
-        return Inertia::render('Product', [
-            'product' => $product, 
-            'categories_menu' => $categoriesMenu, 
+        // Получаем самый популярый отзыв
+        $popularReview = $product->popularReview();
+
+        return Inertia::render('ProductPage', [
+            'product' => $product,
             'breadcrumbs' => $breadcrumbs,
-            'groupedCharacteristics' => $groupedCharacteristics,
             'popularReview' => $popularReview,
             'reviewImages' => $reviewsImages,
+            'groupedCharacteristics' => $groupedCharacteristics,
+            'currentTab' => 'overview',
         ]);
+
     }
 
-    public function reviews(Request $request, string $productSlug)
+    public function reviews($productSlug, Request $request)
     {
-        // Категории для меню
-        $categoriesMenu = Category::get()->toTree();
-
         // Получаем продукт
         $product = Product::where('slug', $productSlug)
             ->withAllReviews()
@@ -88,9 +183,7 @@ class ProductController extends Controller
             ->paginate(5);
 
         // Получить все изображения у отзывов
-        $reviewsImages = $reviews->flatMap(function ($review) {
-            return $review->images;
-        });
+        $reviewsImages = $product->getAllReviewImages();
 
         // Получаем самый популярый отзыв
         $popularReview = $product->popularReview();
@@ -109,9 +202,8 @@ class ProductController extends Controller
             ];
         });
 
-        return Inertia::render('ProductReviews', [
+        return Inertia::render('ProductPage', [
             'product' => $product,
-            'categories_menu' => $categoriesMenu,
             'breadcrumbs' => $breadcrumbs,
             'reviewImages' => $reviewsImages,
             'popularReview' => $popularReview,
@@ -119,9 +211,38 @@ class ProductController extends Controller
             'ratingsGroups' => $ratingsGroups,
             'averageOptionRatings' => $averageOptionRatings,
             'request' => $request->all(),
+            'currentTab' => 'reviews',
         ]);
     }
 
+    public function specifications($productSlug)
+    {
+        // Получаем продукт
+        $product = Product::where('slug', $productSlug)
+            ->withAllReviewsAndImages()
+            ->withAggregateData()
+            ->firstOrFail();
+
+        // Хлебные крошки
+        $breadcrumbs = Breadcrumbs::generate('productCharacteristics', $product);
+        
+        // Получаем видимые характеристики продукта 
+        $groupedCharacteristics = ProductCharacteristic::getVisibleCharacteristics($product->id, $product->category_id);
+        
+        // Получить все изображения отзывов у продукта
+        $reviewsImages = $product->reviews->flatMap(function ($review) {
+            return $review->images;
+        });
+
+        return Inertia::render('ProductPage', [
+            'product' => $product,
+            'breadcrumbs' => $breadcrumbs,
+            'reviewImages' => $reviewsImages,
+            'groupedCharacteristics' => $groupedCharacteristics,
+            'currentTab' => 'specifications',
+        ]);
+
+    }
 
     public function test() 
     {

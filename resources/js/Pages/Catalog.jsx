@@ -1,16 +1,16 @@
 import Breadcrumbs from "@/Components/Breadcrumbs";
 import DefaultLayout from "@/Layouts/DefaultLayout";
-import { InertiaLink } from "@inertiajs/inertia-react";
+import { Link } from '@inertiajs/react'
 import { useState } from "react";
 
-const Catalog = ({ categories, breadcrumbs, categories_menu }) => {
+const Catalog = ({ categories, breadcrumbs }) => {
 
     const [showChildren, setShowChildren] = useState(null);
 
     return (
-        <DefaultLayout categories_menu={categories_menu}>
+        <DefaultLayout>
         <div className="bg-white">
-            <div className="max-w-full py-16">
+            <div className="max-w-full my-8">
                 <Breadcrumbs breadcrumbs={breadcrumbs} />
                 <h2 className="text-4xl font-bold tracking-tight text-gray-900">Каталог товаров</h2>
         
@@ -25,20 +25,22 @@ const Catalog = ({ categories, breadcrumbs, categories_menu }) => {
                         {showChildren === category && (
                             <div className="absolute inset-1 flex  justify-start p-5 bg-white rounded-lg">
                                 <div className="text-black">
-                                    <InertiaLink 
+                                    <Link 
                                         className="font-bold mb-1 hover:text-orange-700" 
-                                        href={route('categories', { categorySlug: category.slug })}>{category.name}
-                                    </InertiaLink>
+                                        href={route('categories', { categorySlug: category.slug })}
+                                    >
+                                        {category.name}
+                                    </Link>
                                     {category.children && category.children.length > 0 && (
                                     <ul>
                                         {category.children.map((child) => (
                                         <li key={child.id}>
-                                            <InertiaLink 
+                                            <Link 
                                                 className="hover:text-orange-700"
                                                 href={route('categories', { categorySlug: child.slug })}
                                             >
                                                 {child.name}
-                                            </InertiaLink>
+                                            </Link>
                                         </li>
                                         ))}
                                     </ul>
