@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 export default function Filters({ values, setValues, setShowFilters, reset }) {
 
     const { filters } = usePage().props;
-    // console.log(filters);
+
     const [lastClickedValue, setLastClickedValue] = useState(null);
     const [timerId, setTimerId] = useState(null);
 

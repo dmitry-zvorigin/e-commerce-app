@@ -6,17 +6,11 @@ import Pagination from "@/Components/Review/Pagination";
 import { useRef } from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { router } from '@inertiajs/react'
+import { router, usePage } from '@inertiajs/react'
 
-const ProductReviewsComponent = ({   
-    product, 
-    popularReview, 
-    reviewImages, 
-    ratingsGroups, 
-    averageOptionRatings, 
-    reviews,
-    request,
-}) => {
+export default function ProductReviewsComponent() {
+
+    const { product, popularReview, reviewImages, ratingsGroups, averageOptionRatings, reviews, request } = usePage().props;
 
     const reviewsRef = useRef(null);
 
@@ -231,5 +225,3 @@ const ProductReviewsComponent = ({
         </div>
     );
 };
-
-export default ProductReviewsComponent;

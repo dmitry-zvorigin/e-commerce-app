@@ -10,36 +10,25 @@ import ProductSpecificationsComponent from '@/Components/Product/ProductSpecific
 import ProductShowComponent from '@/Components/Product/ProductShowComponent';
 import ProductReviewsComponent from '@/Components/Product/ProductReviewsComponent';
 
-export default function Product({ 
-    breadcrumbs, groupedCharacteristics, popularReview, reviewImages, reviews, ratingsGroups, averageOptionRatings, request  
-}) {
+export default function Product() {
 
+    const { product, currentTab, breadcrumbs, reviewImages } = usePage().props;
 
     const links = [
         {title: 'Характеристики', url: 'product.specifications', icon: <TableCellsIcon className='w-5 h-5 text-gray-500'/>},
         {title: 'Отзывы', url: 'product.reviews', icon: <StarIcon className='w-5 h-5 text-gray-500'/>},
     ];
 
-    const { product, currentTab } = usePage().props;
-
     const sectionRef = useRef(null);
 
     const renderTabContent = () => {
         switch (currentTab) {
             case 'reviews':
-                return <ProductReviewsComponent 
-                        product={product} 
-                        popularReview={popularReview} 
-                        reviewImages={reviewImages} 
-                        ratingsGroups={ratingsGroups}
-                        averageOptionRatings={averageOptionRatings}
-                        reviews={reviews}
-                        request={request}
-                    />;
+                return <ProductReviewsComponent />;
             case 'specifications':
-                return <ProductSpecificationsComponent product={product} characteristics={groupedCharacteristics} />;
+                return <ProductSpecificationsComponent />;
             default:
-                return <ProductShowComponent product={product} characteristics={groupedCharacteristics} popularReview={popularReview} />;
+                return <ProductShowComponent />;
         }
     };
 
@@ -67,7 +56,6 @@ export default function Product({
                                                     preserveScroll 
                                                     preserveState
                                                     onSuccess={() => sectionRef.current.scrollIntoView({ behavior: 'smooth' })}
-                                                    // className='flex gap-2 p-2 hover:text-orange-400 border-l-[4px] border-white hover:border-orange-400'
                                                     className={
                                                         `flex gap-2 p-2 hover:text-orange-400 border-l-[4px] 
                                                         ${currentTab === element.url.split('.').pop() ? 'border-orange-400' : 'border-white'}`

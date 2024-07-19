@@ -1,7 +1,7 @@
 import { Bars4Icon } from '@heroicons/react/24/outline';
 import { Squares2X2Icon } from '@heroicons/react/20/solid';
 
-export default function ViewControls ({}) {
+export default function ViewControls() {
 
     return (
         <div>

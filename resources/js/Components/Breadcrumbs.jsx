@@ -22,7 +22,7 @@ export default function Breadcrumbs({ breadcrumbs }) {
                                     <Link
                                         href={breadcrumb.url}
                                         className="ms-1 text-sm font-medium text-gray-700 hover:text-orange-400 
-                                        md:ms-2 dark:text-gray-400 dark:hover:text-white"
+                                        dark:text-gray-400 dark:hover:text-white"
                                     >
                                         <span>{breadcrumb.title}</span>
                                     </Link>

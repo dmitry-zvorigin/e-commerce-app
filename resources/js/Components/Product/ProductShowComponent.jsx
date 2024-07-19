@@ -1,13 +1,15 @@
 import ProductCharacteristics from "@/Components/Product/ProductCharacteristics";
 import ProductDescription from "@/Components/Product/ProductDescription";
 import ReviewCard from "@/Components/Review/ReviewCard";
-import { Link } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 
-const ProductShowComponent = ({ product, characteristics, popularReview }) => {
+export default function ProductShowComponent() {
+
+    const { product, groupedCharacteristics, popularReview } = usePage().props;
 
     return (
         <>
-            <ProductCharacteristics productName={product.name} characteristics={characteristics} />
+            <ProductCharacteristics productName={product.name} characteristics={groupedCharacteristics} />
             <ProductDescription description={product.description} />
 
             <div className="border border-slate-300 rounded-lg w-full p-2 mt-5">
@@ -33,5 +35,3 @@ const ProductShowComponent = ({ product, characteristics, popularReview }) => {
 
     );
 };
-
-export default ProductShowComponent;

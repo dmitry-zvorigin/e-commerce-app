@@ -7,11 +7,10 @@ import { usePage } from '@inertiajs/react';
 import { Inertia } from '@inertiajs/inertia';
 import ViewControls from './ViewControls';
 
-
-
 export default function ProductControls() {
 	// TODO
 	const { products, category, filters_query } = usePage().props;
+
 	const [values, setValues] = useState(filters_query);
 	const [showFilters, setShowFilters] = useState(false);
 	const [showOrder, setShowOrder] = useState(false);
@@ -59,7 +58,7 @@ export default function ProductControls() {
 					</div>
 
 					<div className="lg:col-span-3">
-						<ProductList products={products}/>
+						<ProductList />
 						<Pagination data={products}/>
 					</div>
 					
