@@ -3,9 +3,9 @@ import Order from './Order';
 import ProductList from './ProductList';
 import Pagination from './Pagination';
 import Filters from './Filters';
-import { usePage } from '@inertiajs/react';
-import { Inertia } from '@inertiajs/inertia';
+import { router, usePage } from '@inertiajs/react'
 import ViewControls from './ViewControls';
+import ScrollToTopButton from '@/MyComponents/ScrollToTopButton';
 
 export default function ProductControls() {
 	// TODO
@@ -14,32 +14,84 @@ export default function ProductControls() {
 	const [values, setValues] = useState(filters_query);
 	const [showFilters, setShowFilters] = useState(false);
 	const [showOrder, setShowOrder] = useState(false);
-
+	
 	useEffect(() => {
-		if (showFilters || showOrder) {
+		if (showOrder) {
 			const query = Object.fromEntries(
 				Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
 			);
 
 			delete query.page;
 			
-			Inertia.get(route(route().current(), category.slug), query, {
-				replace: true,
+			router.get(route(route().current(), { categorySlug: category.slug }), query, {
 				preserveState: true,
+				preserveScroll: true,
+				only: ['products'],
 			});
 		}
-	}, [showFilters, values, showOrder]);
+	}, [values.order, showOrder]);
 
-	function reset() {
-			const order = values['order']; // Сохраняем значение сортировки
-			setValues({}); // Очищаем все значения фильтров
-			setShowFilters(true);
-			if (order) {
-				setValues({ 'order': order }); // Восстанавливаем значение сортировки
-			}
+
+	function applyFilters() {
+		const query = Object.fromEntries(
+			Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
+		);
+
+		delete query.page;
+
+		router.get(route(route().current(), { categorySlug: category.slug }), query, {
+			preserveState: true,
+			preserveScroll: true,
+			only: ['products'],
+		});
 	}
 
+	function resetAllFilter() {
+			// const order = values['order']; // Сохраняем значение сортировки
+			// setValues({}); // Очищаем все значения фильтров
+			// setShowFilters(true);
+			// if (order) {
+			// 	setValues({ 'order': order }); // Восстанавливаем значение сортировки
+			// }
 
+			const order = values['order']; // Сохраняем значение сортировки
+			const newValues = order ? { 'order': order } : {}; // Создаем новый объект значений с сортировкой (если есть)
+			setValues(newValues); // Устанавливаем новое состояние значений
+			setShowFilters(true); // Показываем фильтры
+		
+			const query = Object.fromEntries(
+				Object.entries(newValues).map(([key, value]) => [key, [value.join(',')]])
+			);
+		
+			delete query.page;
+		
+			router.get(route(route().current(), { categorySlug: category.slug }), query, {
+				preserveState: true,
+				preserveScroll: true,
+				only: ['products'],
+			});
+	}
+
+	function resetOneFilter(filterId) {
+		const newValues = { ...values }; // Получаем все значения
+		delete newValues[filterId]; // Удаляем не нужный фильтр
+
+		setValues(newValues); // Устанавливаем новое состояние значений
+
+		const query = Object.fromEntries(
+			Object.entries(newValues).map(([key, value]) => [key, [value.join(',')]])
+		);
+	
+		delete query.page;
+	
+		router.get(route(route().current(), { categorySlug: category.slug }), query, {
+			preserveState: true,
+			preserveScroll: true,
+			only: ['products'],
+		});
+
+
+	}
 
 	return (
 		<div className="bg-white mt-8">
@@ -47,7 +99,15 @@ export default function ProductControls() {
 			<div className='flex flex-row'>
 
 				<div className='rounded-md border border-slate-300 basis-2/6 h-max'>
-					<Filters values={values} setValues={setValues} showFilters={showFilters} setShowFilters={setShowFilters} reset={reset}/>
+					<Filters 
+						values={values} 
+						setValues={setValues} 
+						showFilters={showFilters} 
+						setShowFilters={setShowFilters} 
+						resetAllFilter={resetAllFilter}
+						resetOneFilter={resetOneFilter} 
+						applyFilters={applyFilters}
+					/>
 				</div>
 
 				<div className='row-span-2 col-span-2 w-full ml-5'>
@@ -64,7 +124,7 @@ export default function ProductControls() {
 					
 				</div>
 			</div>
-		
+			<ScrollToTopButton/>
 		</div>
 	)
 }

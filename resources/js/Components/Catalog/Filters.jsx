@@ -1,10 +1,9 @@
-import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
 import { Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function Filters({ values, setValues, setShowFilters, reset }) {
+export default function Filters({ values, setValues, showFilters, setShowFilters, resetAllFilter, resetOneFilter, applyFilters }) {
 
     const { filters } = usePage().props;
 
@@ -34,7 +33,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
 
             return newValues;
         });
-    }
+    };
 
     function handleCheckboxChangeAll(e) {
         const key = e.target.name;
@@ -56,8 +55,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
 
             return newValues;
         });
-    }
-
+    };
 
     function handleRangeChange(e) {
         const key = e.target.name;
@@ -95,7 +93,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
     
             return newValues;
         });
-    }
+    };
 
     function handleBlur(e) {
         const key = e.target.name;
@@ -140,41 +138,42 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
 
         handleRangeChange(e);
 
-    }
-
-    const handleResetFilter = (filterId) => {
-        setValues(prevValues => {
-            const newValues = { ...prevValues };
-    
-            // Удаляем значения выбранного фильтра из состояния
-            delete newValues[filterId];
-    
-            return newValues;
-        });
     };
 
-
+    // const handleResetFilter = (filterId) => {
+    //     setValues(prevValues => {
+    //         const newValues = { ...prevValues };
     
+    //         // Удаляем значения выбранного фильтра из состояния
+    //         delete newValues[filterId];
+    
+    //         return newValues;
+    //     });
+    //     applyFilters();
+    // };
+
     const handleValueClick = (e) => {
         // TODO
-        // const labelRect = e.target.getBoundingClientRect();
         const labelElement = e.target.closest('label');
         const labelRect = labelElement.getBoundingClientRect();
-        // const parentElement = labelElement.parentElement;
-        // console.log(parentElement);
+
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+
         // Сбрасываем предыдущий таймер, если он есть
         if (timerId) {
             clearTimeout(timerId);
         }
+        const buttonHeight = 64;
+        const buttonLeft = labelRect.left + scrollLeft + labelRect.width;
+        // Позиционируем по середине метки
+        const buttonTop = labelRect.top + scrollTop + (labelRect.height / 2) - (buttonHeight / 2);
 
-        const buttonLeft = labelRect.right + window.scrollX + 10; // Добавляем 10 пикселей отступа
-        const buttonTop = labelRect.top + window.scrollY + (labelRect.height / 2) - 350; // Позиционируем по середине метки
-        // 385
+        // Устанавливаем координаты кнопки
         setLastClickedValue({
             position: {
-                left: buttonLeft,
                 top: buttonTop,
-                right: -107,
+                left: buttonLeft,
             },
         });
 
@@ -187,7 +186,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
     };
 
     return (
-            <div className="flex flex-col p-5 relative">
+            <div className="flex flex-col p-5">
                 <div className="flex flex-col">
 
                     {filters.map((filter) => {
@@ -211,7 +210,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
                                     values={values}
                                     handleBlur={handleBlur}
                                 />
-                            )
+                            );
 
                         } else if (filter.type === 'checkbox') {
                             return (
@@ -221,11 +220,11 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
                                     values={values}
                                     handleCheckboxChange={handleCheckboxChange}
                                     handleCheckboxChangeAll={handleCheckboxChangeAll}
-                                    handleResetFilter={handleResetFilter}
                                     setShowFilters={setShowFilters}
                                     handleValueClick={handleValueClick}
+                                    resetOneFilter={resetOneFilter}
                                 />
-                            )
+                            );
                         }
 
                     })}
@@ -236,7 +235,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
                             <div 
                                 className="absolute flex z-10 items-center"
                                 style={{
-                                    right: `${lastClickedValue.position.right}px`,
+                                    left: `${lastClickedValue.position.left}px`,
                                     top: `${lastClickedValue.position.top}px`, // Верхний край label
                                 }}
                             >
@@ -248,7 +247,7 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
 
                                 <button 
                                     className="bg-blue-500 text-white p-5 rounded-md"
-                                    onClick={() => setShowFilters(true)}
+                                    onClick={applyFilters}
                                 >
                                     Показать
                                 </button>
@@ -256,8 +255,8 @@ export default function Filters({ values, setValues, setShowFilters, reset }) {
                         </div>
                     )}
                 </div>
-                <button onClick={ () => setShowFilters(true) } className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold">Применить</button>
-                <button onClick={reset} className="border rounded-md p-3 text-sm font-semibold ">Сбросить</button>
+                <button onClick={applyFilters} className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold">Применить</button>
+                <button onClick={resetAllFilter} className="border rounded-md p-3 text-sm font-semibold ">Сбросить</button>
             </div>
     );
 
@@ -349,7 +348,7 @@ const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
     );
 }
 
-const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxChangeAll, handleResetFilter, handleValueClick, setShowFilters }) => {
+const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxChangeAll, handleValueClick, setShowFilters, resetOneFilter }) => {
 
     const [showAll, setShowAll] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -490,7 +489,7 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                     <div>
                                         {values.hasOwnProperty(filter.attribute.slug) && (
                                             <button 
-                                                onClick={() => handleResetFilter(filter.attribute.slug)}
+                                                onClick={() => resetOneFilter(filter.attribute.slug)}
                                                 className="px-3 py-1 bg-red-500 text-white rounded-md mt-5">
                                                 Сбросить
                                             </button>
