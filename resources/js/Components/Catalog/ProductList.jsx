@@ -3,16 +3,17 @@ import { Link } from '@inertiajs/react'
 import { usePage } from "@inertiajs/react";
 import Rating from "@/MyComponents/Rating";
 
-export default function ProductList() {
+export default function ProductList({ products }) {
 
-    const { products } = usePage().props;
+	// console.log(products);
+    // const { products } = usePage().props;
 
     return (
 		<div className="bg-white">
 			<div className="mx-auto max-w-2xl lg:max-w-7xl mt-5 mb-5">
 
 				<div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
-					{products.data.map((product) => (
+					{products.map((product) => (
 						<div 
 							key={product.id}
 							className="border border-slate-300 rounded-lg bg-white hover:drop-shadow-2xl p-3 group flex flex-col justify-between "

@@ -1,6 +1,8 @@
 import { Disclosure, Transition } from "@headlessui/react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/solid";
 import { usePage } from '@inertiajs/react';
+import { useEffect } from "react";
 import { useState } from "react";
 
 export default function Filters({ values, setValues, showFilters, setShowFilters, resetAllFilter, resetOneFilter, applyFilters }) {
@@ -140,21 +142,10 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
 
     };
 
-    // const handleResetFilter = (filterId) => {
-    //     setValues(prevValues => {
-    //         const newValues = { ...prevValues };
-    
-    //         // Удаляем значения выбранного фильтра из состояния
-    //         delete newValues[filterId];
-    
-    //         return newValues;
-    //     });
-    //     applyFilters();
-    // };
-
     const handleValueClick = (e) => {
         // TODO
-        const labelElement = e.target.closest('label');
+        // const labelElement = e.target.closest('label');
+        const labelElement = e.target.closest('.input-container');
         const labelRect = labelElement.getBoundingClientRect();
 
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -199,6 +190,7 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                                     handleRangeChange={handleRangeChange}
                                     values={values}
                                     handleBlur={handleBlur}
+                                    handleValueClick={handleValueClick}
                                 />
                             )
                         } else if (filter.type === 'price') {
@@ -209,6 +201,7 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                                     handleRangeChange={handleRangeChange}
                                     values={values}
                                     handleBlur={handleBlur}
+                                    handleValueClick={handleValueClick}
                                 />
                             );
 
@@ -255,15 +248,43 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                         </div>
                     )}
                 </div>
-                <button onClick={applyFilters} className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold">Применить</button>
-                <button onClick={resetAllFilter} className="border rounded-md p-3 text-sm font-semibold ">Сбросить</button>
+                <button 
+                    onClick={applyFilters} 
+                    className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold"
+                >
+                    Применить
+                </button>
+
+                <button 
+                    onClick={resetAllFilter} 
+                    className="border rounded-md p-3 text-sm font-semibold"
+                >
+                    Сбросить
+                </button>
             </div>
     );
 
     
 }
 
-const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
+const FilterRange = ({ filter, values, handleBlur, handleRangeChange, handleValueClick }) => {
+
+    const clearInput = (type) => {
+        const key = filter.attribute.slug;
+
+    // Создаем искусственное событие
+        const event = {
+            target: {
+                name: key,
+                value: '', // Очищаем значение
+                dataset: { type: type },
+                min: filter.min_value,
+                max: filter.max_value
+            }
+        };
+        
+        handleRangeChange(event);
+    };
 
     return (
         <Disclosure
@@ -300,42 +321,99 @@ const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
 
                         <Disclosure.Panel>
                             <div className="flex flex-col p-2 w-full">
-                                <div className="flex justify-between">
-                                    <input 
-                                        name={filter.attribute.slug}
-                                        value={
-                                            values[filter.attribute.slug] && values[filter.attribute.slug][0] != filter.min_value
-                                                ? values[filter.attribute.slug][0]
-                                                : ''
-                                        }
-                                        data-type="min"
-                                        placeholder={`от ${filter.min_value}`} 
-                                        min={filter.min_value}
-                                        max={filter.max_value}
-                                        type="number" 
-                                        className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
-                                        onBlur={handleBlur}
-                                        onChange={handleRangeChange}
-                                        onWheel={(e) => e.currentTarget.blur()}
-                                    />
+                                <div className="input-container flex justify-between gap-2">
 
-                                    <input 
-                                        name={filter.attribute.slug}
-                                        value={
-                                            values[filter.attribute.slug] && values[filter.attribute.slug][1] != filter.max_value
-                                                ? values[filter.attribute.slug][1]
-                                                : ''
-                                        }
-                                        data-type="max"
-                                        placeholder={`до ${filter.max_value}`} 
-                                        min={filter.min_value}
-                                        max={filter.max_value}
-                                        type="number" 
-                                        className="border border-gray-300 text-indigo-600 rounded-md min-w-28 p-2 text-sm"
-                                        onBlur={handleBlur}
-                                        onChange={handleRangeChange}
-                                        onWheel={(e) => e.currentTarget.blur()}
-                                    />
+                                    <div 
+                                        className="
+                                            border border-gray-300 rounded-lg flex 
+                                            flex-row items-center w-1/2 
+                                            focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 
+                                            hover:ring-1 hover:ring-blue-600 hover:border-blue-600"
+                                    >
+                                        <input 
+                                            name={filter.attribute.slug}
+                                            value={
+                                                values[filter.attribute.slug] && values[filter.attribute.slug][0] != filter.min_value
+                                                    ? values[filter.attribute.slug][0]
+                                                    : ''
+                                            }
+                                            data-type="min"
+                                            placeholder={`от ${filter.min_value}`} 
+                                            min={filter.min_value}
+                                            max={filter.max_value}
+                                            type="number" 
+                                            className="border-none text-indigo-600 rounded-lg p-2 text-sm w-full focus:ring-0 pr-0"
+                                            onBlur={handleBlur}
+                                            // onChange={handleRangeChange}
+                                            onChange={(e) => {
+                                                handleRangeChange(e);
+                                                handleValueClick(e);
+                                            }}
+                                            onWheel={(e) => e.currentTarget.blur()}
+                                        />
+                                        {values[filter.attribute.slug] && values[filter.attribute.slug][0] != filter.min_value && (
+                                            <button 
+                                            className="pr-2"
+                                            onClick={(e) => {
+                                                clearInput('min');
+                                                handleValueClick(e);
+                                            }}
+                                            >
+                                                <XMarkIcon className="w-5 h-5 text-gray-500 hover:text-gray-800"/>
+                                            </button>
+                                        )}
+
+                                        {/* <button className="pr-2">
+                                            <XMarkIcon className="w-5 h-5 text-gray-500 hover:text-gray-800"/>
+                                        </button> */}
+                                        
+                                    </div>
+
+                                    <div 
+                                        className="
+                                            border border-gray-300 rounded-lg flex 
+                                            flex-row items-center w-1/2 
+                                            focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 
+                                            hover:ring-1 hover:ring-blue-600 hover:border-blue-600"
+                                    >
+                                        <input 
+                                            name={filter.attribute.slug}
+                                            value={
+                                                values[filter.attribute.slug] && values[filter.attribute.slug][1] != filter.max_value
+                                                    ? values[filter.attribute.slug][1]
+                                                    : ''
+                                            }
+                                            data-type="max"
+                                            placeholder={`до ${filter.max_value}`} 
+                                            min={filter.min_value}
+                                            max={filter.max_value}
+                                            type="number" 
+                                            className="text-indigo-600 rounded-lg p-2 text-sm border-none w-full focus:ring-0 pr-0"
+                                            onBlur={handleBlur}
+                                            // onChange={handleRangeChange}
+                                            onChange={(e) => {
+                                                handleRangeChange(e);
+                                                handleValueClick(e);
+                                            }}
+                                            onWheel={(e) => e.currentTarget.blur()}
+                                        />
+                                        {/* <button className="pr-2">
+                                            <XMarkIcon className="w-5 h-5 text-gray-500 hover:text-gray-800"/>
+                                        </button> */}
+                                        {values[filter.attribute.slug] && values[filter.attribute.slug][1] != filter.max_value && (
+                                            <button 
+                                                className="pr-2"
+                                                onClick={(e) => {
+                                                    clearInput('max');
+                                                    handleValueClick(e);
+                                                }}
+                                            >
+                                                <XMarkIcon className="w-5 h-5 text-gray-500 hover:text-gray-800"/>
+                                            </button>
+                                        )}
+                                    </div>
+
+
                                 </div>
 
                             </div>
@@ -347,6 +425,8 @@ const FilterRange = ({ filter, values, handleBlur, handleRangeChange }) => {
         </Disclosure>
     );
 }
+
+
 
 const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxChangeAll, handleValueClick, setShowFilters, resetOneFilter }) => {
 
@@ -424,13 +504,13 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                     {!isSearching && (
                                         <>
                                         <label 
-                                            className="flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
+                                            className="input-container flex items-center p-2 w-full hover:bg-orange-100 rounded-md"
                                         >
                                             <input 
                                                 name={filter.attribute.slug}
                                                 value={filter.attribute.slug}
                                                 type="checkbox" 
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-0"
                                                 checked={allValuesSelected}
                                                 onChange={handleCheckboxChangeAll}
                                                 onClick={handleValueClick}
@@ -453,16 +533,18 @@ const FilterChecbox = ({ filter, handleCheckboxChange, values, handleCheckboxCha
                                             htmlFor={value.id} 
                                             key={value.id} 
                                             className={
-                                                `flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`
+                                                `input-container flex items-center p-2 w-full hover:bg-orange-100 rounded-md ${!showAll && index > 6 ? 'hidden' : ''}`
                                             }
                                         >
                                             <input 
                                                 name={filter.attribute.slug}
                                                 value={value.id}
                                                 id={value.id}
-                                                checked={Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())}
+                                                checked={
+                                                    Array.isArray(values[filter.attribute.slug]) && values[filter.attribute.slug].includes(value.id.toString())
+                                                }
                                                 type="checkbox" 
-                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                                                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 focus:ring-0"
                                                 onChange={handleCheckboxChange}
                                                 // onClick={() => handleValueClick(value.id)}
                                                 onClick={handleValueClick}

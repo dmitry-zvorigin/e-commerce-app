@@ -238,6 +238,19 @@ class CategoryController extends Controller
             $filtersQuery[$key] = explode(',', $values[0]);
         }
 
+        // dd($request->all());
+
+        // $filtersQuery = [];
+        // foreach ($request->all() as $key => $values) {
+        //     if (is_array($values)) {
+        //         // Если значение уже является массивом, просто используем его
+        //         $filtersQuery[$key] = $values;
+        //     } else {
+        //         // Если значение не массив, разделяем его на части
+        //         $filtersQuery[$key] = explode(',', $values);
+        //     }
+        // }
+
         // Фильтруем, сортируем продукты, так же получаем отношения.
         $products = $this->productService
             ->createProductQuery($category)
@@ -248,7 +261,7 @@ class CategoryController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->paginate(18)
-            ->appends(Requ::all());
+            ->appends($request->all());
 
         // $productsQuery = Product::query()->where('category_id', $category->id);
         // $products = $productsQuery
