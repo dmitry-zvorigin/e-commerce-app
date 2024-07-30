@@ -22,11 +22,22 @@ export default function ProductControls() {
 
 	// Загрузка
 	const [loading, setLoading] = useState(false);
+	const [initialLoading, setInitialLoading] = useState(false);
 	
 
 	const fetchProducts = (page = 1, append = false, ref = true, filters = values) => {
 		const query = buildQuery(filters, page);
-		setLoading(true);
+
+		if (!append) {
+			setInitialLoading(true);
+		} else {
+			setLoading(true);
+		}
+
+		if (page === 1) {
+			delete query.page;
+		}
+
 
 		router.get(route(route().current(), { categorySlug: category.slug }), query, {
             preserveState: true,
@@ -40,6 +51,7 @@ export default function ProductControls() {
                 }
                 setCurrentPage(page.props.products.current_page);
                 setLoading(false);
+				setInitialLoading(false);
             },
             onFinish: () => {
 				if (ref) {
@@ -47,7 +59,10 @@ export default function ProductControls() {
 				}
                 
             },
-            onError: () => setLoading(false),
+            onError: () => {
+				setLoading(false);
+				setInitialLoading(false);
+			},
         });
 
 	};
@@ -284,7 +299,7 @@ export default function ProductControls() {
 					</div>
 
 					<div className="lg:col-span-3">
-						<ProductList products={currentProducts} />
+						<ProductList products={currentProducts} loading={initialLoading}/>
 						
 						{ products.next_page_url !== null && (
 							<button 
@@ -307,3 +322,4 @@ export default function ProductControls() {
 		</div>
 	)
 }
+

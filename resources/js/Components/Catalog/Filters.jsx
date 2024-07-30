@@ -142,7 +142,7 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
 
     };
 
-    const handleValueClick = (e) => {
+    function handleValueClick (e) {
         // TODO
         // const labelElement = e.target.closest('label');
         const labelElement = e.target.closest('.input-container');
@@ -226,7 +226,7 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                     {lastClickedValue !== null && (
                         <div>
                             <div 
-                                className="absolute flex z-10 items-center"
+                                className="absolute flex z-10 items-center group"
                                 style={{
                                     left: `${lastClickedValue.position.left}px`,
                                     top: `${lastClickedValue.position.top}px`, // Верхний край label
@@ -235,11 +235,12 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                                 <div className="w-0 h-0 
                                     border-t-[20px] border-t-transparent
                                     border-r-[28px] border-r-blue-500
-                                    border-b-[20px] border-b-transparent">
+                                    border-b-[20px] border-b-transparent
+                                    ">
                                 </div>
 
                                 <button 
-                                    className="bg-blue-500 text-white p-5 rounded-md"
+                                    className="bg-blue-500 text-white p-5 rounded-md hover:shadow-2xl"
                                     onClick={applyFilters}
                                 >
                                     Показать
