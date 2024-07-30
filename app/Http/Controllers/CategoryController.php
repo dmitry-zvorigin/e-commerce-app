@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Breadcrumbs\BreadcrumbsManager;
+use App\Http\Requests\FilterProductRequest;
 use App\Models\Category;
 use App\Models\CategoryAttributeRelationship;
 use App\Models\Product;
@@ -206,7 +207,7 @@ class CategoryController extends Controller
 
     }
 
-    public function categories($categorySlug, Request $request)
+    public function categories($categorySlug, FilterProductRequest $request)
     {
         $category = Category::where('slug', $categorySlug)->first();
 
@@ -230,24 +231,9 @@ class CategoryController extends Controller
         ]);
     }
 
-    protected function renderProductsView(Category $category, Request $request, $breadcrumbs)
+    protected function renderProductsView(Category $category, FilterProductRequest $request, $breadcrumbs)
     {
-        // Формируем request, разделяем его на значения
-        $filtersQuery = [];
-        foreach ($request->all() as $key => $values) {
-            $filtersQuery[$key] = explode(',', $values);
-        }
-
-        // $filtersQuery = [];
-        // foreach ($request->all() as $key => $values) {
-        //     if (is_array($values)) {
-        //         // Если значение уже является массивом, просто используем его
-        //         $filtersQuery[$key] = $values;
-        //     } else {
-        //         // Если значение не массив, разделяем его на части
-        //         $filtersQuery[$key] = explode(',', $values);
-        //     }
-        // }
+        $filtersQuery = $request->filtersQuery();
 
         // Фильтруем, сортируем продукты, так же получаем отношения.
         $products = $this->productService
@@ -259,34 +245,9 @@ class CategoryController extends Controller
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
             ->paginate(18);
-            // ->appends($request->all());
-
-        // $productsQuery = Product::query()->where('category_id', $category->id);
-        // $products = $productsQuery
-        //     ->with(['images'])
-        //     ->withCount('ratings')
-        //     ->withAvg('ratings', 'rating_value')
-        //     ->paginate(18)
-        //     ->appends(Requ::all());
 
         // Получаем фильтры которые относятся к определенной категориям. 
-        $filters = CategoryAttributeRelationship::where('category_id', $category->id)
-            ->where('is_required', true)
-            // Отношение на получение атрибутов и значений
-            ->with(['attribute.values' => function ($query) use ($category) {
-                $query->whereHas('productCharacteristics.product', function ($query) use ($category) {
-                    $query->where('category_id', $category->id);
-                })
-                // Подсчитываем количество продуктов для значения
-                ->withCount(['productCharacteristics' => function ($query) use ($category) {
-                    $query->whereHas('product', function ($query) use ($category) {
-                        $query->where('category_id', $category->id);
-                    });
-                }])
-                ->orderBy('value_string')->orderBy('value_int');
-            }])
-            ->orderBy('order')
-            ->get();
+        $filters = CategoryAttributeRelationship::withRequiredFilters($category->id)->get();
 
         foreach ($filters as $filter) {
             if ($filter->type === 'price') {

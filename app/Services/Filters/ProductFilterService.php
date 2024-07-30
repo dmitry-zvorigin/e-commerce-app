@@ -30,15 +30,19 @@ class ProductFilterService
         $slugs = array_keys($filtersQuery);
         $attributesBySlug = $this->attributeRepository->getAttributeIdsBySlugs($slugs);
 
-        foreach ($filtersQuery as $key => $filterValues) {
+        $attributeIds = array_values($attributesBySlug);
+        $attributeTypes =  CategoryAttributeRelationship::whereIn('attribute_id', $attributeIds)->pluck('type', 'attribute_id');
 
+        foreach ($filtersQuery as $key => $filterValues) {
             if (isset($attributesBySlug[$key])) {
                 $attributeId = $attributesBySlug[$key];
-                $attributeType = CategoryAttributeRelationship::where('attribute_id', $attributeId)->value('type');
+                $attributeType = $attributeTypes[$attributeId] ?? null;
 
-                $filterStrategy = $this->filterStrategyFactory->make($attributeType);
-                if ($filterStrategy) {
-                    $productsQuery = $filterStrategy->apply($productsQuery, $attributeId, $filterValues);
+                if ($attributeType) {
+                    $filterStrategy = $this->filterStrategyFactory->make($attributeType);
+                    if ($filterStrategy) {
+                        $productsQuery = $filterStrategy->apply($productsQuery, $attributeId, $filterValues);
+                    }
                 }
             }
         }
