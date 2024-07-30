@@ -13,7 +13,14 @@ export default function ProductControls() {
 
 	const productsRef = useRef(null);
 
-	const [values, setValues] = useState(filters_query);
+	const initialValues = Object.keys(filters_query).reduce((acc, key) => {
+		const value = filters_query[key];
+		acc[key] = value.includes(',') ? value.split(',') : [value];
+		return acc;
+	}, {});
+	
+
+	const [values, setValues] = useState(initialValues);
 	const [showFilters, setShowFilters] = useState(false);
 	const [showOrder, setShowOrder] = useState(false);
 
@@ -69,11 +76,28 @@ export default function ProductControls() {
 
 
 	const buildQuery = (values, page) => {
-		const query = Object.fromEntries(
-			Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-		);
+		// const query = Object.fromEntries(
+		// 	Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
+		// );
+		const query = {
+			...values,
+			page,
+		}
 
-		query.page = page;
+		Object.keys(query).forEach(key => {
+			if (Array.isArray(query[key])) {
+				query[key] = query[key].join(',');
+			}
+		});
+
+		// // Преобразование массива значений в строку через запятую
+		// Object.keys(query).forEach(key => {
+		// 	if (Array.isArray(query[key])) {
+		// 		query[key] = query[key].join(',');
+		// 	}
+		// });
+
+		// query.page = page;
 		return query;
 	};
 

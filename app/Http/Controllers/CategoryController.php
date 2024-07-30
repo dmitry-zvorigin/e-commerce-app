@@ -235,10 +235,8 @@ class CategoryController extends Controller
         // Формируем request, разделяем его на значения
         $filtersQuery = [];
         foreach ($request->all() as $key => $values) {
-            $filtersQuery[$key] = explode(',', $values[0]);
+            $filtersQuery[$key] = explode(',', $values);
         }
-
-        // dd($request->all());
 
         // $filtersQuery = [];
         // foreach ($request->all() as $key => $values) {
@@ -260,8 +258,8 @@ class CategoryController extends Controller
             ->with(['images'])
             ->withCount('ratings')
             ->withAvg('ratings', 'rating_value')
-            ->paginate(18)
-            ->appends($request->all());
+            ->paginate(18);
+            // ->appends($request->all());
 
         // $productsQuery = Product::query()->where('category_id', $category->id);
         // $products = $productsQuery
@@ -299,13 +297,13 @@ class CategoryController extends Controller
                 $filter->findMinMaxValues($filter->category_id);
             }
         }
-
+        
         return Inertia::render('Products', [
             'category' => $category, 
             'products' => $products, 
             'breadcrumbs' => $breadcrumbs,
             'filters' => $filters,
-            'filters_query' => $filtersQuery,
+            'filters_query' => $request->all(),
         ]);
     }
 

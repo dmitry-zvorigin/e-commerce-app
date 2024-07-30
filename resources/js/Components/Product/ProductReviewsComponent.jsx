@@ -114,7 +114,7 @@ export default function ProductReviewsComponent() {
     };
 
     const resetFilters = () => {
-        const order = values['order'];
+        const order = filters['order'];
         const newValues = order ? { 'order': order } : {};
         setFilters(newValues);
         setCurrentPage(1);
