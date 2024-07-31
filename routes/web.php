@@ -34,9 +34,25 @@ Route::get('product/{productSlug}/specifications', [ProductController::class, 's
 Route::inertia('/compare', 'Compare')->name('compare');
 Route::inertia('/favorites', 'Favorites')->name('favorites');
 Route::inertia('/cart', 'Cart')->name('cart');
+
 Route::inertia('/user', 'User')->name('user');
 Route::inertia('/notification', 'Notification')->name('notification');
 
+Route::inertia('/profile', 'Profile')->name('profile');
+
+Route::prefix('profile')->group(function () {
+    Route::inertia('/order/all', 'Profile/OrderAll')->name('profile.order');
+    Route::inertia('/wishlist', 'Profile/Wishlist')->name('profile.wishlist');
+    Route::inertia('/subscriptions', 'Profile/Subscriptions')->name('profile.subscriptions');
+    Route::inertia('/address', 'Profile/Address')->name('profile.address');
+    Route::inertia('/prozapass', 'Profile/Prozapass')->name('profile.prozapass');
+    Route::inertia('/achievements', 'Profile/Achievements')->name('profile.achievements');
+    Route::inertia('/service-requests', 'Profile/ServiceRequests')->name('profile.service-requests');
+    Route::inertia('/feedback', 'Profile/Feedback')->name('profile.feedback');
+    Route::inertia('/security', 'Profile/Security')->name('profile.security');
+    Route::inertia('notifications', 'Profile/Notifications')->name('profile.notifications');
+    Route::inertia('/settings', 'Profile/Settings')->name('profile.settings');
+});
 
 // Route::get('/', function () {
 //     return Inertia::render('Home');
@@ -65,10 +81,11 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Пока удалил
+// Route::middleware('auth')->group(function () {
+//     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+//     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+//     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+// });
 
 require __DIR__.'/auth.php';
