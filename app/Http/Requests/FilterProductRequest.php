@@ -45,6 +45,7 @@ class FilterProductRequest extends FormRequest
     {
         // Формируем request, разделяем его на значения
         $filterQuery = [];
+        // dd($this->all());
         foreach ($this->all() as $key => $values) {
             $filterQuery[$key] = explode(',', $values);
         }

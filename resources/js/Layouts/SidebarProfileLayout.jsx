@@ -1,4 +1,5 @@
 import DefaultLayout from "@/Layouts/DefaultLayout";
+import ScrollToTopButton from "@/MyComponents/ScrollToTopButton";
 import { 
     ArchiveBoxIcon, BanknotesIcon, BellIcon, ClipboardDocumentCheckIcon, Cog6ToothIcon, 
     HeartIcon, HomeModernIcon, MegaphoneIcon, 
@@ -68,6 +69,7 @@ const SidebarProfileLayout = ({ children }) => {
 
                 </div>
             </div>
+            <ScrollToTopButton/>
         </DefaultLayout>
     );
 }

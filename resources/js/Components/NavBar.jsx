@@ -3,16 +3,26 @@ import { Link } from '@inertiajs/react'
 import { BellIcon, ChevronDownIcon, HeartIcon, MagnifyingGlassIcon, ScaleIcon, ShoppingBagIcon, UserCircleIcon } from "@heroicons/react/24/outline";
 import { usePage } from '@inertiajs/react';
 
-const LinkNav = ({ name, href, icon: Icon}) => {
+const LinkNav = ({ name, href, icon: Icon, value}) => {
+
 	return(
-		<div className="ml-4 flow-root lg:ml-6">
-			<Link href={href} className="-m-2 flex flex-col items-center p-2 group">
+		<div className="ml-4 flow-root lg:ml-6 relative">
+			<Link href={href} className="-m-2 flex flex-col items-center p-2 group z-10">
 				<Icon
 					className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-orange-700"
 					aria-hidden="true"
 				/>
 				<span className='text-sm text-gray-400 group-hover:text-orange-700'>{name}</span>
 			</Link>
+			{value.length > 0 && (
+				<div 
+					className='absolute rounded-full border w-6 h-6 
+						flex justify-center items-center text-white text-sm bg-orange-500 top-0 right-0 select-none z-[-1]'
+				>
+					{value.length}
+				</div>
+			)}
+
 		</div>
 	);
 }
@@ -217,11 +227,13 @@ const Menu = ({ categories }) => {
 
 const Navbar = ({ categoris_menu }) => {
 
+	const { auth } = usePage().props;
+
 	const navigationLinks = [
-		{ name: 'Сравнить' , href: route('compare'), icon: ScaleIcon },
-		{ name: 'Избранное', href: route('favorites'), icon: HeartIcon },
-		{ name: 'Корзина', href: route('cart'), icon: ShoppingBagIcon },
-		{ name: 'Уведомления', href: route('notification'), icon: BellIcon },
+		{ name: 'Сравнить' , href: route('compare'), icon: ScaleIcon, value: 0 },
+		{ name: 'Избранное', href: route('wishlist.redirect'), icon: HeartIcon, value: auth.wishlist },
+		{ name: 'Корзина', href: route('cart'), icon: ShoppingBagIcon, value: 0 },
+		{ name: 'Уведомления', href: route('notification'), icon: BellIcon, value: 0 },
 	];
 
   	const userButton = { name: 'Войти', icon: UserCircleIcon };
@@ -250,7 +262,7 @@ const Navbar = ({ categoris_menu }) => {
 			<div>
 				<div className='flex'>
 					{navigationLinks.map((navLink, index) => (
-						<LinkNav name={navLink.name} key={index} href={navLink.href} icon={navLink.icon} />
+						<LinkNav name={navLink.name} key={index} href={navLink.href} icon={navLink.icon} value={navLink.value} />
 					))}
 					<ButtonUser name={userButton.name} icon={userButton.icon}/>
 				</div>

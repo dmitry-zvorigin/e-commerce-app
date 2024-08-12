@@ -233,6 +233,11 @@ class CategoryController extends Controller
 
     protected function renderProductsView(Category $category, FilterProductRequest $request, $breadcrumbs)
     {
+        // dd($request->all());
+        // $filters = CategoryAttributeRelationship::withRequiredFilters($category->id)->get()->pluck('attribute.slug')->toArray();
+        // $filtersValue = $request->only($filters);
+        // dd($filtersValue);
+    
         $filtersQuery = $request->filtersQuery();
 
         // Фильтруем, сортируем продукты, так же получаем отношения.

@@ -1,14 +1,14 @@
 import { useEffect, useState, useRef } from 'react'
 import Order from './Order';
-import ProductList from './ProductList';
+import ProductList from './ProductsView';
 import Pagination from './Pagination';
 import Filters from './Filters';
 import { router, usePage } from '@inertiajs/react'
 import ViewControls from './ViewControls';
 import ScrollToTopButton from '@/MyComponents/ScrollToTopButton';
+import ProductsView from './ProductsView';
 
 export default function ProductControls() {
-	// TODO
 	const { products, category, filters_query } = usePage().props;
 
 	const productsRef = useRef(null);
@@ -18,7 +18,6 @@ export default function ProductControls() {
 		acc[key] = value.includes(',') ? value.split(',') : [value];
 		return acc;
 	}, {});
-	
 
 	const [values, setValues] = useState(initialValues);
 	const [showFilters, setShowFilters] = useState(false);
@@ -30,7 +29,10 @@ export default function ProductControls() {
 	// Загрузка
 	const [loading, setLoading] = useState(false);
 	const [initialLoading, setInitialLoading] = useState(false);
-	
+
+	// Вид продуктов
+	const urlParams = new URLSearchParams(window.location.search);
+	const initialMode = urlParams.get('mode') || 'list';
 
 	const fetchProducts = (page = 1, append = false, ref = true, filters = values) => {
 		const query = buildQuery(filters, page);
@@ -76,9 +78,6 @@ export default function ProductControls() {
 
 
 	const buildQuery = (values, page) => {
-		// const query = Object.fromEntries(
-		// 	Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-		// );
 		const query = {
 			...values,
 			page,
@@ -90,14 +89,6 @@ export default function ProductControls() {
 			}
 		});
 
-		// // Преобразование массива значений в строку через запятую
-		// Object.keys(query).forEach(key => {
-		// 	if (Array.isArray(query[key])) {
-		// 		query[key] = query[key].join(',');
-		// 	}
-		// });
-
-		// query.page = page;
 		return query;
 	};
 
@@ -114,8 +105,18 @@ export default function ProductControls() {
 	}, [values.order, showOrder]);
 
 	const resetAllFilter = () => {
-        const order = values['order'];
-        const newValues = order ? { 'order': order } : {};
+		// const mode = values['mode'];
+		// const order = values['order'];
+        // const newValues = order ? { 'order': order } : {};
+
+		const mode = values['mode'];
+		const order = values['order'];
+		const newValues = {
+			...(order ? { 'order': order } : {}),
+			...(mode ? { 'mode': mode } : {})
+		};
+
+
         setValues(newValues);
         setShowFilters(true);
         setCurrentPage(1);
@@ -140,164 +141,6 @@ export default function ProductControls() {
         fetchProducts(currentPage + 1, true, false);
     };
 
-	// function applyFilters() {
-	// 	const query = Object.fromEntries(
-	// 		Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-	// 	);
-
-	// 	delete query.page;
-	// 	setCurrentPage(1);
-
-	// 	router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 		preserveState: true,
-	// 		preserveScroll: true,
-	// 		only: ['products'],
-	// 		onSuccess: page => {
-	// 			setCurrentProducts(page.props.products.data);
-	// 		},
-	// 		onFinish: () => {
-    //             productsRef.current.scrollIntoView({ behavior: 'smooth' });
-
-    //         },
-	// 	});
-	// }
-
-	// function resetAllFilter() {
-	// 		// const order = values['order']; // Сохраняем значение сортировки
-	// 		// setValues({}); // Очищаем все значения фильтров
-	// 		// setShowFilters(true);
-	// 		// if (order) {
-	// 		// 	setValues({ 'order': order }); // Восстанавливаем значение сортировки
-	// 		// }
-
-	// 		const order = values['order']; // Сохраняем значение сортировки
-	// 		const newValues = order ? { 'order': order } : {}; // Создаем новый объект значений с сортировкой (если есть)
-	// 		setValues(newValues); // Устанавливаем новое состояние значений
-	// 		setShowFilters(true); // Показываем фильтры
-		
-	// 		const query = Object.fromEntries(
-	// 			Object.entries(newValues).map(([key, value]) => [key, [value.join(',')]])
-	// 		);
-		
-	// 		delete query.page;
-	// 		setCurrentPage(1);
-		
-	// 		router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 			preserveState: true,
-	// 			preserveScroll: true,
-	// 			only: ['products'],
-	// 			onSuccess: page => {
-	// 				setCurrentProducts(page.props.products.data);
-	// 			},
-	// 			onFinish: () => {
-	// 				productsRef.current.scrollIntoView({ behavior: 'smooth' });
-	// 			},
-	// 		});
-	// }
-
-	// function resetOneFilter(filterId) {
-	// 	const newValues = { ...values }; // Получаем все значения
-	// 	delete newValues[filterId]; // Удаляем не нужный фильтр
-
-	// 	setValues(newValues); // Устанавливаем новое состояние значений
-
-	// 	const query = Object.fromEntries(
-	// 		Object.entries(newValues).map(([key, value]) => [key, [value.join(',')]])
-	// 	);
-	
-	// 	delete query.page;
-	// 	setCurrentPage(1);
-	
-	// 	router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 		preserveState: true,
-	// 		preserveScroll: true,
-	// 		only: ['products'],
-	// 		onSuccess: page => {
-	// 			setCurrentProducts(page.props.products.data);
-	// 		},
-	// 		onFinish: () => {
-    //             productsRef.current.scrollIntoView({ behavior: 'smooth' });
-    //         },
-	// 	});
-
-	// }
-
-	// function onPageChange(pageNumber) {
-	// 	const query = Object.fromEntries(
-	// 		Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-	// 	);
-
-	// 	query.page = pageNumber;
-	// 	setCurrentPage(pageNumber);
-
-	// 	router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 		preserveState: true,
-	// 		preserveScroll: true,
-	// 		only: ['products'],
-	// 		onSuccess: page => {
-	// 			setCurrentProducts(page.props.products.data);
-	// 		},
-	// 		onFinish: () => {
-    //             productsRef.current.scrollIntoView({ behavior: 'smooth' });
-    //         },
-	// 	});
-	// }
-
-	// function loadMore() {
-	// 	if (loading) return;
-
-	// 	const nextPage = currentPage + 1;
-
-	// 	setLoading(true);
-
-	// 	const query = Object.fromEntries(
-	// 		Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-	// 	);
-
-	// 	query.page = nextPage;
-
-	// 	router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 		preserveState: true,
-	// 		preserveScroll: true,
-	// 		only: ['products'],
-	// 		onSuccess: page => {
-	// 			setCurrentProducts(prevProducts => [...prevProducts, ...page.props.products.data]);
-	// 			setLoading(false);
-	// 			setCurrentPage(nextPage);
-	// 		},
-	// 		// onFinish: () => {
-                
-    //         // },
-	// 		onError: () => setLoading(false),
-	// 	});
-
-	// }
-
-
-	// useEffect(() => {
-	// 	if (showOrder) {
-	// 		const query = Object.fromEntries(
-	// 			Object.entries(values).map(([key, value]) => [key, [value.join(',')]])
-	// 		);
-
-	// 		delete query.page;
-	// 		setCurrentPage(1);
-			
-	// 		router.get(route(route().current(), { categorySlug: category.slug }), query, {
-	// 			preserveState: true,
-	// 			preserveScroll: true,
-	// 			only: ['products'],
-	// 			onSuccess: page => {
-	// 				setCurrentProducts(page.props.products.data);
-	// 			},
-	// 			onFinish: () => {
-	// 				productsRef.current.scrollIntoView({ behavior: 'smooth' });
-	// 			},
-	// 		});
-	// 	}
-	// }, [values.order, showOrder]);
-
-
 	return (
 		<div className="bg-white mt-8">
 
@@ -319,12 +162,12 @@ export default function ProductControls() {
 
 					<div className='rounded-md border border-slate-300 p-4 flex justify-between items-center' ref={productsRef}>
 						<Order values={values} setValues={setValues} setShowOrder={setShowOrder}/>
-                        <ViewControls/>
+                        <ViewControls values={values} setValues={setValues} />
 					</div>
 
 					<div className="lg:col-span-3">
-						<ProductList products={currentProducts} loading={initialLoading}/>
-						
+						<ProductsView products={currentProducts} loading={initialLoading} initialMode={initialMode} />
+
 						{ products.next_page_url !== null && (
 							<button 
 								className="border rounded-lg border-slate-300 h-[50px] text-center w-full"

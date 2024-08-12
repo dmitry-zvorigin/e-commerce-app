@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import Order from './Order';
-import ProductList from './ProductList';
+import ProductList from './ProductsView';
 import Pagination from './Pagination';
 import Filters from './Filters';
 import { router, usePage } from '@inertiajs/react'

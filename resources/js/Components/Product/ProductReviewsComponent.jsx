@@ -24,6 +24,8 @@ export default function ProductReviewsComponent() {
     const [loading, setLoading] = useState(false);
     const [initialLoading, setInitialLoading] = useState(false);
 
+    // console.log(currentReviews);
+
     const buildQuery = (values, page) => {
 
         const query = {
