@@ -2,14 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Services\Wishlist\DeleteMultipleProductsService;
 use App\Services\Wishlist\DeleteSingleProductService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Inertia\Response;
 
 class WishlistController extends Controller
 {
@@ -24,42 +27,127 @@ class WishlistController extends Controller
         $this->deleteMultipleProductService = $deleteMultipleProductService;
     }
 
-    public function show(Request $request) 
+    public function show(Request $request) : Response
     {
-        // dd($request);
         // TODO 
         // Сейчас я запрашиваю все продукты из избранного
         // Хотелось бы переделать. 
 
         $user = Auth::user();
 
+        $categoryOptions = $user->wishlist()
+            ->with('product.category')
+            ->get()
+            ->pluck('product.category')
+            ->unique('id');
+
         // Получаем все id нужных товаров в избранном
         $wishlistProductIds = Wishlist::where('user_id', $user->id)->pluck('product_id');
 
-        // Получаем все товары с полями id и price (Для выбора всех)
-        $allProducts = Product::whereIn('id', $wishlistProductIds)
-            ->select(['id', 'price'])
-            ->get();
-        $totalProducts = $allProducts->count();
-        // TODO округление денежных значений
-        $totalAmount = round($allProducts->sum('price'), 2);
 
-        $products = Product::whereIn('id', $wishlistProductIds)
-            ->with('images')
-            ->withCount('ratings')
-            ->withAvg('ratings', 'rating_value')
-            ->paginate(5);
+        $query = Product::whereIn('products.id', $wishlistProductIds);
+        $queryAllProducts = Product::whereIn('products.id', $wishlistProductIds);
+
+        if ($request->has('filters')) {
+            $filters = explode(',', $request->input('filters'));
+
+            // Применение фильтров для наличия и уведомлений
+            if (in_array('in_stock', $filters)) {
+                // $query->where('stock', '>', 0);
+            }
+            if (in_array('out_of_stock', $filters)) {
+                // $query->where('stock', '=', 0);
+            }
+            if (in_array('with_notifications', $filters)) {
+                // $query->where('notifications', true);
+            }
+
+            // Фильтрация по категориям, когда slug вместо id
+            $categorySlugs = array_filter($filters, function($filter) {
+                return !in_array($filter, ['in_stock', 'out_of_stock', 'with_notifications']);
+            });
+
+            if ($categorySlugs) {
+                // Находим соответствующие ID категорий по переданным slug
+                $categoryIds = Category::whereIn('slug', $categorySlugs)->pluck('id')->toArray();
+                // Фильтруем продукты по найденным ID категорий
+                if (!empty($categoryIds)) {
+                    $query->whereIn('category_id', $categoryIds);
+                    $queryAllProducts->whereIn('category_id', $categoryIds);
+                }
+            }
+        }
+
+        if ($request->has('order')) {
+            $order = $request->input('order');
+            switch ($order) {
+                case 'price_desc':
+                    $query->orderBy('price', 'desc');
+                    break;
+                case 'price_asc':
+                    $query->orderBy('price', 'asc');
+                    break;
+                default:
+                    $query->join('wishlists', 'products.id', '=', 'wishlists.product_id')
+                        ->where('wishlists.user_id', $user->id)
+                        ->orderBy('wishlists.created_at', 'desc');
+            }
+        } else {
+            // Сортировка по умолчанию (по дате добавления в wishlist)
+            $query->join('wishlists', 'products.id', '=', 'wishlists.product_id')
+                ->where('wishlists.user_id', $user->id)
+                ->orderBy('wishlists.created_at', 'desc');
+        }
+
+        $products = $query->with('images')
+                            ->withCount('ratings')
+                            ->withAvg('ratings', 'rating_value')
+                            ->paginate(5);
+
+
+        $allProducts = $queryAllProducts->select(['id', 'price'])->get();
+        // Получаем все товары с полями id и price (Для выбора всех)
+        // $allProducts = Product::whereIn('id', $wishlistProductIds)
+        //     ->select(['id', 'price', 'category_id'])
+        //     ->get();
+        // $totalProducts = $allProducts->count();
+        // TODO округление денежных значений
+        // $totalAmount = round($allProducts->sum('price'), 2);
+
+
+
+        // // Получаем уникальные ID категории
+        // $categoryIds = $allProducts->pluck('category_id')->unique();
+        // // Получаем категории для фильтрации
+        // $categoryOptions = Category::whereIn('id', $categoryIds)
+        //     ->select(['id', 'name', 'slug'])
+        //     ->get();
+
+        // $products = Product::whereIn('id', $wishlistProductIds)
+        //     ->with('images')
+        //     ->withCount('ratings')
+        //     ->withAvg('ratings', 'rating_value')
+        //     ->paginate(5);
 
         return Inertia::render('Profile/Wishlist', [
             'products' => $products,
-            'total_products' => $totalProducts,
-            'total_amount' => $totalAmount,
             'filter_query' => $request->all(),
             'all_products' => $allProducts,
+            'categoryOptions' => $categoryOptions,
         ]);
+        
+        // $product = Product::where('id', 66)->with('images', 'category')->get();
+
+        // return Inertia::render('Profile/Wishlist', [
+        //     'filters_query' => $request->all(),
+        //     'product' => $product,
+        //     'wishlist' => new WishlistCollection(
+        //         $product = Product::where('id', 66)->with('images', 'category')->get(),
+        //     ),
+        // ]);
     }
 
-    public function add(Request $request)
+    public function add(Request $request) : RedirectResponse
     {
         $user = Auth::user();
 
@@ -95,7 +183,7 @@ class WishlistController extends Controller
         }
     }
 
-    public function delete(Request $request)
+    public function delete(Request $request) : RedirectResponse
     {
         // dd($request);
         $user = Auth::user();
@@ -107,6 +195,6 @@ class WishlistController extends Controller
             $this->deleteSingleProductService->delete($user->id, $productIds);
         }
 
-        return redirect()->back()->with('success', 'Продукт(ы) успешно удалены из избранного');
+        return Redirect::back()->with('success', 'Продукт(ы) успешно удалены из избранного');
     }
 }

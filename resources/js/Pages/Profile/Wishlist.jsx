@@ -7,134 +7,275 @@ import { HeartIcon, AdjustmentsHorizontalIcon, TrashIcon } from "@heroicons/reac
 import { Link, router, usePage } from "@inertiajs/react";
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useReducer } from "react";
+import ProductPlaceholderCard from "@/Components/Product/ProductPlaceholderCard";
+
+const initialState = {
+    selectedProducts: [],
+    selectAll: false,
+    selectedFilters: [],
+    selectedOrder: 'date_desc',
+    hasMore: true,
+    currentProducts: [],
+    allProducts: [],
+    allProductsData: {
+        totalAmount: 0,
+        totalCount: 0,
+    },
+    currentPage: 1,
+    isFilterVisible: false,
+    loadingProducts: false,
+};
+
+function wishlistReducer(state, action) {
+    switch (action.type) {
+        case 'SET_SELECTED_PRODUCTS':
+            return {
+                ...state,
+                selectedProducts: action.payload,
+                selectAll: state.allProducts.length > 0 && state.allProducts.every(product => action.payload.includes(product.id)),
+            };
+        case 'SET_SELECT_ALL':
+            return {
+                ...state,
+                selectAll: action.payload,
+            };
+        case 'RESET_PRODUCTS_DATA':
+            return {
+                ...state,
+                allProductsData: {
+                    totalCount: action.payload.totalCount,
+                    totalAmount: action.payload.totalAmount,
+                },
+            };
+        case 'UPDATE_SELECTED_PRODUCTS_DATA':
+            return {
+                ...state,
+                allProductsData: {
+                    totalCount: action.payload.totalCount,
+                    totalAmount: action.payload.totalAmount,
+                },
+            };
+        case 'UPDATE_CURRENT_PRODUCTS':
+            return {
+                ...state,
+                currentProducts: action.payload,
+            };
+        case 'UPDATE_ALL_PRODUCTS':
+            return {
+                ...state,
+                allProducts: action.payload,
+            };
+        case 'LOAD_MORE_PRODUCTS':
+            return {
+                ...state,
+                currentProducts: [...state.currentProducts, ...action.payload],
+                currentPage: state.currentPage + 1,
+            };
+        case 'SET_FILTERS': 
+            return {
+                ...state,
+                selectedFilters: action.payload,
+            };
+        case 'SET_ORDER': 
+            return {
+                ...state,
+                selectedOrder: action.payload,
+            };
+        case 'SET_IS_FILTER_VISIBLE': 
+            return {
+                ...state,
+                isFilterVisible: action.payload,
+            }
+        case 'SET_IS_MODAL_OPEN': 
+            return {
+                ...state,
+                isModalOpen: action.payload,
+            }
+        case 'SET_HAS_MORE':
+            return {
+                ...state,
+                hasMore: action.payload,
+            };
+        case 'SET_LOADING_PRODUCTS':
+            return {
+                ...state,
+                loadingProducts: action.payload,
+            }
+        case 'SET_CURRENT_PAGE': 
+            return {
+                ...state,
+                currentPage: action.payload,
+            }
+        case 'RESET_PRODUCTS':
+            return {
+                ...state,
+                loadingProducts: action.payload.loadingProducts,
+                currentProducts: action.payload.currentProducts,
+                currentPage: action.payload.currentPage,
+                hasMore: action.payload.hasMore,
+            };
+        case 'UPDATE_PRODUCTS':
+            return {
+                ...state,
+                loadingProducts: action.payload.loadingProducts,
+                currentProducts: action.payload.currentProducts,
+                allProducts: action.payload.allProducts,
+                selectedProducts: action.payload.selectedProducts,
+            }
+        default: 
+            return state;
+    }
+}
 
 const Wishlist = () => {
+    // console.log(usePage().props);
+    // return;
+    const { products, filter_query, all_products } = usePage().props;
 
-    const { products, filter_query, total_amount, total_products, all_products } = usePage().props;
+    // Вычесляем общую сумму всех продуктов
+    const totalAmount = all_products.reduce((sum, product) => {
+        return sum + parseFloat(product.price || 0);
+    }, 0);
+    const initialTotalAmount = Math.round(totalAmount * 100) / 100;
+    const initialTotalCount = all_products.length;
 
-    const [isFilterVisible, setIsFilterVisible] = useState(false);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const [selectedProducts, setSelectedProducts] = useState([]);
-    const [selectAll, setSelectAll] = useState(false);
-
-    const [hasMore, setHasMore] = useState(true);
-    
-    const [currentProducts, setCurrentProducts] = useState(products.data);
-
-    const [allProducts, setAllProducts] = useState(all_products);
-    const [allProductsData, setAllProductsData] = useState({
-        totalAmount: total_amount,
-        totalCount: all_products.length,
+    const [state, dispatch] = useReducer(wishlistReducer, {
+        ...initialState,
+        currentProducts: products.data,
+        allProducts: all_products,
+        allProductsData: {
+            totalAmount: initialTotalAmount,
+            totalCount: initialTotalCount,
+        },
+        selectedFilters: filter_query.filters ? filter_query.filters.split(',') : [],
+        selectedOrder: filter_query.order || 'date_desc',
+        isFilterVisible: false,
+        isModalOpen: false,
+        loadingProducts: false,
     });
 
-    const [currentPage, setCurrentPage] = useState(1);
+    const fetchProducts = (updatedFilters = state.selectedFilters, updatedOrder = state.selectedOrder) => {
+        dispatch({
+            type: 'RESET_PRODUCTS',
+            payload: {
+                loadingProducts: true,
+                currentProducts: [],
+                currentPage: 1,
+                hasMore: true,
+            }
+        })
+        const params = {};
 
-    // Извлечение значений сортировки и фильтров из filter_query
-    const initialSort = filter_query.order || 'date_desc';
-    const initialFilters = filter_query.filters ? filter_query.filters.split(',') : [];
-
-    const [selectedFilters, setSelectedFilters] = useState(initialFilters);
-    const [selectedOrder, setSelectedOrder] = useState(initialSort);
-
-    const fetchProducts = () => {
-        setCurrentProducts([]);
-        const params = {
-            // page: currentPage,
-        };
-
-        // Добавляем параметр сортировки только если он не равен значению по умолчанию
-        if (selectedOrder !== 'date_desc') {
-            params.order = selectedOrder;
+        if (updatedOrder !== 'date_desc') {
+            params.order = updatedOrder;
         }
 
-        // Добавляем параметр фильтров только если фильтры не пустые
-        if (selectedFilters.length > 0) {
-            params.filters = selectedFilters.join(',');
+        if (updatedFilters.length > 0) {
+            params.filters = updatedFilters.join(',');
         }
-        console.log(selectedOrder);
+
         router.get(route('profile.wishlist'), params, {
             preserveState: true,
             preserveScroll: true,
-            only: ['products'],
+            only: ['products', 'all_products'],
             onSuccess: (page) => {
-                // setCurrentProducts(prevProducts => [...prevProducts, ...page.props.products.data]);
-                setCurrentProducts([]);
-                setCurrentProducts(prevProducts => [...prevProducts, ...page.props.products.data]);
+
+                dispatch({
+                    type: 'UPDATE_PRODUCTS',
+                    payload: {
+                        currentProducts: page.props.products.data,
+                        allProducts: page.props.all_products,
+                        selectedProducts: [],
+                        loadingProducts: false,
+                    }
+                })             
             }
         });
-    }
-
-
-    useEffect(() => {
-        // Проверяем, выбраны ли все продукты
-        const allSelected = all_products.length > 0 && all_products.every(product => selectedProducts.includes(product.id));
-        setSelectAll(allSelected);
-
-        // Обновляем количество и сумму выбранных товаров
-        if (selectedProducts.length === 0) {
-            // Возвращаем к исходным значениям, если ни один товар не выбран
-            setAllProductsData({
-                totalCount: total_products,
-                totalAmount: total_amount,
-            });
-
-        } else {
-
-            const totalAmount = selectedProducts.reduce((sum, productId) => {
-                const product = allProducts.find(p => p.id === productId);
-                return sum + (product ? parseFloat(product.price) : 0);
-            }, 0);
-
-            // Округление суммы до двух десятичных знаков
-            const roundedTotalAmount = Math.round(totalAmount * 100) / 100;
-
-            setAllProductsData({
-                totalCount: selectedProducts.length,
-                totalAmount: roundedTotalAmount
-            });
-        }
-    }, [selectedProducts, currentProducts, allProducts]);
-
-    const handleButtonClick = (event) => {
-        event.stopPropagation();
-        setIsFilterVisible(!isFilterVisible);
-    }
-
-    const handleSelectAll = () => {
-        if (selectAll) {
-            setSelectedProducts([]);
-        } else {
-            setSelectedProducts(all_products.map(product => product.id));
-        }
-        setSelectAll(!selectAll);
-    }
-
-    const handleProductSelect = (productId) => {
-        if (selectedProducts.includes(productId)) {
-            setSelectedProducts(selectedProducts.filter(id => id !== productId));
-        } else {
-            setSelectedProducts([...selectedProducts, productId]);
-        }
-        setSelectAll(false);       
     };
 
-    // Метод для загрузки старницы при скроле
-    // TODO
+    const handleSelectAll = () => {
+        if (state.selectAll) {
+            dispatch({
+                type: 'SET_SELECTED_PRODUCTS',
+                payload: [],
+            });
+        } else {
+            dispatch({
+                type: 'SET_SELECTED_PRODUCTS',
+                payload: state.allProducts.map(product => product.id),
+            });
+        }
+    };
+    
+    const handleProductSelect = (productId) => {
+        const updatedSelectedProducts = state.selectedProducts.includes(productId)
+            ? state.selectedProducts.filter(id => id !== productId)
+            : [...state.selectedProducts, productId];
+
+        dispatch({
+            type: 'SET_SELECTED_PRODUCTS',
+            payload: updatedSelectedProducts,
+        });
+    };
+
+    const handleDeleteClick = () => {
+        dispatch({
+            type: 'SET_IS_MODAL_OPEN',
+            payload: true,
+        });
+    };
+
+    const handleDeleteSuccess = (deletedProductIds) => {
+        dispatch({
+            type: 'UPDATE_PRODUCTS',
+            payload: {
+                currentProducts: state.currentProducts.filter(product => !deletedProductIds.includes(product.id)),
+                allProducts: state.allProducts.filter(product => !deletedProductIds.includes(product.id)),
+                selectedProducts: [],
+            }
+        })
+    };
+
     const fetchMoreProducts = () => {
-        router.get(route('profile.wishlist'), {page: currentPage + 1}, {
+
+        const params = {};
+
+        if (state.selectedOrder !== 'date_desc') {
+            params.order = state.selectedOrder;
+        }
+
+        if (state.selectedFilters.length > 0) {
+            params.filters = state.selectedFilters.join(',');
+        }
+
+        const nextPage = state.currentPage + 1;
+        params.page = nextPage;
+        // params.page = state.currentPage + 1;
+
+        router.get(route('profile.wishlist'), params , {
             preserveState: true,
             preserveScroll: true,
             only: ['products'],
             onSuccess: (page) => {
                 if (page.props.products.data.length > 0) {
-                    setCurrentProducts(prevProducts => [...prevProducts, ...page.props.products.data]);
-                    setCurrentPage(currentPage + 1);
-    
+                    dispatch({
+                        type: 'LOAD_MORE_PRODUCTS',
+                        payload: page.props.products.data,
+                    });
 
+                    dispatch({
+                        type: 'SET_CURRENT_PAGE',
+                        payload: nextPage,
+                    });
+                    // window.history.replaceState({}, document.title, window.location.pathname + window.location.search.replace(/[\?&]page=\d+/, ''));
                 } else {
-                    setHasMore(false); // Если нет больше продуктов
+                    dispatch({
+                        type: 'SET_HAS_MORE',
+                        payload: false,
+                    });
                 }
+
                 // Удаляем параметр page из URL
                 const url = new URL(window.location);
                 url.searchParams.delete('page');
@@ -143,21 +284,58 @@ const Wishlist = () => {
         });
     };
 
-    const handleDeleteClick = () => {
-        setIsModalOpen(true);
-    };
+    const handleButtonClick = (event) => {
+        event.stopPropagation();
+        dispatch({
+            type: 'SET_IS_FILTER_VISIBLE',
+            payload: (!state.isFilterVisible),
+        });
+    }
 
-    const handleDeleteSuccess = (deletedProductIds) => {
-        setCurrentProducts(prevProducts =>
-            prevProducts.filter(product => !deletedProductIds.includes(product.id))
-        );
-        setSelectedProducts([]); // Очистка выбранных продуктов
-    };
+    useEffect(() => {
+        // Проверяем, выбраны ли все продукты
+        const allSelected = state.allProducts.length > 0 && state.allProducts.every(product => state.selectedProducts.includes(product.id));
+
+        dispatch({
+            type: 'SET_SELECT_ALL',
+            payload: allSelected,
+        });
+
+        // Обновляем количество и сумму выбранных товаров
+        if (state.selectedProducts.length === 0) {
+            // Возвращаем к исходным значениям, если ни один товар не выбран
+            dispatch({
+                type: 'RESET_PRODUCTS_DATA',
+                payload: {
+                    totalCount: initialTotalCount,
+                    totalAmount: initialTotalAmount,
+                },
+            });
+
+        } else {
+            // Вычисляем общую сумму выбранных продуктов
+            const totalAmount = state.selectedProducts.reduce((sum, productId) => {
+                const product = state.allProducts.find(p => p.id === productId);
+                return sum + (product ? parseFloat(product.price) : 0);
+            }, 0);
+
+            // Округление суммы до двух десятичных знаков
+            const roundedTotalAmount = Math.round(totalAmount * 100) / 100;
+
+            dispatch({
+                type: 'UPDATE_SELECTED_PRODUCTS_DATA',
+                payload: {
+                    totalCount: state.selectedProducts.length,
+                    totalAmount: roundedTotalAmount,
+                },
+            });
+        }
+    }, [state.selectedProducts, state.currentProducts, state.allProducts]);
 
     return (
         <SidebarProfileLayout>
 
-            {products.length < 1 ? (
+            {state.allProductsData.totalCount < 0 ? (
                 <div className="w-full flex justify-center items-center p-5 h-full">
                     <HeartIcon className="w-52 h-52 text-gray-500 m-20"/>
                     <div>
@@ -168,10 +346,13 @@ const Wishlist = () => {
             ) : (
                 <div>
                     <div className="border border-slate-300 rounded-lg m-5 p-5">
+
                         <div 
                             className="text-2xl font-bold mb-5"
                         >
-                            {`${declineProductCount(allProductsData.totalCount)} на сумму: ${allProductsData.totalAmount} P`}
+                            {`${declineProductCount(state.allProductsData.totalCount ?? initialTotalCount)} 
+                                на сумму: ${state.allProductsData.totalAmount ?? initialTotalAmount} P`
+                            }
                         </div>
 
                         <div className="flex justify-between items-center">
@@ -183,23 +364,21 @@ const Wishlist = () => {
                                         gap-1 hover:bg-orange-100 w-full cursor-pointer"
                                         onClick={(e) => e.stopPropagation()}
                                 >
-                                    <ButtonCheckbox checked={selectAll} onChange={handleSelectAll} />
+                                    <ButtonCheckbox checked={state.selectAll} onChange={handleSelectAll} />
                                     <span className="ml-2 text-sm text-gray-600">Выбрать все</span>
                                 </label>
 
                                 <ButtonSortAndFilters 
                                     handleButtonClick={handleButtonClick} 
-                                    isFilterVisible={isFilterVisible} 
-                                    setIsFilterVisible={setIsFilterVisible}
-                                    selectedFilters={selectedFilters}
-                                    setSelectedFilters={setSelectedFilters}
-                                    selectedOrder={selectedOrder}
-                                    setSelectedOrder={setSelectedOrder}
+                                    isFilterVisible={state.isFilterVisible} 
+                                    selectedFilters={state.selectedFilters}
+                                    selectedOrder={state.selectedOrder}
                                     fetchProducts={fetchProducts}
+                                    dispatch={dispatch}
                                 />
 
 
-                                {selectedProducts.length > 0 && (
+                                {state.selectedProducts.length > 0 && (
                                     <div className="flex justify-center items-center border rounded-lg relative h-full">
                                         <button 
                                             className="p-2 hover:bg-orange-100"
@@ -209,11 +388,11 @@ const Wishlist = () => {
                                         </button>
                                     </div>
                                 )}
-                                {isModalOpen && (
+                                {state.isModalOpen && (
                                     <ModalOpenDeleteProduct 
-                                        setIsModalOpen={setIsModalOpen} 
-                                        selectedProducts={selectedProducts} 
+                                        selectedProducts={state.selectedProducts} 
                                         onDeleteSuccess={handleDeleteSuccess}
+                                        dispatch={dispatch}
                                     />
                                 )}
 
@@ -230,24 +409,32 @@ const Wishlist = () => {
                     </div>
 
                     <InfiniteScroll
-                        dataLength={currentProducts.length}
+                        dataLength={state.currentProducts.length}
                         next={fetchMoreProducts}
-                        hasMore={hasMore}
-                        loader={<h4>Loading...</h4>}
-                    >
-                        <div className="p-5 gap-10 grid grid-cols-1">
-                            {currentProducts.map((product, index) => (
-                                <ProductList
-                                    key={product.id}
-                                    product={product}
-                                    mode={'list'}
-                                    checkbox={true}
-                                    isSelected={selectedProducts.includes(product.id)}
-                                    onProductSelected={() => handleProductSelect(product.id)}
-                                />
-                            ))}
-                        </div>
+                        hasMore={state.hasMore}
+                        loader={<div className="p-5 flex justify-center items-center">Загрузка...</div>}
+                    >  
+                        {state.loadingProducts ? (
+                            <div className="p-5 gap-10 grid grid-cols-1">
+                                <ProductPlaceholderCard mode="list" count={5}/>
+                            </div>
+                        ): (
+                            <div className="p-5 gap-10 grid grid-cols-1">
+                                {state.currentProducts.map((product, index) => (
+                                    <ProductList
+                                        key={product.id}
+                                        product={product}
+                                        mode={'list'}
+                                        checkbox={true}
+                                        isSelected={state.selectedProducts.includes(product.id)}
+                                        onProductSelected={() => handleProductSelect(product.id)}
+                                    />
+                                ))}
+                            </div>
+                        )}
+
                     </InfiniteScroll>
+                    
 
                 </div>
             )}
@@ -260,24 +447,26 @@ export default Wishlist;
 
 const ButtonSortAndFilters = ({ 
     isFilterVisible, 
-    setIsFilterVisible, 
     handleButtonClick, 
     selectedFilters, 
-    setSelectedFilters, 
     selectedOrder, 
-    setSelectedOrder, 
-    fetchProducts 
+    fetchProducts,
+    dispatch
 }) => {
     
     const [filterHeight, setFilterHeight] = useState(0);
     const buttonRef = useRef(null);
     const filterRef = useRef(null);    
 
+    const hasFiltersOrSort = selectedFilters.length > 0 || selectedOrder !== 'date_desc';
     // Обработчик клика по документу для закрытия блока фильтров при клике вне его
     useEffect(() => {
         const handleClickOutside = (event) => {
             if (filterRef.current && !filterRef.current.contains(event.target) && buttonRef.current && !buttonRef.current.contains(event.target)) {
-                setIsFilterVisible(false);
+                dispatch({ 
+                    type: 'SET_IS_FILTER_VISIBLE', 
+                    payload: false 
+                });
             }
         };
 
@@ -297,11 +486,18 @@ const ButtonSortAndFilters = ({
 
             <button 
                 onClick={handleButtonClick}
-                className="p-2 hover:bg-orange-100"
+                // className="p-2 hover:bg-orange-100"
+                className={`p-2 rounded-lg ${hasFiltersOrSort ? 'bg-orange-500 text-white' : 'hover:bg-orange-100'}`}
                 ref={buttonRef}
             >
                 <AdjustmentsHorizontalIcon className="h-[22px] w-[22px] "/>
             </button>
+
+            {/* {hasFiltersOrSort && (
+                <div className="absolute z-50 right-1 top-1">
+                    <div className="rounded-full bg-orange-500 w-3 h-3"></div>
+                </div>
+            )} */}
 
             <div 
                 className={`absolute top-[40px] border border-slate-300 rounded-lg z-10 bg-white min-w-[300px]
@@ -313,11 +509,11 @@ const ButtonSortAndFilters = ({
                     }}
                 ref={filterRef}
             >
-                <WishlistOrder selectedOrder={selectedOrder} setSelectedOrder={setSelectedOrder} fetchProducts={fetchProducts}/>
+                <WishlistOrder selectedOrder={selectedOrder} fetchProducts={fetchProducts} dispatch={dispatch}/>
 
                 <hr/>
 
-                <WishlistFilters selectedFilters={selectedFilters} setSelectedFilters={setSelectedFilters} fetchProducts={fetchProducts}/>
+                <WishlistFilters selectedFilters={selectedFilters} fetchProducts={fetchProducts} dispatch={dispatch}/>
 
             </div>
 
@@ -325,24 +521,29 @@ const ButtonSortAndFilters = ({
     );
 }
 
-const WishlistFilters = ({ selectedFilters, setSelectedFilters, fetchProducts }) => {
+const WishlistFilters = ({ selectedFilters, fetchProducts, dispatch }) => {
+
+    const { categoryOptions } = usePage().props;
+    // TODO
+    const categoriesArray = Object.values(categoryOptions);
+    // console.log(categoryOptions);
 
     const filtersOptions = [
         {name: 'В наличии (1)', value: 'in_stock'},
         {name: 'Нет в наличии', value: 'out_of_stock'},
         {name: 'С уведомлениями', value: 'with_notifications'},
-        {name: 'Процессоры', value: 'processors'}
     ];
 
     const handleFilterChange = (value) => {
-        setSelectedFilters(prevFilters => {
-            const updatedFilters = prevFilters.includes(value) 
-                ? prevFilters.filter(filter => filter !== value) 
-                : [...prevFilters, value];
-                
-            fetchProducts();
-            return updatedFilters;
-        });
+        const updatedFilters = selectedFilters.includes(value)
+            ? selectedFilters.filter(filter => filter !== value)
+            : [...selectedFilters, value];
+
+            dispatch({
+                type: 'SET_FILTERS',
+                payload: updatedFilters,
+            });
+            fetchProducts(updatedFilters);
     };
 
     return (
@@ -354,7 +555,7 @@ const WishlistFilters = ({ selectedFilters, setSelectedFilters, fetchProducts })
                     key={index}
                     className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
                         hover:text-black hover:bg-orange-100" 
-                    onClick={() => handleFilterChange(option.value)}
+                    // onClick={() => handleFilterChange(option.value)}
                 >
                     <ButtonCheckbox
                         checked={selectedFilters.includes(option.value)}
@@ -365,11 +566,27 @@ const WishlistFilters = ({ selectedFilters, setSelectedFilters, fetchProducts })
                     </span>
                 </label>
             ))}
+            {categoriesArray.map((option, index) => (
+                <label 
+                    key={option.id}
+                    className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
+                        hover:text-black hover:bg-orange-100" 
+                    // onClick={() => handleFilterChange(option.value)}
+                >
+                    <ButtonCheckbox
+                        checked={selectedFilters.includes(option.slug)}
+                        onChange={() => handleFilterChange(option.slug)}
+                    />
+                    <span className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">
+                        {option.name}
+                    </span>
+                </label>
+            ))}
         </div>
     );
 }
 
-const WishlistOrder = ({ selectedOrder, setSelectedOrder, fetchProducts }) => {
+const WishlistOrder = ({ selectedOrder, fetchProducts, dispatch }) => {
 
     const sortingOptions = [
         {name: 'По убыванию цены', value: 'price_desc'},
@@ -378,7 +595,10 @@ const WishlistOrder = ({ selectedOrder, setSelectedOrder, fetchProducts }) => {
     ];
 
     const handleSortChange = (value) => {
-        setSelectedOrder(value);
+        dispatch({
+            type: 'SET_ORDER',
+            payload: value,
+        });
         fetchProducts();
     };
 
@@ -405,30 +625,36 @@ const WishlistOrder = ({ selectedOrder, setSelectedOrder, fetchProducts }) => {
     );
 }
 
-
-const ModalOpenDeleteProduct = ({ setIsModalOpen, selectedProducts, onDeleteSuccess }) => {
+const ModalOpenDeleteProduct = ({ selectedProducts, onDeleteSuccess, dispatch }) => {
 
     const handleCloseModal = () => {
-        setIsModalOpen(false);
+        dispatch({
+            type: 'SET_IS_MODAL_OPEN', 
+            payload: false
+        })
     };
 
     const handleDeleteProduct = () => {
-        try {
-            router.delete(route('profile.wishlist.delete', { product_ids: selectedProducts }),
-            {
-                preserveState: true,
-                preserveScroll: true, // Сохраняет позицию скролла после запроса
-                onSuccess: () => {
-                    onDeleteSuccess(selectedProducts);
-                    handleCloseModal();
-                },
-                onError: (error) => {
-                    console.error('Ошибка при удалении товаров:', error);
-                }
-            });
-        } catch (error) {
-            console.error('Ошибка при удалении товаров:', error);
-        }
+        dispatch({
+            type: 'SET_LOADING_PRODUCTS',
+            payload: true,
+        });
+        router.delete(route('profile.wishlist.delete', { product_ids: selectedProducts }),
+        {
+            preserveState: true,
+            preserveScroll: true, // Сохраняет позицию скролла после запроса
+            onSuccess: () => {
+                onDeleteSuccess(selectedProducts);
+                handleCloseModal();
+                dispatch({
+                    type: 'SET_LOADING_PRODUCTS',
+                    payload: false,
+                });
+            },
+            onError: (error) => {
+                console.error('Ошибка при удалении товаров:', error);
+            }
+        });
     };
     
 

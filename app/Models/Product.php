@@ -117,7 +117,4 @@ class Product extends Model
         return $query->withCount('ratings')
             ->withAvg('ratings', 'rating_value');
     }
-
-
-
 }
