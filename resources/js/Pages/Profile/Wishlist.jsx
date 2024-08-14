@@ -122,6 +122,7 @@ function wishlistReducer(state, action) {
                 currentProducts: action.payload.currentProducts,
                 allProducts: action.payload.allProducts,
                 selectedProducts: action.payload.selectedProducts,
+                hasMore: action.payload.hasMore,
             }
         default: 
             return state;
@@ -129,11 +130,8 @@ function wishlistReducer(state, action) {
 }
 
 const Wishlist = () => {
-    // console.log(usePage().props);
-    // return;
-    const { products, filter_query, all_products } = usePage().props;
+    const { products, filter_query, all_products, categoryOptions } = usePage().props;
 
-    // Вычесляем общую сумму всех продуктов
     const totalAmount = all_products.reduce((sum, product) => {
         return sum + parseFloat(product.price || 0);
     }, 0);
@@ -150,9 +148,7 @@ const Wishlist = () => {
         },
         selectedFilters: filter_query.filters ? filter_query.filters.split(',') : [],
         selectedOrder: filter_query.order || 'date_desc',
-        isFilterVisible: false,
-        isModalOpen: false,
-        loadingProducts: false,
+        hasMore: !!products.next_page_url,
     });
 
     const fetchProducts = (updatedFilters = state.selectedFilters, updatedOrder = state.selectedOrder) => {
@@ -188,8 +184,10 @@ const Wishlist = () => {
                         allProducts: page.props.all_products,
                         selectedProducts: [],
                         loadingProducts: false,
+                        hasMore: !!page.props.products.next_page_url,
                     }
-                })             
+                });
+
             }
         });
     };
@@ -227,14 +225,28 @@ const Wishlist = () => {
     };
 
     const handleDeleteSuccess = (deletedProductIds) => {
-        dispatch({
-            type: 'UPDATE_PRODUCTS',
-            payload: {
-                currentProducts: state.currentProducts.filter(product => !deletedProductIds.includes(product.id)),
-                allProducts: state.allProducts.filter(product => !deletedProductIds.includes(product.id)),
-                selectedProducts: [],
-            }
-        })
+        // console.log(state.categoryOptions);
+        const updatedCurrentProducts = state.currentProducts.filter(product => !deletedProductIds.includes(product.id));
+        const updatedAllProducts = state.allProducts.filter(product => !deletedProductIds.includes(product.id));
+    
+        if (updatedAllProducts.length === 0) {
+            const updatedFilters = [];
+            dispatch({
+                type: 'SET_FILTERS',
+                payload: updatedFilters,
+            });
+
+            fetchProducts(updatedFilters);
+        } else {
+            dispatch({
+                type: 'UPDATE_PRODUCTS',
+                payload: {
+                    currentProducts: updatedCurrentProducts,
+                    allProducts: updatedAllProducts,
+                    selectedProducts: [],
+                }
+            });
+        }
     };
 
     const fetchMoreProducts = () => {
@@ -251,8 +263,7 @@ const Wishlist = () => {
 
         const nextPage = state.currentPage + 1;
         params.page = nextPage;
-        // params.page = state.currentPage + 1;
-
+        
         router.get(route('profile.wishlist'), params , {
             preserveState: true,
             preserveScroll: true,
@@ -268,7 +279,7 @@ const Wishlist = () => {
                         type: 'SET_CURRENT_PAGE',
                         payload: nextPage,
                     });
-                    // window.history.replaceState({}, document.title, window.location.pathname + window.location.search.replace(/[\?&]page=\d+/, ''));
+
                 } else {
                     dispatch({
                         type: 'SET_HAS_MORE',
@@ -334,8 +345,7 @@ const Wishlist = () => {
 
     return (
         <SidebarProfileLayout>
-
-            {state.allProductsData.totalCount < 0 ? (
+            {state.allProductsData.totalCount < 1 ? (
                 <div className="w-full flex justify-center items-center p-5 h-full">
                     <HeartIcon className="w-52 h-52 text-gray-500 m-20"/>
                     <div>
@@ -372,6 +382,7 @@ const Wishlist = () => {
                                     handleButtonClick={handleButtonClick} 
                                     isFilterVisible={state.isFilterVisible} 
                                     selectedFilters={state.selectedFilters}
+                                    categoryOptions={categoryOptions}
                                     selectedOrder={state.selectedOrder}
                                     fetchProducts={fetchProducts}
                                     dispatch={dispatch}
@@ -412,7 +423,7 @@ const Wishlist = () => {
                         dataLength={state.currentProducts.length}
                         next={fetchMoreProducts}
                         hasMore={state.hasMore}
-                        loader={<div className="p-5 flex justify-center items-center">Загрузка...</div>}
+                        loader={<div className="px-5 flex justify-center items-center">Загрузка...</div>}
                     >  
                         {state.loadingProducts ? (
                             <div className="p-5 gap-10 grid grid-cols-1">
@@ -449,6 +460,7 @@ const ButtonSortAndFilters = ({
     isFilterVisible, 
     handleButtonClick, 
     selectedFilters, 
+    categoryOptions,
     selectedOrder, 
     fetchProducts,
     dispatch
@@ -479,7 +491,7 @@ const ButtonSortAndFilters = ({
             document.removeEventListener("mousedown", handleClickOutside);
         };
         
-    }, [filterRef, buttonRef]);
+    }, [filterRef, buttonRef, categoryOptions]);
 
     return (
         <div className="flex justify-center items-center border rounded-lg relative h-full">
@@ -513,7 +525,7 @@ const ButtonSortAndFilters = ({
 
                 <hr/>
 
-                <WishlistFilters selectedFilters={selectedFilters} fetchProducts={fetchProducts} dispatch={dispatch}/>
+                <WishlistFilters selectedFilters={selectedFilters} categoryOptions={categoryOptions} fetchProducts={fetchProducts} dispatch={dispatch}/>
 
             </div>
 
@@ -521,12 +533,7 @@ const ButtonSortAndFilters = ({
     );
 }
 
-const WishlistFilters = ({ selectedFilters, fetchProducts, dispatch }) => {
-
-    const { categoryOptions } = usePage().props;
-    // TODO
-    const categoriesArray = Object.values(categoryOptions);
-    // console.log(categoryOptions);
+const WishlistFilters = ({ selectedFilters, categoryOptions, fetchProducts, dispatch }) => {
 
     const filtersOptions = [
         {name: 'В наличии (1)', value: 'in_stock'},
@@ -566,7 +573,7 @@ const WishlistFilters = ({ selectedFilters, fetchProducts, dispatch }) => {
                     </span>
                 </label>
             ))}
-            {categoriesArray.map((option, index) => (
+            {categoryOptions.map((option, index) => (
                 <label 
                     key={option.id}
                     className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
@@ -650,6 +657,10 @@ const ModalOpenDeleteProduct = ({ selectedProducts, onDeleteSuccess, dispatch })
                     type: 'SET_LOADING_PRODUCTS',
                     payload: false,
                 });
+                // Удаляем параметр page из URL
+                const url = new URL(window.location);
+                url.searchParams.delete('page');
+                window.history.replaceState(null, '', url);
             },
             onError: (error) => {
                 console.error('Ошибка при удалении товаров:', error);

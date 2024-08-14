@@ -39,11 +39,11 @@ class WishlistController extends Controller
             ->with('product.category')
             ->get()
             ->pluck('product.category')
-            ->unique('id');
+            ->unique('id')
+            ->values()
+            ->toArray();
 
-        // Получаем все id нужных товаров в избранном
         $wishlistProductIds = Wishlist::where('user_id', $user->id)->pluck('product_id');
-
 
         $query = Product::whereIn('products.id', $wishlistProductIds);
         $queryAllProducts = Product::whereIn('products.id', $wishlistProductIds);
@@ -104,30 +104,7 @@ class WishlistController extends Controller
                             ->withAvg('ratings', 'rating_value')
                             ->paginate(5);
 
-
         $allProducts = $queryAllProducts->select(['id', 'price'])->get();
-        // Получаем все товары с полями id и price (Для выбора всех)
-        // $allProducts = Product::whereIn('id', $wishlistProductIds)
-        //     ->select(['id', 'price', 'category_id'])
-        //     ->get();
-        // $totalProducts = $allProducts->count();
-        // TODO округление денежных значений
-        // $totalAmount = round($allProducts->sum('price'), 2);
-
-
-
-        // // Получаем уникальные ID категории
-        // $categoryIds = $allProducts->pluck('category_id')->unique();
-        // // Получаем категории для фильтрации
-        // $categoryOptions = Category::whereIn('id', $categoryIds)
-        //     ->select(['id', 'name', 'slug'])
-        //     ->get();
-
-        // $products = Product::whereIn('id', $wishlistProductIds)
-        //     ->with('images')
-        //     ->withCount('ratings')
-        //     ->withAvg('ratings', 'rating_value')
-        //     ->paginate(5);
 
         return Inertia::render('Profile/Wishlist', [
             'products' => $products,
@@ -136,15 +113,6 @@ class WishlistController extends Controller
             'categoryOptions' => $categoryOptions,
         ]);
         
-        // $product = Product::where('id', 66)->with('images', 'category')->get();
-
-        // return Inertia::render('Profile/Wishlist', [
-        //     'filters_query' => $request->all(),
-        //     'product' => $product,
-        //     'wishlist' => new WishlistCollection(
-        //         $product = Product::where('id', 66)->with('images', 'category')->get(),
-        //     ),
-        // ]);
     }
 
     public function add(Request $request) : RedirectResponse
