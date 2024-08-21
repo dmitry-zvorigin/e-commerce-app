@@ -1,0 +1,27 @@
+.react-datepicker__day--in-selecting-range:not(.react-datepicker__day--in-range),
+.react-datepicker__month-text--in-selecting-range:not(.react-datepicker__day--in-range),
+.react-datepicker__quarter-text--in-selecting-range:not(.react-datepicker__day--in-range),
+.react-datepicker__year-text--in-selecting-range:not(.react-datepicker__day--in-range) {
+  @apply bg-orange-500 text-black;
+}
+
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range,
+.react-datepicker__day--selected,
+.react-datepicker__day--selecting-range-start,
+.react-datepicker__day--selecting-range-end {
+  @apply bg-orange-500 text-black;
+}
+
+.react-datepicker__day--today {
+  @apply bg-orange-300 text-black rounded-md;
+}
+
+.react-datepicker__day:hover {
+  @apply text-orange-500;
+}
+
+.react-datepicker__day--in-range:hover,
+.react-datepicker__day--in-selecting-range:hover {
+  @apply bg-orange-600;
+}

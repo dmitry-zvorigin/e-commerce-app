@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useReducer } from "react";
 import ProductPlaceholderCard from "@/Components/Product/ProductPlaceholderCard";
+import '../../../css/Calendar.css';
 
 const initialState = {
     selectedProducts: [],
