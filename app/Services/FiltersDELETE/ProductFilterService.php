@@ -27,6 +27,7 @@ class ProductFilterService
 
     public function filterProducts($productsQuery, array $filtersQuery)
     {
+        // dump($filtersQuery);
         $slugs = array_keys($filtersQuery);
         $attributesBySlug = $this->attributeRepository->getAttributeIdsBySlugs($slugs);
 

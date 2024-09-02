@@ -19,13 +19,40 @@ class ProductService
     ) {
         $this->productFilterService = $productFilterService;
         $this->productSorterService = $productSorterService;
+        $this->productsQuery = Product::query();
     }
 
 
-    public function createProductQuery(Category $category)
-    {
-        $this->productsQuery = Product::where('category_id', $category->id);
+    // public function createProductQuery(array $params = [])
+    // {
+    //     $this->productsQuery = Product::query();
 
+    //     // Фильтрация по категориям
+    //     if (!empty($params['category_ids']) && is_array($params['category_ids'])) {
+    //         $this->productsQuery->whereIn('category_id', $params['category_ids']);
+    //     }
+
+    //     // dd($params);
+    //     // Фильтрация по продуктам
+    //     if (!empty($params['product_ids']) && is_array($params['product_ids'])) {
+    //         $this->productsQuery->whereIn('id', $params['product_ids']);
+    //     }
+
+    //     return $this;
+
+    //     // $this->productsQuery = Product::where('category_id', $category->id);
+
+    // }
+
+    public function whereCategory(array $params)
+    {
+        $this->productsQuery->whereIn('category_id', $params);
+        return $this;
+    }
+
+    public function whereProduct(array $params)
+    {
+        $this->productsQuery->whereIn('id', $params);
         return $this;
     }
 

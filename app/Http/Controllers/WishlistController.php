@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Wishlist;
+use App\Services\Filters\ProductFilterService;
+use App\Services\ProductService;
+use App\Services\Sorting\ProductSorterService;
 use App\Services\Wishlist\DeleteMultipleProductsService;
 use App\Services\Wishlist\DeleteSingleProductService;
 use Illuminate\Http\RedirectResponse;
@@ -43,10 +46,12 @@ class WishlistController extends Controller
             ->values()
             ->toArray();
 
-        $wishlistProductIds = Wishlist::where('user_id', $user->id)->pluck('product_id');
+        $wishlistProductIds = Wishlist::where('user_id', $user->id)->pluck('product_id')->toArray();
 
         $query = Product::whereIn('products.id', $wishlistProductIds);
         $queryAllProducts = Product::whereIn('products.id', $wishlistProductIds);
+
+        
 
         if ($request->has('filters')) {
             $filters = explode(',', $request->input('filters'));
@@ -103,6 +108,20 @@ class WishlistController extends Controller
                             ->withCount('ratings')
                             ->withAvg('ratings', 'rating_value')
                             ->paginate(5);
+
+        
+        // $products = $this->productService
+        //     ->createProductQuery(['product_ids' => $wishlistProductIds])
+        //     // ->filter($filtersQuery)
+        //     // ->sort($filtersQuery)
+        //     ->getProductQuery()
+        //     ->with(['images'])
+        //     ->withCount('ratings')
+        //     ->withAvg('ratings', 'rating_value')
+        //     ->paginate(5);
+
+        
+        // dd($products);
 
         $allProducts = $queryAllProducts->select(['id', 'price'])->get();
 
