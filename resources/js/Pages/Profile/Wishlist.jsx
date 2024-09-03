@@ -11,10 +11,14 @@ import { useReducer } from "react";
 import ProductPlaceholderCard from "@/Components/Product/ProductPlaceholderCard";
 import '../../../css/Calendar.css';
 
+
 const initialState = {
     selectedProducts: [],
     selectAll: false,
-    selectedFilters: [],
+    selectedFilters: {
+        filters: [],
+        categories: [],
+    },
     selectedOrder: 'date_desc',
     hasMore: true,
     currentProducts: [],
@@ -76,7 +80,18 @@ function wishlistReducer(state, action) {
         case 'SET_FILTERS': 
             return {
                 ...state,
-                selectedFilters: action.payload,
+                selectedFilters: {
+                    filters: action.payload.filters || state.selectedFilters.filters,
+                    categories: action.payload.categories || state.selectedFilters.categories,
+                },
+            };
+        case 'DESTROY_FILTERS':
+            return {
+                ...state,
+                selectedFilters: {
+                    filters: [],
+                    categories: [],
+                },
             };
         case 'SET_ORDER': 
             return {
@@ -147,7 +162,10 @@ const Wishlist = () => {
             totalAmount: initialTotalAmount,
             totalCount: initialTotalCount,
         },
-        selectedFilters: filter_query.filters ? filter_query.filters.split(',') : [],
+        selectedFilters: {
+            filters: filter_query.filters ? filter_query.filters.split(',') : [],
+            categories: filter_query.categories ? filter_query.categories.split(',') : [],
+        },
         selectedOrder: filter_query.order || 'date_desc',
         hasMore: !!products.next_page_url,
     });
@@ -167,9 +185,13 @@ const Wishlist = () => {
         if (updatedOrder !== 'date_desc') {
             params.order = updatedOrder;
         }
+        
+        if (updatedFilters.filters.length > 0) {
+            params.filters = updatedFilters.filters.join(',');
+        }
 
-        if (updatedFilters.length > 0) {
-            params.filters = updatedFilters.join(',');
+        if (updatedFilters.categories.length > 0) {
+            params.categories = updatedFilters.categories.join(',');
         }
 
         router.get(route('profile.wishlist'), params, {
@@ -231,7 +253,15 @@ const Wishlist = () => {
         const updatedAllProducts = state.allProducts.filter(product => !deletedProductIds.includes(product.id));
     
         if (updatedAllProducts.length === 0) {
-            const updatedFilters = [];
+
+            const updatedFilters = {
+                filters: [],
+                categories: [],
+            };
+            // dispatch({
+            //     type: 'DESTROY_FILTERS',
+            // });
+
             dispatch({
                 type: 'SET_FILTERS',
                 payload: updatedFilters,
@@ -258,8 +288,12 @@ const Wishlist = () => {
             params.order = state.selectedOrder;
         }
 
-        if (state.selectedFilters.length > 0) {
-            params.filters = state.selectedFilters.join(',');
+        if (state.selectedFilters.filters.length > 0) {
+            params.filters = state.selectedFilters.filters.join(',');
+        }
+
+        if (state.selectedFilters.categories.length > 0) {
+            params.categories = state.selectedFilters.categories.join(',');
         }
 
         const nextPage = state.currentPage + 1;
@@ -376,7 +410,7 @@ const Wishlist = () => {
                                         onClick={(e) => e.stopPropagation()}
                                 >
                                     <ButtonCheckbox checked={state.selectAll} onChange={handleSelectAll} />
-                                    <span className="ml-2 text-sm text-gray-600">Выбрать все</span>
+                                    <span className="mx-2 text-sm text-gray-600 select-none">Выбрать все</span>
                                 </label>
 
                                 <ButtonSortAndFilters 
@@ -517,9 +551,9 @@ const ButtonSortAndFilters = ({
                     overflow-hidden transition-all duration-500 ease-in-out
                     ${isFilterVisible ? 'opacity-100' : 'h-0 opacity-0'}
                     `}
-                    style={{
-                        height: isFilterVisible ? `${filterHeight}px` : '0',
-                    }}
+                style={{
+                    height: isFilterVisible ? `${filterHeight}px` : '0',
+                }}
                 ref={filterRef}
             >
                 <WishlistOrder selectedOrder={selectedOrder} fetchProducts={fetchProducts} dispatch={dispatch}/>
@@ -542,17 +576,50 @@ const WishlistFilters = ({ selectedFilters, categoryOptions, fetchProducts, disp
         {name: 'С уведомлениями', value: 'with_notifications'},
     ];
 
-    const handleFilterChange = (value) => {
-        const updatedFilters = selectedFilters.includes(value)
-            ? selectedFilters.filter(filter => filter !== value)
-            : [...selectedFilters, value];
+    // const handleFilterChange = (value) => {
+    //     const updatedFilters = selectedFilters.includes(value)
+    //         ? selectedFilters.filter(filter => filter !== value)
+    //         : [...selectedFilters, value];
 
-            dispatch({
-                type: 'SET_FILTERS',
-                payload: updatedFilters,
-            });
-            fetchProducts(updatedFilters);
+    //         dispatch({
+    //             type: 'SET_FILTERS',
+    //             payload: updatedFilters,
+    //         });
+    //         fetchProducts(updatedFilters);
+    // };
+
+    const handleFilterChange = (value) => {
+        const isCategoryFilter = categoryOptions.some(option => option.slug === value);
+        let updatedFilters;
+
+        if (isCategoryFilter) {
+            const updatedCategories = selectedFilters.categories.includes(value)
+                ? selectedFilters.categories.filter(filter => filter !== value)
+                : [...selectedFilters.categories, value];
+
+            updatedFilters = {
+                ...selectedFilters,
+                categories: updatedCategories
+            };
+        } else {
+            const updatedOtherFilters = selectedFilters.filters.includes(value)
+                ? selectedFilters.filters.filter(filter => filter !== value)
+                : [...selectedFilters.filters, value];
+
+            updatedFilters = {
+                ...selectedFilters,
+                filters: updatedOtherFilters
+            };
+        }
+
+        dispatch({
+            type: 'SET_FILTERS',
+            payload: updatedFilters,
+        });
+
+        fetchProducts(updatedFilters);
     };
+
 
     return (
         <div className="px-5">
@@ -566,7 +633,7 @@ const WishlistFilters = ({ selectedFilters, categoryOptions, fetchProducts, disp
                     // onClick={() => handleFilterChange(option.value)}
                 >
                     <ButtonCheckbox
-                        checked={selectedFilters.includes(option.value)}
+                        checked={selectedFilters.filters.includes(option.value)}
                         onChange={() => handleFilterChange(option.value)}
                     />
                     <span className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">
@@ -582,7 +649,7 @@ const WishlistFilters = ({ selectedFilters, categoryOptions, fetchProducts, disp
                     // onClick={() => handleFilterChange(option.value)}
                 >
                     <ButtonCheckbox
-                        checked={selectedFilters.includes(option.slug)}
+                        checked={selectedFilters.categories.includes(option.slug)}
                         onChange={() => handleFilterChange(option.slug)}
                     />
                     <span className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">

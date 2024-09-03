@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\FilterWishlistRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Wishlist;
-use App\Services\Filters\ProductFilterService;
-use App\Services\ProductService;
-use App\Services\Sorting\ProductSorterService;
 use App\Services\Wishlist\DeleteMultipleProductsService;
 use App\Services\Wishlist\DeleteSingleProductService;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +14,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Services\ProductFilterService as Filter;
+use App\Services\ProductSortingService as Sorting;
 
 class WishlistController extends Controller
 {
@@ -30,100 +30,38 @@ class WishlistController extends Controller
         $this->deleteMultipleProductService = $deleteMultipleProductService;
     }
 
-    public function show(Request $request) : Response
+    public function show(FilterWishlistRequest $request) : Response
     {
         // TODO 
         // Сейчас я запрашиваю все продукты из избранного
         // Хотелось бы переделать. 
+        $filtersQuery = $request->filterQuery();
 
         $user = Auth::user();
 
-        $categoryOptions = $user->wishlist()
+        $wishlist = Wishlist::where('user_id', $user->id)
             ->with('product.category')
-            ->get()
-            ->pluck('product.category')
-            ->unique('id')
-            ->values()
-            ->toArray();
-
-        $wishlistProductIds = Wishlist::where('user_id', $user->id)->pluck('product_id')->toArray();
-
-        $query = Product::whereIn('products.id', $wishlistProductIds);
-        $queryAllProducts = Product::whereIn('products.id', $wishlistProductIds);
-
+            ->get();
         
+        $categoryOptions = $wishlist->pluck('product.category')->unique('id')->values()->toArray();
+        $wishlistProductIds = $wishlist->pluck('product_id')->toArray();
 
-        if ($request->has('filters')) {
-            $filters = explode(',', $request->input('filters'));
+        $baseQuery = Product::query()->whereIn('products.id', $wishlistProductIds);
+    
+        $productFilterService = new Filter($baseQuery);
+        $filteredQuery = $productFilterService->applyFilters($filtersQuery);
+    
+        $cloneQuery = clone $filteredQuery;
 
-            // Применение фильтров для наличия и уведомлений
-            if (in_array('in_stock', $filters)) {
-                // $query->where('stock', '>', 0);
-            }
-            if (in_array('out_of_stock', $filters)) {
-                // $query->where('stock', '=', 0);
-            }
-            if (in_array('with_notifications', $filters)) {
-                // $query->where('notifications', true);
-            }
-
-            // Фильтрация по категориям, когда slug вместо id
-            $categorySlugs = array_filter($filters, function($filter) {
-                return !in_array($filter, ['in_stock', 'out_of_stock', 'with_notifications']);
-            });
-
-            if ($categorySlugs) {
-                // Находим соответствующие ID категорий по переданным slug
-                $categoryIds = Category::whereIn('slug', $categorySlugs)->pluck('id')->toArray();
-                // Фильтруем продукты по найденным ID категорий
-                if (!empty($categoryIds)) {
-                    $query->whereIn('category_id', $categoryIds);
-                    $queryAllProducts->whereIn('category_id', $categoryIds);
-                }
-            }
-        }
-
-        if ($request->has('order')) {
-            $order = $request->input('order');
-            switch ($order) {
-                case 'price_desc':
-                    $query->orderBy('price', 'desc');
-                    break;
-                case 'price_asc':
-                    $query->orderBy('price', 'asc');
-                    break;
-                default:
-                    $query->join('wishlists', 'products.id', '=', 'wishlists.product_id')
-                        ->where('wishlists.user_id', $user->id)
-                        ->orderBy('wishlists.created_at', 'desc');
-            }
-        } else {
-            // Сортировка по умолчанию (по дате добавления в wishlist)
-            $query->join('wishlists', 'products.id', '=', 'wishlists.product_id')
-                ->where('wishlists.user_id', $user->id)
-                ->orderBy('wishlists.created_at', 'desc');
-        }
-
-        $products = $query->with('images')
-                            ->withCount('ratings')
-                            ->withAvg('ratings', 'rating_value')
-                            ->paginate(5);
-
-        
-        // $products = $this->productService
-        //     ->createProductQuery(['product_ids' => $wishlistProductIds])
-        //     // ->filter($filtersQuery)
-        //     // ->sort($filtersQuery)
-        //     ->getProductQuery()
-        //     ->with(['images'])
-        //     ->withCount('ratings')
-        //     ->withAvg('ratings', 'rating_value')
-        //     ->paginate(5);
-
-        
-        // dd($products);
-
-        $allProducts = $queryAllProducts->select(['id', 'price'])->get();
+        $allProducts = $cloneQuery->select(['id', 'price'])->get();
+    
+        $productSortingService = new Sorting($filteredQuery);
+        $sortedQuery = $productSortingService->applySorting($filtersQuery['order'], 7);
+    
+        $products = $sortedQuery->with('images')
+            ->withCount('ratings')
+            ->withAvg('ratings', 'rating_value')
+            ->paginate(5);
 
         return Inertia::render('Profile/Wishlist', [
             'products' => $products,

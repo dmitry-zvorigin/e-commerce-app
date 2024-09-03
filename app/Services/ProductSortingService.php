@@ -7,6 +7,7 @@ use App\Services\Sorting\DateAscendingSorting;
 use App\Services\Sorting\DateDescendingSorting;
 use App\Services\Sorting\PriceAscendingSorting;
 use App\Services\Sorting\PriceDescendingSorting;
+use App\Services\Sorting\WishlistDateSorting;
 use Illuminate\Database\Eloquent\Builder;
 
 class ProductSortingService
@@ -36,6 +37,7 @@ class ProductSortingService
             3 => new DateAscendingSorting(),
             4 => new DateDescendingSorting(),
             6 => new AverageRatingDescendingSorting(),
+            7 => new WishlistDateSorting(),
             default => new PriceAscendingSorting(),
         };
     }

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\Filters\AttributeFilter;
 use App\Services\Filters\AttributeRangeFilter;
+use App\Services\Filters\CategoryFilter;
 use App\Services\Filters\PriceRangeFilter;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -32,8 +33,10 @@ class ProductFilterService
     {
         $specifications = [];
         
-        foreach ($filtersQuery['checkbox'] as $attributeId => $values) {
-            $specifications[] = new AttributeFilter($attributeId, $values);
+        if (!empty($filtersQuery['checkbox'])) {
+            foreach ($filtersQuery['checkbox'] as $attributeId => $values) {
+                $specifications[] = new AttributeFilter($attributeId, $values);
+            }
         }
 
         if (!empty($filtersQuery['price'])) {
@@ -45,6 +48,12 @@ class ProductFilterService
                 $specifications[] = new AttributeRangeFilter($attributeId, $range['min'], $range['max']);
             }
         }
+
+        if (!empty($filtersQuery['selected_categories'])) {
+            $specifications[] = new CategoryFilter($filtersQuery['selected_categories']);
+        }
+
+        
 
         return $specifications;
     }
