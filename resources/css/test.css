@@ -1,0 +1,27 @@
+.test {  display: grid;
+    grid-template-columns: 1fr 4fr 1fr;
+    grid-template-rows: 0fr 0fr 0fr 0fr;
+    gap: 0px 8px;
+    grid-auto-flow: row;
+    grid-template-areas:
+      "Img Name Menu"
+      "Img Voblers ."
+      "Img Button Price"
+      "Img Avalis .";
+  }
+  
+  .Img { grid-area: Img; }
+  
+  .Name { grid-area: Name; }
+  
+  .Menu { grid-area: Menu; }
+  
+  .Voblers { grid-area: Voblers; }
+  
+  .Button { grid-area: Button; }
+  
+  .Avalis { grid-area: Avalis; }
+  
+  .Price { grid-area: Price; }
+  
+  

@@ -232,7 +232,7 @@ const Navbar = ({ categoris_menu }) => {
 	const navigationLinks = [
 		{ name: 'Сравнить' , href: route('compare'), icon: ScaleIcon, value: 0 },
 		{ name: 'Избранное', href: route('wishlist.redirect'), icon: HeartIcon, value: auth.wishlist },
-		{ name: 'Корзина', href: route('cart'), icon: ShoppingBagIcon, value: 0 },
+		{ name: 'Корзина', href: route('cart'), icon: ShoppingBagIcon, value: auth.cart },
 		{ name: 'Уведомления', href: route('notification'), icon: BellIcon, value: 0 },
 	];
 

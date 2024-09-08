@@ -33,12 +33,14 @@ class HandleInertiaRequests extends Middleware
     {
         $user = Auth::user();
         $wishlist = $user ? $user->wishlist->pluck('product_id') : [];
+        $cart = $user ? $user->cart->pluck('id') : [];
 
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $user,
                 'wishlist' => $wishlist,
+                'cart' => $cart,
             ],
             'categoriesMenu' => Category::get()->toTree(),
         ];

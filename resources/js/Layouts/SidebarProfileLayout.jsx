@@ -38,7 +38,7 @@ const SidebarProfileLayout = ({ children }) => {
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900">Корзина</h2>
 
                     <div className="flex flex-row">
-                        <div className="border border-slate-300 rounded-lg flex mt-8 min-w-[300px]">
+                        <div className="border border-slate-300 rounded-lg flex mt-8 min-w-[300px] h-max">
                             <nav className="w-full">
                                 {Links.map((linkGroup, groupIndex) => (
                                     <div key={`group-${groupIndex}`} className="border-b border-slate-300">

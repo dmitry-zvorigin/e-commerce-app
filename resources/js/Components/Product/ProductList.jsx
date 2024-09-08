@@ -5,6 +5,7 @@ import { router, usePage } from '@inertiajs/react'
 import { useEffect } from "react";
 import { useState } from "react";
 import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
+import { addProductsToCart } from "@/Service/Api/Cart";
 
 
 export default function ProductList({ product, mode, checkbox = false, isSelected = false, onProductSelected }) {
@@ -117,7 +118,7 @@ export default function ProductList({ product, mode, checkbox = false, isSelecte
                     </div>
                     <div className="flex justify-end gap-2">
                         <ButtonAddWishlist wishlist={wishlist} handleAddToWishlist={handleAddToWishlist} product_id={product.id} loading={loadingProductId}/>
-                        <ButtonAddShoplist />
+                        <ButtonAddShoplist product_id={product.id} />
                     </div>
                 </div>
             </div>
@@ -227,17 +228,37 @@ const ButtonAddWishlist = ({ wishlist, handleAddToWishlist, product_id, loading 
     );
 }
 
-const ButtonAddShoplist = ({ type }) => {
+const ButtonAddShoplist = ({ type, product_id }) => {
+
+    const handleAddToCart = () => {
+        console.log(1);
+
+        addProductsToCart(
+            product_id,
+            () => {
+
+            },
+            (error) => {
+                console.error('Ошибка при добавление товара в корзину:', error);
+            }
+        );
+    }
+    
+
     return (
         <>
             {type === 'icon' ? (
                 <button 
                     className="rounded-md border border-slate-300 flex justify-center items-center p-3 group-hover:bg-orange-400 group-hover:text-white"
+                    onClick={handleAddToCart}
                 >
                     <ShoppingBagIcon className="h-5 w-5" />
                 </button>
             ) : (
-                <button className="border border-slate-300 rounded-lg group group-hover:bg-orange-500 h-[46px] w-[150px] group-hover:text-white ">
+                <button 
+                    className="border border-slate-300 rounded-lg group group-hover:bg-orange-500 h-[46px] w-[150px] group-hover:text-white "
+                    onClick={handleAddToCart}
+                >
                     Купить
                 </button>
             )}

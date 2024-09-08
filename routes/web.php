@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -39,7 +40,16 @@ Route::get('/favorites', [WishlistController::class, 'show'])->name('favorites')
 Route::post('/favorites/add', [WishlistController::class, 'add'])->middleware('auth')->name('wishlist.add');
 Route::get('/favorites/index', [WishlistController::class, 'index'])->middleware('auth')->name('wishlist.index');
 
-Route::inertia('/cart', 'Cart')->name('cart');
+Route::get('/cart', [CartController::class, 'show'])->middleware('auth')->name('cart');
+Route::post('/cart/add', [CartController::class, 'add'])->middleware('auth')->name('cart.add');
+Route::delete('/cart/delete', [CartController::class, 'delete'])->middleware('auth')->name('cart.delete');
+
+
+Route::post('/cart/add', [CartController::class, 'add'])->middleware('auth')->name('cart.add');
+Route::get('/cart/index', [CartController::class, 'index'])->middleware('auth')->name('cart.index');
+
+
+// Route::inertia('/cart', 'Cart')->name('cart');
 
 Route::inertia('/user', 'User')->name('user');
 Route::inertia('/notification', 'Notification')->name('notification');
@@ -50,6 +60,7 @@ Route::inertia('/notification', 'Notification')->name('notification');
 // Route::get('/favorites', [WishlistController::class, 'show'])->name('favorites');
 Route::post('/favorites/add', [WishlistController::class, 'add'])->middleware('auth')->name('wishlist.add');
 Route::get('/favorites/index', [WishlistController::class, 'index'])->middleware('auth')->name('wishlist.index');
+
 
 Route::inertia('/favorites', 'Favorites')->name('favorites');
 
