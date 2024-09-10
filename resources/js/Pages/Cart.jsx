@@ -11,6 +11,7 @@ import { deleteSelectedProducts } from "@/Service/Api/Cart";
 import { addToWishlist } from "@/Service/Api/Wishlist";
 import { useState } from "react";
 import CartDropdown from "@/Components/Cart/CartDropdown";
+import ScrollToTopButton from "@/MyComponents/ScrollToTopButton";
 
 const initialState = {
     cartItems: [],
@@ -123,7 +124,6 @@ export default function Cart ({  }) {
             <div className="bg-white">
                 <div className="max-w-full mb-5">
                     <h2 className="text-4xl font-bold tracking-tight text-gray-900 my-8">Корзина</h2>
-                    <CartDropdown/>
                     {isEmptyCart ? (
                         <div className="grid gap-5 grid-cols-[2fr_1fr]">
 
@@ -205,7 +205,7 @@ export default function Cart ({  }) {
 
                 </div>
             </div>
-
+            <ScrollToTopButton/>
         </DefaultLayout>
     );
 }
@@ -213,7 +213,7 @@ export default function Cart ({  }) {
 
 const ProductList = ({ cartItem, selectedCartItemIds, dispatch, wishlist }) => {
 
-    console.log(cartItem);
+    // console.log(cartItem);
     const isSelectedWishlist = wishlist.includes(cartItem.product_id);
 
     const handleProductSelect = (cartItemId) => {

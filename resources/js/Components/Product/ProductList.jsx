@@ -231,7 +231,6 @@ const ButtonAddWishlist = ({ wishlist, handleAddToWishlist, product_id, loading 
 const ButtonAddShoplist = ({ type, product_id }) => {
 
     const handleAddToCart = () => {
-        console.log(1);
 
         addProductsToCart(
             product_id,

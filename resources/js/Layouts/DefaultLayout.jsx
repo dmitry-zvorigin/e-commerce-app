@@ -1,5 +1,6 @@
 import Banners from "@/Components/Banners";
 import Footer from "@/Components/Footer";
+import Header from "@/Components/Header/Header";
 import Navbar from "@/Components/NavBar";
 import { usePage } from "@inertiajs/react";
 
@@ -10,7 +11,7 @@ export default function ({ children }) {
         <div className="flex flex-col min-h-screen">
             <Banners/>
             <header className="container mx-auto px-4">
-                <Navbar categoris_menu={categoriesMenu}/>
+                <Header/>
             </header>
             <hr/>
             <div className="container mx-auto px-4 flex-grow">

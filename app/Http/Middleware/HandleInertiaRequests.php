@@ -32,15 +32,37 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         $user = Auth::user();
-        $wishlist = $user ? $user->wishlist->pluck('product_id') : [];
-        $cart = $user ? $user->cart->pluck('id') : [];
+
+        if ($user) {
+            $cartItems = $user->cart()->with('product.images')->get()->map(function ($cartItem) {
+                return [
+                    'id' => $cartItem->id,
+                    'product' => [
+                        'id' => $cartItem->product->id,
+                        'name' => $cartItem->product->name,
+                        'slug' => $cartItem->product->slug,
+                        'image' => $cartItem->product->images->first()?->image_url_thumbnail ?? null,
+                        'price' => $cartItem->product->price,
+                        'quantity' => $cartItem->quantity,
+                    ],
+                ];
+            });
+
+            $wishlist = $user->wishlist->pluck('product_id');
+        } else {
+            $cartItems = collect();
+            $wishlist = collect();
+        }
+
+        // $wishlist = $user ? $user->wishlist->pluck('product_id') : [];
+        // $cart = $user ? $user->cart->product->pluck('id', ) : [];
 
         return [
             ...parent::share($request),
             'auth' => [
                 'user' => $user,
                 'wishlist' => $wishlist,
-                'cart' => $cart,
+                'cart' => $cartItems,
             ],
             'categoriesMenu' => Category::get()->toTree(),
         ];
