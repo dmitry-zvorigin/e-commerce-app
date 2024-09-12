@@ -62,7 +62,7 @@ export default function CartDropdown ({ cartItems }) {
                 <div className="flex gap-5">
                     <div>
                         <button
-                            className="border border-slate-300 rounded-lg py-2 px-2"
+                            className="border border-slate-300 rounded-lg py-2 px-2 hover:bg-gray-200"
                         >
                             Оформить заказ
                         </button>
@@ -70,7 +70,7 @@ export default function CartDropdown ({ cartItems }) {
 
                     <div>
                         <Link
-                            className="border bg-orange-500 rounded-lg text-white  py-2 px-2"
+                            className="border rounded-lg text-white  py-2 px-2 bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400"
                             href={route('cart')}
                             as="button"
                         >

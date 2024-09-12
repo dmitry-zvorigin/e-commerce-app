@@ -252,7 +252,7 @@ export default function Filters({ values, setValues, showFilters, setShowFilters
                 </div>
                 <button 
                     onClick={applyFilters} 
-                    className="border rounded-md mb-5 mt-5 p-3 bg-orange-400 text-white hover:bg-orange-300 text-sm font-semibold"
+                    className="border rounded-md mb-5 mt-5 p-3 text-white text-sm font-semibold bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400"
                 >
                     Применить
                 </button>

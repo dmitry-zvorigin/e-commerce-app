@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef, useMemo } from 'react';
-import { Link } from "@inertiajs/react";
 import { BellIcon, ChevronDownIcon, HeartIcon, MagnifyingGlassIcon, ScaleIcon, ShoppingBagIcon, UserCircleIcon } from "@heroicons/react/24/outline";
-import { usePage } from '@inertiajs/react';
+import { Link, usePage } from "@inertiajs/react";
 import CartDropdown from './CartDropdown';
 import ProfileDropdown from './ProfileDropdown';
 

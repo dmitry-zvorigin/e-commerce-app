@@ -169,7 +169,7 @@ export default function Cart ({  }) {
                                             <h2>{selectedProductTotalPrice} ₽</h2>
                                         </div>
                                         <div className="mt-5">
-                                            <button className="rounded-lg bg-orange-500 w-full h-[50px] text-white hover:bg-orange-300">
+                                            <button className="rounded-lg w-full h-[50px] text-white bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400">
                                                 Перейти к оформлению
                                             </button>
                                         </div>

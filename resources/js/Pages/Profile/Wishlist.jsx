@@ -9,8 +9,6 @@ import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useReducer } from "react";
 import ProductPlaceholderCard from "@/Components/Product/ProductPlaceholderCard";
-import '../../../css/Calendar.css';
-
 
 const initialState = {
     selectedProducts: [],
@@ -446,7 +444,7 @@ const Wishlist = () => {
                             </div>
 
                             <div>
-                                <button className="rounded-lg bg-orange-500 h-[40px] w-[150px] text-white hover:bg-orange-300">
+                                <button className="rounded-lg h-[40px] w-[150px] text-white bg-gradient-to-b from-orange-400 to-orange-500 hover:from-orange-300 hover:to-orange-400">
                                     Купить
                                 </button>
                             </div>
