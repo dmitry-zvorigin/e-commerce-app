@@ -33,12 +33,12 @@ export default function CatalogDropdown ({ categories }) {
                         {categories.map((category) => (
                         <Link 
                             key={category.id}
-                            className={` hover-text-orange-700 p-3 ${selectedCategory === category ? 'text-orange-700' : ''}`} 
+                            className={` hover-text-orange-500 p-3 ${selectedCategory === category ? 'text-orange-500' : ''}`} 
                             href={route('categories', category.slug)} 
                             onMouseEnter={() => handleMouseEnter(category)}
                             onMouseLeave={handleMouseLeave}
                         >
-                            <div className='hover:text-orange-700 p-3'>
+                            <div className='hover:text-orange-500 p-3'>
                                 <li>{category.name}</li>
                             </div>
                             <hr/>
@@ -55,7 +55,7 @@ export default function CatalogDropdown ({ categories }) {
                                         <div className='mt-2 mb-2'>
                                             <Link 
                                                 href={route('categories', child.slug)} 
-                                                className='hover:text-orange-700 text-lg font-bold duration-200'
+                                                className='hover:text-orange-500 text-lg font-bold duration-200'
                                             >
                                                 {child.name}
                                             </Link>
@@ -66,7 +66,7 @@ export default function CatalogDropdown ({ categories }) {
                                                 <div key={ch.id} className='m-1'>
                                                     <Link 
                                                         href={route('categories', ch.slug)} 
-                                                        className='hover:text-orange-700 duration-200'
+                                                        className='hover:text-orange-500 duration-200'
                                                     >
                                                         {ch.name}
                                                     </Link>

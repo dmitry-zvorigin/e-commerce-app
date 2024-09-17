@@ -36,7 +36,7 @@ export default function RatingFilter({ filters, ratingsGroups, onFilterChange })
             <div className="flex items-center m-5">
                 {[5, 4, 3, 2, 1].map((rating, index) => (
                     <label 
-                        className={`flex items-center cursor-pointer mr-5 bg-gray-100 rounded-lg p-1 hover:bg-gray-200 gap-1 ${!ratingsGroups[rating] ? 'opacity-50' : ''}`} 
+                        className={`flex items-center cursor-pointer mr-5 bg-gray-100 rounded-lg py-1 px-2 hover:bg-gray-200 gap-1 ${!ratingsGroups[rating] ? 'opacity-50' : ''}`} 
                         key={index}
                         // Добавляем disabled, если количество оценок равно нулю
                         disabled={!ratingsGroups[rating]}

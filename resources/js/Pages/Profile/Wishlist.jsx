@@ -1,158 +1,34 @@
 import SidebarProfileLayout from "@/Layouts/SidebarProfileLayout";
-import ProductList from "@/Components/Product/ProductList";
 import { declineProductCount } from "@/helpers";
 import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
-import ButtonSelect from "@/MyComponents/ButtonSelect";
-import { HeartIcon, AdjustmentsHorizontalIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { Link, router, usePage } from "@inertiajs/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useReducer } from "react";
 import ProductPlaceholderCard from "@/Components/Product/ProductPlaceholderCard";
-
-const initialState = {
-    selectedProducts: [],
-    selectAll: false,
-    selectedFilters: {
-        filters: [],
-        categories: [],
-    },
-    selectedOrder: 'date_desc',
-    hasMore: true,
-    currentProducts: [],
-    allProducts: [],
-    allProductsData: {
-        totalAmount: 0,
-        totalCount: 0,
-    },
-    currentPage: 1,
-    isFilterVisible: false,
-    loadingProducts: false,
-};
-
-function wishlistReducer(state, action) {
-    switch (action.type) {
-        case 'SET_SELECTED_PRODUCTS':
-            return {
-                ...state,
-                selectedProducts: action.payload,
-                selectAll: state.allProducts.length > 0 && state.allProducts.every(product => action.payload.includes(product.id)),
-            };
-        case 'SET_SELECT_ALL':
-            return {
-                ...state,
-                selectAll: action.payload,
-            };
-        case 'RESET_PRODUCTS_DATA':
-            return {
-                ...state,
-                allProductsData: {
-                    totalCount: action.payload.totalCount,
-                    totalAmount: action.payload.totalAmount,
-                },
-            };
-        case 'UPDATE_SELECTED_PRODUCTS_DATA':
-            return {
-                ...state,
-                allProductsData: {
-                    totalCount: action.payload.totalCount,
-                    totalAmount: action.payload.totalAmount,
-                },
-            };
-        case 'UPDATE_CURRENT_PRODUCTS':
-            return {
-                ...state,
-                currentProducts: action.payload,
-            };
-        case 'UPDATE_ALL_PRODUCTS':
-            return {
-                ...state,
-                allProducts: action.payload,
-            };
-        case 'LOAD_MORE_PRODUCTS':
-            return {
-                ...state,
-                currentProducts: [...state.currentProducts, ...action.payload],
-                currentPage: state.currentPage + 1,
-            };
-        case 'SET_FILTERS': 
-            return {
-                ...state,
-                selectedFilters: {
-                    filters: action.payload.filters || state.selectedFilters.filters,
-                    categories: action.payload.categories || state.selectedFilters.categories,
-                },
-            };
-        case 'DESTROY_FILTERS':
-            return {
-                ...state,
-                selectedFilters: {
-                    filters: [],
-                    categories: [],
-                },
-            };
-        case 'SET_ORDER': 
-            return {
-                ...state,
-                selectedOrder: action.payload,
-            };
-        case 'SET_IS_FILTER_VISIBLE': 
-            return {
-                ...state,
-                isFilterVisible: action.payload,
-            }
-        case 'SET_IS_MODAL_OPEN': 
-            return {
-                ...state,
-                isModalOpen: action.payload,
-            }
-        case 'SET_HAS_MORE':
-            return {
-                ...state,
-                hasMore: action.payload,
-            };
-        case 'SET_LOADING_PRODUCTS':
-            return {
-                ...state,
-                loadingProducts: action.payload,
-            }
-        case 'SET_CURRENT_PAGE': 
-            return {
-                ...state,
-                currentPage: action.payload,
-            }
-        case 'RESET_PRODUCTS':
-            return {
-                ...state,
-                loadingProducts: action.payload.loadingProducts,
-                currentProducts: action.payload.currentProducts,
-                currentPage: action.payload.currentPage,
-                hasMore: action.payload.hasMore,
-            };
-        case 'UPDATE_PRODUCTS':
-            return {
-                ...state,
-                loadingProducts: action.payload.loadingProducts,
-                currentProducts: action.payload.currentProducts,
-                allProducts: action.payload.allProducts,
-                selectedProducts: action.payload.selectedProducts,
-                hasMore: action.payload.hasMore,
-            }
-        default: 
-            return state;
-    }
-}
+import ButtonSortAndFilters from "@/Components/Wishlist/ButtonSortAndFilters";
+import DeleteWarningModal from "@/Components/Wishlist/DeleteWarningModal";
+import { WishlistReducer, initialState } from "@/Reducers/WishlistReducer";
+import { useCallback } from "react";
+import { useMemo } from "react";
+import ProductList from "@/Components/Product/ProductList";
 
 const Wishlist = () => {
     const { products, filter_query, all_products, categoryOptions } = usePage().props;
 
-    const totalAmount = all_products.reduce((sum, product) => {
-        return sum + parseFloat(product.price || 0);
-    }, 0);
-    const initialTotalAmount = Math.round(totalAmount * 100) / 100;
     const initialTotalCount = all_products.length;
 
-    const [state, dispatch] = useReducer(wishlistReducer, {
+    const totalAmount = useMemo(() => {
+        return all_products.reduce((sum, product) => {
+            return sum + parseFloat(product.price || 0);
+        }, 0);
+    }, [all_products]);
+    
+    const initialTotalAmount = useMemo(() => Math.round(totalAmount * 100) / 100, [totalAmount]);
+
+    console.log(products);
+    const [state, dispatch] = useReducer(WishlistReducer, {
         ...initialState,
         currentProducts: products.data,
         allProducts: all_products,
@@ -168,7 +44,7 @@ const Wishlist = () => {
         hasMore: !!products.next_page_url,
     });
 
-    const fetchProducts = (updatedFilters = state.selectedFilters, updatedOrder = state.selectedOrder) => {
+    const fetchProducts = useCallback((updatedFilters = state.selectedFilters, updatedOrder = state.selectedOrder) => {
         dispatch({
             type: 'RESET_PRODUCTS',
             payload: {
@@ -177,20 +53,9 @@ const Wishlist = () => {
                 currentPage: 1,
                 hasMore: true,
             }
-        })
-        const params = {};
+        });
 
-        if (updatedOrder !== 'date_desc') {
-            params.order = updatedOrder;
-        }
-        
-        if (updatedFilters.filters.length > 0) {
-            params.filters = updatedFilters.filters.join(',');
-        }
-
-        if (updatedFilters.categories.length > 0) {
-            params.categories = updatedFilters.categories.join(',');
-        }
+        const params = generateParams(updatedFilters, updatedOrder);
 
         router.get(route('profile.wishlist'), params, {
             preserveState: true,
@@ -211,9 +76,9 @@ const Wishlist = () => {
 
             }
         });
-    };
+    }, [state.selectedFilters, state.selectedOrder]);
 
-    const handleSelectAll = () => {
+    const handleSelectAll = useCallback(() => {
         if (state.selectAll) {
             dispatch({
                 type: 'SET_SELECTED_PRODUCTS',
@@ -225,18 +90,18 @@ const Wishlist = () => {
                 payload: state.allProducts.map(product => product.id),
             });
         }
-    };
+    }, [state.selectAll, state.allProducts]);
     
-    const handleProductSelect = (productId) => {
+    const handleProductSelect = useCallback((productId) => {
         const updatedSelectedProducts = state.selectedProducts.includes(productId)
             ? state.selectedProducts.filter(id => id !== productId)
             : [...state.selectedProducts, productId];
-
+    
         dispatch({
             type: 'SET_SELECTED_PRODUCTS',
             payload: updatedSelectedProducts,
         });
-    };
+    }, [state.selectedProducts]);
 
     const handleDeleteClick = () => {
         dispatch({
@@ -246,7 +111,6 @@ const Wishlist = () => {
     };
 
     const handleDeleteSuccess = (deletedProductIds) => {
-        // console.log(state.categoryOptions);
         const updatedCurrentProducts = state.currentProducts.filter(product => !deletedProductIds.includes(product.id));
         const updatedAllProducts = state.allProducts.filter(product => !deletedProductIds.includes(product.id));
     
@@ -256,9 +120,6 @@ const Wishlist = () => {
                 filters: [],
                 categories: [],
             };
-            // dispatch({
-            //     type: 'DESTROY_FILTERS',
-            // });
 
             dispatch({
                 type: 'SET_FILTERS',
@@ -275,26 +136,17 @@ const Wishlist = () => {
                     selectedProducts: [],
                 }
             });
+
+            // if (updatedCurrentProducts.length < state.currentPage * productPerPage) {
+            //     fetchMoreProducts();
+            // }
         }
     };
 
     const fetchMoreProducts = () => {
 
-        const params = {};
-
-        if (state.selectedOrder !== 'date_desc') {
-            params.order = state.selectedOrder;
-        }
-
-        if (state.selectedFilters.filters.length > 0) {
-            params.filters = state.selectedFilters.filters.join(',');
-        }
-
-        if (state.selectedFilters.categories.length > 0) {
-            params.categories = state.selectedFilters.categories.join(',');
-        }
-
         const nextPage = state.currentPage + 1;
+        const params = generateParams(state.selectedFilters, state.selectedOrder);
         params.page = nextPage;
         
         router.get(route('profile.wishlist'), params , {
@@ -320,7 +172,6 @@ const Wishlist = () => {
                     });
                 }
 
-                // Удаляем параметр page из URL
                 const url = new URL(window.location);
                 url.searchParams.delete('page');
                 window.history.replaceState(null, '', url);
@@ -328,13 +179,23 @@ const Wishlist = () => {
         });
     };
 
-    const handleButtonClick = (event) => {
-        event.stopPropagation();
-        dispatch({
-            type: 'SET_IS_FILTER_VISIBLE',
-            payload: (!state.isFilterVisible),
-        });
-    }
+    const generateParams = (filters, order) => {
+        const params = {};
+
+        if (order != 'date_desc') {
+            params.order = order;
+        }
+
+        if (filters.filters.length > 0) {
+            params.filters = filters.filters.join(',');
+        }
+
+        if (filters.categories.length > 0) {
+            params.categories = filters.categories.join(',');
+        }
+
+        return params;
+    };
 
     useEffect(() => {
         // Проверяем, выбраны ли все продукты
@@ -412,15 +273,12 @@ const Wishlist = () => {
                                 </label>
 
                                 <ButtonSortAndFilters 
-                                    handleButtonClick={handleButtonClick} 
-                                    isFilterVisible={state.isFilterVisible} 
                                     selectedFilters={state.selectedFilters}
                                     categoryOptions={categoryOptions}
                                     selectedOrder={state.selectedOrder}
                                     fetchProducts={fetchProducts}
                                     dispatch={dispatch}
                                 />
-
 
                                 {state.selectedProducts.length > 0 && (
                                     <div className="flex justify-center items-center border rounded-lg relative h-full">
@@ -433,14 +291,9 @@ const Wishlist = () => {
                                     </div>
                                 )}
                                 {state.isModalOpen && (
-                                    <ModalOpenDeleteProduct 
-                                        selectedProducts={state.selectedProducts} 
-                                        onDeleteSuccess={handleDeleteSuccess}
-                                        dispatch={dispatch}
-                                    />
+                                    <DeleteWarningModal selectedProducts={state.selectedProducts} onDeleteSuccess={handleDeleteSuccess} dispatch={dispatch}/>
                                 )}
 
-                                
                             </div>
 
                             <div>
@@ -479,7 +332,6 @@ const Wishlist = () => {
 
                     </InfiniteScroll>
                     
-
                 </div>
             )}
 
@@ -488,276 +340,3 @@ const Wishlist = () => {
 }
 
 export default Wishlist;
-
-const ButtonSortAndFilters = ({ 
-    isFilterVisible, 
-    handleButtonClick, 
-    selectedFilters, 
-    categoryOptions,
-    selectedOrder, 
-    fetchProducts,
-    dispatch
-}) => {
-    
-    const [filterHeight, setFilterHeight] = useState(0);
-    const buttonRef = useRef(null);
-    const filterRef = useRef(null);    
-
-    const hasFiltersOrSort = selectedFilters.length > 0 || selectedOrder !== 'date_desc';
-    // Обработчик клика по документу для закрытия блока фильтров при клике вне его
-    useEffect(() => {
-        const handleClickOutside = (event) => {
-            if (filterRef.current && !filterRef.current.contains(event.target) && buttonRef.current && !buttonRef.current.contains(event.target)) {
-                dispatch({ 
-                    type: 'SET_IS_FILTER_VISIBLE', 
-                    payload: false 
-                });
-            }
-        };
-
-        if (filterRef.current) {
-            setFilterHeight(filterRef.current.scrollHeight);
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-        
-    }, [filterRef, buttonRef, categoryOptions]);
-
-    return (
-        <div className="flex justify-center items-center border rounded-lg relative h-full">
-
-            <button 
-                onClick={handleButtonClick}
-                // className="p-2 hover:bg-orange-100"
-                className={`p-2 rounded-lg ${hasFiltersOrSort ? 'bg-orange-500 text-white' : 'hover:bg-orange-100'}`}
-                ref={buttonRef}
-            >
-                <AdjustmentsHorizontalIcon className="h-[22px] w-[22px] "/>
-            </button>
-
-            {/* {hasFiltersOrSort && (
-                <div className="absolute z-50 right-1 top-1">
-                    <div className="rounded-full bg-orange-500 w-3 h-3"></div>
-                </div>
-            )} */}
-
-            <div 
-                className={`absolute top-[40px] border border-slate-300 rounded-lg z-10 bg-white min-w-[300px]
-                    overflow-hidden transition-all duration-500 ease-in-out
-                    ${isFilterVisible ? 'opacity-100' : 'h-0 opacity-0'}
-                    `}
-                style={{
-                    height: isFilterVisible ? `${filterHeight}px` : '0',
-                }}
-                ref={filterRef}
-            >
-                <WishlistOrder selectedOrder={selectedOrder} fetchProducts={fetchProducts} dispatch={dispatch}/>
-
-                <hr/>
-
-                <WishlistFilters selectedFilters={selectedFilters} categoryOptions={categoryOptions} fetchProducts={fetchProducts} dispatch={dispatch}/>
-
-            </div>
-
-        </div>
-    );
-}
-
-const WishlistFilters = ({ selectedFilters, categoryOptions, fetchProducts, dispatch }) => {
-
-    const filtersOptions = [
-        {name: 'В наличии (1)', value: 'in_stock'},
-        {name: 'Нет в наличии', value: 'out_of_stock'},
-        {name: 'С уведомлениями', value: 'with_notifications'},
-    ];
-
-    // const handleFilterChange = (value) => {
-    //     const updatedFilters = selectedFilters.includes(value)
-    //         ? selectedFilters.filter(filter => filter !== value)
-    //         : [...selectedFilters, value];
-
-    //         dispatch({
-    //             type: 'SET_FILTERS',
-    //             payload: updatedFilters,
-    //         });
-    //         fetchProducts(updatedFilters);
-    // };
-
-    const handleFilterChange = (value) => {
-        const isCategoryFilter = categoryOptions.some(option => option.slug === value);
-        let updatedFilters;
-
-        if (isCategoryFilter) {
-            const updatedCategories = selectedFilters.categories.includes(value)
-                ? selectedFilters.categories.filter(filter => filter !== value)
-                : [...selectedFilters.categories, value];
-
-            updatedFilters = {
-                ...selectedFilters,
-                categories: updatedCategories
-            };
-        } else {
-            const updatedOtherFilters = selectedFilters.filters.includes(value)
-                ? selectedFilters.filters.filter(filter => filter !== value)
-                : [...selectedFilters.filters, value];
-
-            updatedFilters = {
-                ...selectedFilters,
-                filters: updatedOtherFilters
-            };
-        }
-
-        dispatch({
-            type: 'SET_FILTERS',
-            payload: updatedFilters,
-        });
-
-        fetchProducts(updatedFilters);
-    };
-
-
-    return (
-        <div className="px-5">
-            <h1 className="text-2xl font-bold my-2">Фильтры</h1>
-
-            {filtersOptions.map((option, index) => (
-                <label 
-                    key={index}
-                    className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
-                        hover:text-black hover:bg-orange-100" 
-                    // onClick={() => handleFilterChange(option.value)}
-                >
-                    <ButtonCheckbox
-                        checked={selectedFilters.filters.includes(option.value)}
-                        onChange={() => handleFilterChange(option.value)}
-                    />
-                    <span className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">
-                        {option.name}
-                    </span>
-                </label>
-            ))}
-            {categoryOptions.map((option, index) => (
-                <label 
-                    key={option.id}
-                    className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
-                        hover:text-black hover:bg-orange-100" 
-                    // onClick={() => handleFilterChange(option.value)}
-                >
-                    <ButtonCheckbox
-                        checked={selectedFilters.categories.includes(option.slug)}
-                        onChange={() => handleFilterChange(option.slug)}
-                    />
-                    <span className="peer-checked/draft:text-orange-500 cursor-pointer p-2 h-full w-full">
-                        {option.name}
-                    </span>
-                </label>
-            ))}
-        </div>
-    );
-}
-
-const WishlistOrder = ({ selectedOrder, fetchProducts, dispatch }) => {
-
-    const sortingOptions = [
-        {name: 'По убыванию цены', value: 'price_desc'},
-        {name: 'По возрастанию цены', value: 'price_asc'},
-        {name: 'По дате добавления', value: 'date_desc'},
-    ];
-
-    const handleSortChange = (value) => {
-        dispatch({
-            type: 'SET_ORDER',
-            payload: value,
-        });
-        fetchProducts();
-    };
-
-    return (
-        <div className="px-5">
-            <h1 className="text-2xl font-bold my-2">Сортировка</h1>
-            {sortingOptions.map((option, index) => (
-                <label 
-                    key={option.value}
-                    className="flex items-center gap-2 rounded-lg cursor-pointer h-full w-full 
-                        hover:text-black hover:bg-orange-100" 
-                    onClick={() => handleSortChange(option.value)}
-                >
-                    <ButtonSelect
-                        checked={selectedOrder === option.value}
-                        onChange={() => handleSortChange(option.value)}
-                    />
-                    <span className="cursor-pointer p-2 h-full w-full">
-                        {option.name}
-                    </span>
-                </label>
-            ))}
-        </div>
-    );
-}
-
-const ModalOpenDeleteProduct = ({ selectedProducts, onDeleteSuccess, dispatch }) => {
-
-    const handleCloseModal = () => {
-        dispatch({
-            type: 'SET_IS_MODAL_OPEN', 
-            payload: false
-        })
-    };
-
-    const handleDeleteProduct = () => {
-        dispatch({
-            type: 'SET_LOADING_PRODUCTS',
-            payload: true,
-        });
-        router.delete(route('profile.wishlist.delete', { product_ids: selectedProducts }),
-        {
-            preserveState: true,
-            preserveScroll: true, // Сохраняет позицию скролла после запроса
-            onSuccess: () => {
-                onDeleteSuccess(selectedProducts);
-                handleCloseModal();
-                dispatch({
-                    type: 'SET_LOADING_PRODUCTS',
-                    payload: false,
-                });
-                // Удаляем параметр page из URL
-                const url = new URL(window.location);
-                url.searchParams.delete('page');
-                window.history.replaceState(null, '', url);
-            },
-            onError: (error) => {
-                console.error('Ошибка при удалении товаров:', error);
-            }
-        });
-    };
-    
-
-
-
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
-                <h2 className="text-xl font-bold mb-2">Удаление товаров</h2>
-                <p className="mb-2">Удаление товаров из списка отменяет подписку на уведомления о поступлении данных товаров</p>
-                <div className="flex justify-end space-x-4">
-                    <button
-                        onClick={() => handleDeleteProduct()}
-                        className="text-black px-4 py-2 border border-slate-300 rounded-lg"
-                    >
-                        Удалить
-                    </button>
-
-                    <button
-                        onClick={handleCloseModal}
-                        className="bg-orange-500 text-white px-4 py-2 hover:bg-orange-400 rounded-lg"
-                    >
-                        Оставить
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}

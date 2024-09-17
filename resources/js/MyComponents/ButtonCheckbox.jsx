@@ -9,7 +9,6 @@ export default function ButtonCheckbox({ disabled, checked, onChange }) {
             cursor-pointer
             focus:ring-indigo-500 
             focus:ring-0
-            ml-2
             "
             disabled={disabled}
             checked={checked}

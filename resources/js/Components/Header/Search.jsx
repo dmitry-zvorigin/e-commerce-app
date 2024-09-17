@@ -160,7 +160,7 @@ export default function Search() {
             >
                 <div 
                     className={`h-full w-full rounded-lg outline-none ring-0 border border-gray-100 flex-col justify-center items-center gap-2 
-                    bg-gray-100 cursor-text shadow-md hover:shadow-xl hover:bg-white group transition-shadow duration-200 ${
+                    bg-gray-100 cursor-text hover:shadow-xl hover:bg-white group transition-shadow duration-200 ${
                         isVisible ? ' bg-white' : 'hover:bg-gray-100'
                     }`}
                     onClick={openDropdown} 
@@ -202,19 +202,19 @@ export default function Search() {
 
 const PresearchSuggests = () => {
     return (
-        <div className="mt-2 p-4">
-            <div className="flex justify-between mb-3">
-                <h1>История поиска</h1>
-                <button className="text-blue-500">Очистить историю</button>
+        <div className="mt-2">
+            <div className="flex justify-between mb-3 mx-4">
+                <h1 className="text-gray-400">История поиска</h1>
+                <button className="text-gray-400 hover:text-orange-500 duration-200">Очистить историю</button>
             </div>
             <div>
                 {Array.from({ length: 5 }).map((_, index) => (
-                    <div key={index} className="flex justify-between cursor-pointer text-slate-400 py-1">
-                        <div className="flex items-center hover:bg-slate-100 rounded-md p-1 w-full">
+                    <div key={index} className="flex justify-between cursor-pointer text-slate-400 py-2 hover:bg-slate-200 rounded-lg">
+                        <div className="flex items-center px-4 py-1 w-full">
                             <ClockIcon className="w-5 h-5 mr-2"/>
                             История {index + 1}
                         </div>
-                        <button className="hover:text-slate-600">
+                        <button className="hover:text-slate-600 px-4">
                             <XMarkIcon className="w-5 h-5"/>
                         </button>
                     </div>

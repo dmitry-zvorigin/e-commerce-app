@@ -10,7 +10,6 @@ import { useEffect } from "react";
 import { deleteSelectedProducts } from "@/Service/Api/Cart";
 import { addToWishlist } from "@/Service/Api/Wishlist";
 import { useState } from "react";
-import CartDropdown from "@/Components/Cart/CartDropdown";
 import ScrollToTopButton from "@/MyComponents/ScrollToTopButton";
 
 const initialState = {
@@ -131,7 +130,7 @@ export default function Cart ({  }) {
                                 {state.showSelection && (
                                     <div className="border rounded-lg border-slate-300 flex justify-between py-5 pr-5">
                                         <div>
-                                            <label className="flex justify-center items-center cursor-pointer select-none">
+                                            <label className="flex justify-center items-center cursor-pointer select-none px-2">
                                                 <ButtonCheckbox 
                                                     checked={state.isAllCartItemsSelected}
                                                     onChange={handleProductSelectAll}
@@ -213,7 +212,6 @@ export default function Cart ({  }) {
 
 const ProductList = ({ cartItem, selectedCartItemIds, dispatch, wishlist }) => {
 
-    // console.log(cartItem);
     const isSelectedWishlist = wishlist.includes(cartItem.product_id);
 
     const handleProductSelect = (cartItemId) => {
@@ -229,22 +227,23 @@ const ProductList = ({ cartItem, selectedCartItemIds, dispatch, wishlist }) => {
 
     return (
         <div className="border rounded-lg border-slate-300 relative">
-            <div className="absolute">
+            <div className="absolute px-2">
                 <ButtonCheckbox 
                     checked={selectedCartItemIds.includes(cartItem.id)}
                     onChange={() => handleProductSelect(cartItem.id)}
                 />
             </div>
             <div className="test p-5 ml-5">
-                <div className="Img h-[200px] flex flex-col justify-between">
-                    <div className="bg-gray-300 w-full h-[100px]">
+                <div className="Img flex flex-col justify-between h-[200px]">
+                    <div className="w-full h-full">
                         <Link
                             href={route('product.show', { productSlug: cartItem.product.slug })}
+                            className=""
                         >
                             <img
                                 src={`/products_images/image_thumbnail/${cartItem.product.images[0].image_url_thumbnail}`}
                                 alt={cartItem.product.name}
-                                className="object-contain"                          
+                                className="object-contain h-full w-full"                          
                             />
                         </Link>
 
@@ -334,6 +333,8 @@ const Menu = ({ isSelectedWishlist, cartId, productId, dispatch }) => {
 
 const ButtonAddProduct = ({ initialQuantity, cartId, dispatch }) => {
 
+    // TODO 
+    // Количество товаров, реализовать
     // const initialQuantity = 1;
     const maxQuantity = 5;
     const [quantity, setQuantiry] = useState(initialQuantity);

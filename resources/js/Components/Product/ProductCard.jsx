@@ -5,79 +5,50 @@ import { useEffect } from "react";
 import { Link } from '@inertiajs/react'
 import ProductImageGallery from "./ProductImageGallery";
 import Rating from "@/MyComponents/Rating";
+import ButtonAddShoplist from "@/MyComponents/ButtonAddShoplist";
+import ButtonAddWishlist from "@/MyComponents/ButtonAddWishlist";
+import ButtonCheckbox from "@/MyComponents/ButtonCheckbox";
+import ButtonAddCompare from "@/MyComponents/ButtonAddCompare";
+import ProductRatingReviews from "@/MyComponents/ProductRatingReviews";
 
 
 export default function ProductCard({ product, reviewImages }) {
 
     return (
         <div>
-
             <div className="border border-slate-300 rounded-lg mt-5">
+                <div className="grid m-2 grid-cols-[1fr_1fr]">
 
-                <div className="h-96 flex ml-2 mt-2 mr-2">
-
-                    <div className="w-2/3 mr-8 flex">
+                    <div>
                         <ImageSlider images={product.images} productName={product.name}/>
                     </div>
 
                     <div className="w-full p-5">
-
                         {/* TODO */}
                         <h2>AM3+, 4 x 3.8 ГГц, L2 - 4 МБ, L3 - 4 МБ, 2 х DDR3-1866 МГц, TDP 95 Вт, кулер подробнее</h2>
+                        <div className="flex my-5 h-[36px]">
 
-                        <div className="flex mt-3 mb-3">
-                            <div className="rounded-md p-1 flex justify-center items-center bg-gray-100">
-                                <label 
-                                    className='flex items-center p-1 w-full hover:bg-orange-100 rounded-md cursor-pointer'
-                                >
-                                    <input 
-                                        type="checkbox" 
-                                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                                    />
-                                    <span className="ml-2 text-sm text-gray-600 " >
-                                        Сравнить
-                                    </span>
-                                    
-                                </label>
-                                
+                            <div className="flex justify-center items-center ">
+                                <ButtonAddCompare/>
                             </div>
 
-                            <div className="ml-2 p-1 rounded-md flex bg-gray-100 text-sm text-gray-600 items-center">
-                                <Link 
-                                    className="flex" 
+                            <div className="ml-2">
+                                {/* <Link 
+                                    className="flex justify-center items-center bg-gray-100 hover:bg-gray-200 h-full w-full rounded-lg px-2 text-gray-600 text-sm" 
                                     href={route('product.reviews', { productSlug: product.slug })}>
-                                    <Rating value={product.ratings_avg_rating_value} size={'small'} precision={0.1}/>
-                                    <p className="ml-1 mr-1">{product.ratings_count}</p>
-                                </Link>
+                                        <Rating value={product.ratings_avg_rating_value} size={'small'} precision={0.1}/>
+                                        <p className="ml-1 h-[18px]">{product.ratings_count}</p>
+                                </Link> */}
+                                <ProductRatingReviews productSlug={product.slug} productRating={product.ratings_avg_rating_value} ReviewsCount={product.ratings_count}/>
                             </div>
 
                         </div>
 
-                        <div className="flex h-16 justify-between">
-                            <div className="rounded-lg flex bg-gray-100 text-4xl mr-5 text-center items-center w-96 p-2">
-                                {product.price} ₽
-                            </div>
-                            <div className="rounded-lg flex bg-gray-100 text-sm text-gray-600 mr-5">
-                                <button 
-                                    className="
-                                        rounded-lg border-slate-300 flex justify-center 
-                                        items-center p-3 hover:border-orange-400 w-16
-                                        hover:bg-gray-200
-                                        "
-                                >
-                                    <HeartIcon className="h-7 w-7"/>
-                                </button>
-                            </div>
-                            <div className="rounded-lg flex bg-gray-100 text-sm ">
-                                <button 
-                                    className="rounded-lg border border-slate-300 flex justify-center items-center 
-                                    p-3 bg-orange-400 hover:bg-orange-300 w-44 text-2xl text-white"
-                                >
-                                    Купить
-                                </button>
-                            </div>
+                        <div className="flex justify-between gap-5 h-[60px]">
+                            <div className="bg-gray-100 rounded-lg w-full flex justify-start items-center text-4xl px-2 text-nowrap">{product.price} ₽</div>
+                            <div className=""><ButtonAddWishlist productId={product.id} size={60}/></div>
+                            <div className="h-full"><ButtonAddShoplist productId={product.id} isHover={true}/></div>
                         </div>
-
 
                     </div>
                 </div>
@@ -141,7 +112,7 @@ const ImageSlider = ({images, productName}) => {
     };
     
     return (
-        <>
+        <div className="flex h-[500px]">
             <div className="p-2 items-center flex flex-col">
                 <button 
                     className="border border-black rounded-full justify-center items-center p-1"
@@ -166,7 +137,7 @@ const ImageSlider = ({images, productName}) => {
                 </button>
             </div>
 
-            <div className="h-full flex justify-center">
+            <div className="h-full w-full flex justify-center">
                 {images && images.length > 0 ? (
                     <img
                         src={`/products_images/image_detail/${selectedImage.image_url_detail}`}
@@ -185,7 +156,7 @@ const ImageSlider = ({images, productName}) => {
                 )}
             </div>
 
-        </>
+        </div>
     );
 }
 

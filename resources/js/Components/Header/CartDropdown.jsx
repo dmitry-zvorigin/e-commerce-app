@@ -37,6 +37,7 @@ export default function CartDropdown ({ cartItems }) {
                 <div className="">
                     <button
                         onClick={handleDeleteProducts}
+                        className="hover:text-orange-500 duration-200"
                     >
                         Очистить список
                     </button>

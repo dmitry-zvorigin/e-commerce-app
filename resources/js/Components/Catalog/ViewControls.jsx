@@ -5,35 +5,6 @@ import { useState } from 'react';
 
 export default function ViewControls({ values, setValues}) {
 
-    // const setMode = (newMode) => {
-    //     const newValues = { ...values, mode: [newMode] };
-    //     setValues(newValues);
-    //     const query = buildQuery(newValues);
-
-    //     router.visit(window.location.pathname, {
-    //         method: 'get',
-    //         data: query,
-    //         preserveScroll: true,
-    //         preserveState: true,
-    //     });
-    // };
-
-    
-    // const buildQuery = (values, page) => {
-	// 	const query = {
-	// 		...values,
-	// 		page,
-	// 	}
-
-	// 	Object.keys(query).forEach(key => {
-	// 		if (Array.isArray(query[key])) {
-	// 			query[key] = query[key].join(',');
-	// 		}
-	// 	});
-
-	// 	return query;
-	// };
-
     const initialMode = values.mode ? values.mode[0] : 'list';
     const [currentMode, setCurrentMode] = useState(initialMode);
 
@@ -42,7 +13,13 @@ export default function ViewControls({ values, setValues}) {
         const newValues = { ...values, mode: [newMode] };
         setValues(newValues);
         setCurrentMode(newMode);
-        updateUrlWithMode(newMode);  // Обновляем URL без перезагрузки страницы
+        updateUrlWithMode(newMode);
+
+        router.get(window.location.pathname, { mode: newMode }, {
+            preserveState: true,
+            replace: true,
+            preserveScroll: true,
+        })
     };
 
     const updateUrlWithMode = (newMode) => {

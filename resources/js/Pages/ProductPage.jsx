@@ -33,14 +33,16 @@ export default function Product() {
     };
 
     return (
-        <>
-            <DefaultLayout>
+        <DefaultLayout>
             <div className="bg-white">
                 <div className="max-w-full my-8">
                     <Breadcrumbs breadcrumbs={breadcrumbs} />
-                    <h2 className="text-4xl font-bold tracking-tight text-gray-900">
-                        {product.name}
-                    </h2>
+                    <div className='flex justify-between'>
+                        <h2 className="text-4xl font-bold tracking-tight text-gray-900">
+                            {product.name}
+                        </h2>
+                        <p className='text-sm text-gray-400 text-nowrap'># {product.id}</p>
+                    </div>
 
                     <ProductCard product={product} reviewImages={reviewImages} />
 
@@ -57,7 +59,7 @@ export default function Product() {
                                                     preserveState
                                                     onSuccess={() => sectionRef.current.scrollIntoView({ behavior: 'smooth' })}
                                                     className={
-                                                        `flex gap-2 p-2 hover:text-orange-400 border-l-[4px] 
+                                                        `flex gap-2 p-2 hover:text-orange-500 border-l-[4px] 
                                                         ${currentTab === element.url.split('.').pop() ? 'border-orange-400' : 'border-white'}`
                                                     }
                                                 >
@@ -79,7 +81,6 @@ export default function Product() {
                                             </Link>
                                         </li> */}
 
-
                                     </ul>
                                 </nav>
                             </div>
@@ -96,8 +97,7 @@ export default function Product() {
 
             <ScrollToTopButton/>
 
-            </DefaultLayout>
-        </>
+        </DefaultLayout>
     );
 
 }

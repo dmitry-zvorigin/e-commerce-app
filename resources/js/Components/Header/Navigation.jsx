@@ -3,6 +3,7 @@ import { BellIcon, ChevronDownIcon, HeartIcon, MagnifyingGlassIcon, ScaleIcon, S
 import { Link, usePage } from "@inertiajs/react";
 import CartDropdown from './CartDropdown';
 import ProfileDropdown from './ProfileDropdown';
+import { useMenu } from '../Context/MenuContext';
 
 export default function Navigation () {
 
@@ -74,20 +75,7 @@ const WishlistLink = ({ wishlistItems }) => (
 
 const CartLink = ({ cartItems }) => {
 
-	const { url } = usePage();
-	// console.log(url);
-	const [isAnimating, setIsAnimating] = useState(false);
-	const [isVisible, setIsVisible] = useState(false);
-
-	const openDropdown = () => {
-		if (url === '/cart') return;
-		setIsVisible(true);
-		setIsAnimating(true);
-	}
-
-	const closeDropdown = () => {
-		setIsAnimating(false);
-	}
+	const { isMenuVisible, isMenuAnimating, closeMenu, openMenu} = useMenu();
 
 	const selectedProductTotalPrice = useMemo(() => {
         const totalAmount = cartItems
@@ -102,8 +90,8 @@ const CartLink = ({ cartItems }) => {
 
 	return (
 		<div className="flow-root relative"
-			onMouseEnter={hasItemsInCart ? openDropdown : null} 
-			onMouseLeave={closeDropdown}
+			onMouseEnter={hasItemsInCart ? openMenu : null} 
+			onMouseLeave={closeMenu}
 		>
 			<Link 
                 href={route('cart')} 
@@ -127,12 +115,12 @@ const CartLink = ({ cartItems }) => {
 					</div>			
 
 					<div
-						className={`fixed inset-0 bg-black transition-all duration-200 ${isAnimating ? 'opacity-50 visible' : 'opacity-0 invisible'} z-40 pointer-events-none`}
+						className={`fixed inset-0 bg-black transition-all duration-200 ${isMenuAnimating ? 'opacity-50 visible' : 'opacity-0 invisible'} z-40 pointer-events-none`}
 					/>
 					<div
-						className={`absolute right-0 z-50 bg-white rounded-lg transform origin-top-right transition-all duration-200 ${isAnimating ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-50 invisible'}`}
-						onMouseEnter={openDropdown}
-						onMouseLeave={closeDropdown}
+						className={`absolute right-0 z-50 bg-white rounded-lg transform origin-top-right transition-all duration-200 ${isMenuAnimating ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-50 invisible'}`}
+						onMouseEnter={openMenu}
+						onMouseLeave={closeMenu}
 					>
 						<CartDropdown cartItems={cartItems} />
 					</div>
